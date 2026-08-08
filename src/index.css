@@ -1,0 +1,41 @@
+@import 'tailwindcss';
+
+@layer base {
+  body {
+    background-color: #f8fafc;
+    color: #0f172a;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+
+/* Estilos de tarjeta pastel y utilidades */
+.pastel-blue-card {
+  background: linear-gradient(135deg, #e0f2fe 0%, #f0f9ff 100%);
+  border: 1px solid #bae6fd;
+}
+
+.pastel-pink-card {
+  background: linear-gradient(135deg, #fce7f3 0%, #fdf2f8 100%);
+  border: 1px solid #fbcfe8;
+}
+
+.pastel-green-card {
+  background: linear-gradient(135deg, #dcfce7 0%, #f0fdf4 100%);
+  border: 1px solid #bbf7d0;
+}
+
+.pastel-yellow-card {
+  background: linear-gradient(135deg, #fef3c7 0%, #fffbeb 100%);
+  border: 1px solid #fde68a;
+}
+
+.pastel-red-card {
+  background: linear-gradient(135deg, #fee2e2 0%, #fef2f2 100%);
+  border: 1px solid #fecaca;
+}
+
+.pastel-purple-card {
+  background: linear-gradient(135deg, #f3e8ff 0%, #faf5ff 100%);
+  border: 1px solid #e9d5ff;
+}
