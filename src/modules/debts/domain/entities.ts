@@ -22,6 +22,7 @@ export interface DebtPayment {
   currency: Currency;
   rateUsed: number;
   rateType: 'bcv' | 'libre';
+  vaultId?: string; // Bóveda asociada donde entra o sale el dinero
   createdAt: string;
   note?: string;
 }

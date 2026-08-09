@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useDebtsStore } from './useDebtsStore';
 import { useRatesStore } from '../../rates/presentation/useRatesStore';
+import { useVaultsStore } from '../../vaults/presentation/useVaultsStore';
 import { FinanceEngine } from '../../analytics/domain/financeEngine';
 import { ReceiptModal } from './ReceiptModal';
 import type { AgreementType, Currency, DebtType } from '../../shared/domain/types';
@@ -9,6 +10,7 @@ import type { Debt } from '../domain/entities';
 export const DebtsView: React.FC = () => {
   const { debts, paymentsByDebtId, createDebt, addPayment, loadPaymentsForDebt } = useDebtsStore();
   const { rates } = useRatesStore();
+  const { vaults } = useVaultsStore();
 
   const [selectedDebtForReceipt, setSelectedDebtForReceipt] = useState<Debt | null>(null);
 
@@ -16,13 +18,14 @@ export const DebtsView: React.FC = () => {
   const [contactName, setContactName] = useState('');
   const [contactPhone, setContactPhone] = useState('');
   const [totalAmount, setTotalAmount] = useState('');
-  const [currency, setCurrency] = useState<Currency>('USDT');
+  const [currency, setCurrency] = useState<Currency>('USD');
   const [type, setType] = useState<DebtType>('receivable');
   const [agreementType, setAgreementType] = useState<AgreementType>('fixed_usdt');
 
   // Estado para registrar abono
   const [paymentDebtId, setPaymentDebtId] = useState<string | null>(null);
   const [paymentAmount, setPaymentAmount] = useState('');
+  const [paymentVaultId, setPaymentVaultId] = useState('');
 
   const handleCreateDebt = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -47,6 +50,9 @@ export const DebtsView: React.FC = () => {
     const amount = parseFloat(paymentAmount);
     if (isNaN(amount) || amount <= 0 || !rates) return;
 
+    const selectedVault = vaults.find((v) => v.id === paymentVaultId);
+    const paymentCurrency = selectedVault ? selectedVault.currency : debt.currency;
+
     const isFloating = debt.agreementType === 'floating_ves';
     const rateUsed = isFloating ? rates.usd_official : rates.usd_libre;
     const rateType = isFloating ? 'bcv' : 'libre';
@@ -54,12 +60,14 @@ export const DebtsView: React.FC = () => {
     await addPayment({
       debtId: debt.id,
       amount,
-      currency: debt.currency,
+      currency: paymentCurrency,
       rateUsed,
       rateType,
+      vaultId: paymentVaultId || undefined,
     });
 
     setPaymentAmount('');
+    setPaymentVaultId('');
     setPaymentDebtId(null);
   };
 
@@ -124,7 +132,9 @@ export const DebtsView: React.FC = () => {
               onChange={(e) => setCurrency(e.target.value as Currency)}
               className="w-full text-sm border border-slate-300 rounded-xl px-3 py-2 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-sky-400 outline-hidden"
             >
-              <option value="USDT">USDT / USD</option>
+              <option value="USD">USD ($)</option>
+              <option value="USDT">USDT (Cryptocurrency)</option>
+              <option value="EUR">EUR (€)</option>
               <option value="VES">Bolívares (VES)</option>
             </select>
           </div>
@@ -136,7 +146,7 @@ export const DebtsView: React.FC = () => {
               onChange={(e) => setAgreementType(e.target.value as AgreementType)}
               className="w-full text-sm border border-slate-300 rounded-xl px-3 py-2 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-sky-400 outline-hidden"
             >
-              <option value="fixed_usdt">Congelado en USDT</option>
+              <option value="fixed_usdt">Congelado en Divisas</option>
               <option value="floating_ves">Flotante en Bolívares</option>
             </select>
           </div>
@@ -181,7 +191,7 @@ export const DebtsView: React.FC = () => {
                       <h3 className="text-base font-black text-slate-900">{debt.contactName}</h3>
                     </div>
                     <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-white/80 border border-slate-200 text-slate-600">
-                      {debt.agreementType === 'fixed_usdt' ? 'USDT Fijo' : 'Bs Flotante'}
+                      {debt.agreementType === 'floating_ves' ? 'Bs Flotante' : 'Congelado en Divisas'}
                     </span>
                   </div>
 
@@ -195,28 +205,49 @@ export const DebtsView: React.FC = () => {
                     <div>
                       <div className="text-slate-400">Saldo Pendiente</div>
                       <div className="font-extrabold text-sky-950">
-                        $ {calc ? calc.remainingAmountUSDT.toFixed(2) : '...'}
+                        {debt.currency === 'VES' ? 'Bs.' : debt.currency === 'EUR' ? '€' : '$'}{' '}
+                        {calc ? calc.remainingAmountOriginal.toFixed(2) : '...'}
                       </div>
                     </div>
                   </div>
 
                   <div className="flex items-center justify-between gap-2 pt-1">
                     {paymentDebtId === debt.id ? (
-                      <div className="flex items-center space-x-1 w-full">
+                      <div className="flex flex-col sm:flex-row items-center gap-1.5 w-full bg-white p-2 rounded-xl border border-sky-300">
                         <input
                           type="number"
                           step="any"
                           placeholder="Monto abono"
                           value={paymentAmount}
                           onChange={(e) => setPaymentAmount(e.target.value)}
-                          className="w-full text-xs px-2 py-1.5 border border-sky-400 rounded-lg focus:outline-hidden bg-white"
+                          className="w-full text-xs px-2 py-1 border border-slate-300 rounded-lg focus:outline-hidden"
                         />
-                        <button
-                          onClick={() => void handleAddPayment(debt)}
-                          className="px-3 py-1.5 bg-emerald-600 text-white text-xs font-bold rounded-lg cursor-pointer shrink-0"
+                        <select
+                          value={paymentVaultId}
+                          onChange={(e) => setPaymentVaultId(e.target.value)}
+                          className="w-full text-xs px-2 py-1 border border-slate-300 rounded-lg focus:outline-hidden bg-slate-50"
                         >
-                          OK
-                        </button>
+                          <option value="">Bóveda (opcional)...</option>
+                          {vaults.map((v) => (
+                            <option key={v.id} value={v.id}>
+                              {v.name} ({v.currency})
+                            </option>
+                          ))}
+                        </select>
+                        <div className="flex space-x-1 shrink-0">
+                          <button
+                            onClick={() => void handleAddPayment(debt)}
+                            className="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-lg cursor-pointer"
+                          >
+                            OK
+                          </button>
+                          <button
+                            onClick={() => setPaymentDebtId(null)}
+                            className="px-2 py-1 bg-slate-200 text-slate-700 text-xs font-semibold rounded-lg cursor-pointer"
+                          >
+                            ✕
+                          </button>
+                        </div>
                       </div>
                     ) : (
                       <>

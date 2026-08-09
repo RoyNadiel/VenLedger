@@ -74,7 +74,7 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({
             <div className="text-xs font-bold uppercase text-sky-600 tracking-wider">VenLedger Ticket</div>
             <div className="text-lg font-black text-slate-900 mt-0.5">{debt.contactName}</div>
             <div className="text-[10px] text-slate-400">
-              Acuerdo: {debt.agreementType === 'fixed_usdt' ? 'Congelado en USDT' : 'Flotante en Bs'}
+              Acuerdo: {debt.agreementType === 'floating_ves' ? 'Flotante en Bs' : 'Congelado en Divisas'}
             </div>
           </div>
 
