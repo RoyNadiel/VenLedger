@@ -12,7 +12,7 @@ import { Plus, X } from 'lucide-react';
 import { ConversionCard } from './ConversionCard';
 import { CreateVaultForm } from './CreateVaultForm';
 import { VaultCard } from './VaultCard';
-import { VaultDetailModal } from './VaultDetailModal';
+import { VaultDetailView } from './VaultDetailView';
 
 export const VaultsSummary: React.FC = () => {
   const { vaults, createVault, updateVault, deleteVault } = useVaultsStore();
@@ -97,6 +97,23 @@ export const VaultsSummary: React.FC = () => {
       await deleteVault(id);
     }
   };
+
+  if (selectedVaultForDetails) {
+    return (
+      <VaultDetailView
+        vault={selectedVaultForDetails}
+        rates={rates}
+        transactions={transactions}
+        vaults={vaults}
+        onBack={() => setSelectedVaultForDetails(null)}
+        onEdit={(v) => {
+          setSelectedVaultForDetails(null);
+          handleStartEdit(v);
+        }}
+        onDelete={(id) => void handleDelete(id)}
+      />
+    );
+  }
 
   return (
     <div className="space-y-4">
@@ -251,22 +268,6 @@ export const VaultsSummary: React.FC = () => {
           />
         ))}
       </div>
-
-      {/* Modal Dedicado de Bóveda */}
-      {selectedVaultForDetails && (
-        <VaultDetailModal
-          vault={selectedVaultForDetails}
-          rates={rates}
-          transactions={transactions}
-          vaults={vaults}
-          onClose={() => setSelectedVaultForDetails(null)}
-          onEdit={(v) => {
-            setSelectedVaultForDetails(null);
-            handleStartEdit(v);
-          }}
-          onDelete={(id) => void handleDelete(id)}
-        />
-      )}
     </div>
   );
 };
