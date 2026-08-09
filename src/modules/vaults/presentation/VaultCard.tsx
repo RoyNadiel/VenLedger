@@ -1,15 +1,15 @@
 import React from 'react';
 import type { Vault } from '../domain/entities';
-import type { Currency, VaultType, ExchangeRates } from '../../shared/domain/types';
-import type { Transaction } from '../../transactions/domain/entities';
-import { History, Pencil } from 'lucide-react';
-import { VaultHistoryList } from './VaultHistoryList';
+import type {
+  Currency,
+  VaultType,
+  ExchangeRates,
+} from '../../shared/domain/types';
+import { Pencil } from 'lucide-react';
 
 export interface VaultCardProps {
   vault: Vault;
   rates: ExchangeRates | null;
-  transactions: Transaction[];
-  vaults: Vault[];
   editingVault: Vault | null;
   setEditingVault: (vault: Vault | null) => void;
   editName: string;
@@ -21,16 +21,12 @@ export interface VaultCardProps {
   handleStartEdit: (vault: Vault) => void;
   handleSaveEdit: () => void;
   handleDelete: (id: string) => void;
-  isHistoryActive: boolean;
-  setActiveVaultHistoryId: (id: string | null) => void;
   onOpenDetails?: (vault: Vault) => void;
 }
 
 export const VaultCard: React.FC<VaultCardProps> = ({
   vault,
   rates,
-  transactions,
-  vaults,
   editingVault,
   setEditingVault,
   editName,
@@ -42,8 +38,6 @@ export const VaultCard: React.FC<VaultCardProps> = ({
   handleStartEdit,
   handleSaveEdit,
   handleDelete,
-  isHistoryActive,
-  setActiveVaultHistoryId,
   onOpenDetails,
 }) => {
   const isEditing = editingVault?.id === vault.id;
@@ -60,10 +54,7 @@ export const VaultCard: React.FC<VaultCardProps> = ({
       }`}
     >
       {isEditing ? (
-        <div
-          onClick={(e) => e.stopPropagation()}
-          className="space-y-2 text-xs"
-        >
+        <div onClick={(e) => e.stopPropagation()} className="space-y-2 text-xs">
           <div>
             <label className="block font-semibold text-slate-500 mb-0.5">
               Nombre
@@ -173,21 +164,23 @@ export const VaultCard: React.FC<VaultCardProps> = ({
                   })}
                 </span>
                 {/* Equivalente en $ para Bóvedas en Bolívares (Tasa BCV) */}
-                {vault.currency === 'VES' && rates && rates.usd_official > 0 && (
-                  <div className="text-xs font-semibold text-slate-500 mt-0.5">
-                    ≈ ${' '}
-                    {(vault.balance / rates.usd_official).toLocaleString(
-                      'en-US',
-                      {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      }
-                    )}{' '}
-                    <span className="text-[10px] text-slate-400 font-normal">
-                      (Tasa BCV)
-                    </span>
-                  </div>
-                )}
+                {vault.currency === 'VES' &&
+                  rates &&
+                  rates.usd_official > 0 && (
+                    <div className="text-xs font-semibold text-slate-500 mt-0.5">
+                      ≈ ${' '}
+                      {(vault.balance / rates.usd_official).toLocaleString(
+                        'en-US',
+                        {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        }
+                      )}{' '}
+                      <span className="text-[10px] text-slate-400 font-normal">
+                        (Tasa BCV)
+                      </span>
+                    </div>
+                  )}
                 {/* Equivalente en Bs para Bóvedas en Divisas */}
                 {vault.currency !== 'VES' && rates && (
                   <div className="text-xs font-semibold text-slate-500 mt-0.5">
@@ -211,20 +204,6 @@ export const VaultCard: React.FC<VaultCardProps> = ({
               </div>
             </div>
           </div>
-
-          {/* Historial Específico de esta Bóveda */}
-          {isHistoryActive && (
-            <div className="pt-3 border-t border-slate-100 space-y-2">
-              <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
-                Historial de {vault.name}
-              </div>
-              <VaultHistoryList
-                vault={vault}
-                transactions={transactions}
-                vaults={vaults}
-              />
-            </div>
-          )}
         </>
       )}
     </div>

@@ -44,7 +44,7 @@ export const App: React.FC = () => {
       <Header activeTab={activeTab} setActiveTab={setActiveTab} />
       <RatesBar />
 
-      <main className="max-w-[1480px] w-full mx-auto p-4 flex-1">
+      <main className="max-w-[1480px] w-full mx-auto p-2 md:p-4 flex-1">
         {activeTab === 'dashboard' && <DashboardView />}
         {activeTab === 'vaults' && <VaultsSummary />}
         {activeTab === 'transactions' && <TransactionsView />}

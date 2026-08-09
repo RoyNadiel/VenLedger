@@ -111,7 +111,7 @@ export const VaultDetailView: React.FC<VaultDetailViewProps> = ({
     vault.currency === 'VES' ? 'Bs.' : vault.currency === 'EUR' ? '€' : '$';
 
   return (
-    <div className="bg-white border border-slate-200 rounded-3xl shadow-sm overflow-hidden space-y-6 p-5 sm:p-6 animate-fade-in">
+    <div className="overflow-hidden space-y-6 animate-fade-in">
       {/* Barra de navegación superior con botón Volver */}
       <div className="flex items-center justify-between pb-4 border-b border-slate-100">
         <button
@@ -133,9 +133,7 @@ export const VaultDetailView: React.FC<VaultDetailViewProps> = ({
           </button>
           <button
             onClick={() => {
-              if (
-                window.confirm('¿Seguro que deseas eliminar esta bóveda?')
-              ) {
+              if (window.confirm('¿Seguro que deseas eliminar esta bóveda?')) {
                 onDelete(vault.id);
                 onBack();
               }
@@ -304,13 +302,10 @@ export const VaultDetailView: React.FC<VaultDetailViewProps> = ({
             {filteredTransactions.map((tx) => {
               const isIncome =
                 tx.type === 'income' ||
-                (tx.destinationVaultId === vault.id &&
-                  tx.type === 'transfer');
+                (tx.destinationVaultId === vault.id && tx.type === 'transfer');
               const isTransfer = tx.type === 'transfer';
               const otherVaultId =
-                tx.vaultId === vault.id
-                  ? tx.destinationVaultId
-                  : tx.vaultId;
+                tx.vaultId === vault.id ? tx.destinationVaultId : tx.vaultId;
               const otherVault = vaults.find((v) => v.id === otherVaultId);
 
               return (

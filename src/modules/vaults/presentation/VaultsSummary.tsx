@@ -19,7 +19,8 @@ export const VaultsSummary: React.FC = () => {
   const { transactions, createTransaction } = useTransactionsStore();
   const { rates } = useRatesStore();
 
-  const [selectedVaultForDetails, setSelectedVaultForDetails] = useState<Vault | null>(null);
+  const [selectedVaultForDetails, setSelectedVaultForDetails] =
+    useState<Vault | null>(null);
   const [isCreating, setIsCreating] = useState(false);
   const [newName, setNewName] = useState('');
   const [newType, setNewType] = useState<VaultType>('cash');
@@ -30,9 +31,6 @@ export const VaultsSummary: React.FC = () => {
   const [editName, setEditName] = useState('');
   const [editType, setEditType] = useState<VaultType>('cash');
   const [editCurrency, setEditCurrency] = useState<Currency>('USD');
-  const [activeVaultHistoryId, setActiveVaultHistoryId] = useState<
-    string | null
-  >(null);
 
   const consolidated: ConsolidatedBalance = rates
     ? FinanceEngine.calculateConsolidatedBalance(vaults, rates)
@@ -249,8 +247,6 @@ export const VaultsSummary: React.FC = () => {
             key={vault.id}
             vault={vault}
             rates={rates}
-            transactions={transactions}
-            vaults={vaults}
             editingVault={editingVault}
             setEditingVault={setEditingVault}
             editName={editName}
@@ -262,8 +258,6 @@ export const VaultsSummary: React.FC = () => {
             handleStartEdit={handleStartEdit}
             handleSaveEdit={() => void handleSaveEdit()}
             handleDelete={(id) => void handleDelete(id)}
-            isHistoryActive={activeVaultHistoryId === vault.id}
-            setActiveVaultHistoryId={setActiveVaultHistoryId}
             onOpenDetails={setSelectedVaultForDetails}
           />
         ))}
