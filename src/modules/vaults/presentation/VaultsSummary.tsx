@@ -91,9 +91,7 @@ export const VaultsSummary: React.FC = () => {
   };
 
   const handleDelete = async (id: string) => {
-    if (window.confirm('¿Seguro que deseas eliminar esta bóveda?')) {
-      await deleteVault(id);
-    }
+    await deleteVault(id);
   };
 
   if (selectedVaultForDetails) {

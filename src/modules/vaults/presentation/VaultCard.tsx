@@ -1,11 +1,5 @@
-import React from 'react';
-import type { Vault } from '../domain/entities';
-import type {
-  Currency,
-  VaultType,
-  ExchangeRates,
-} from '../../shared/domain/types';
-import { Pencil } from 'lucide-react';
+import { useState } from 'react';
+import { ConfirmModal } from '../../shared/presentation/ConfirmModal';
 
 export interface VaultCardProps {
   vault: Vault;
@@ -41,6 +35,7 @@ export const VaultCard: React.FC<VaultCardProps> = ({
   onOpenDetails,
 }) => {
   const isEditing = editingVault?.id === vault.id;
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   return (
     <div
@@ -53,6 +48,17 @@ export const VaultCard: React.FC<VaultCardProps> = ({
         !isEditing ? 'hover:border-sky-300 hover:shadow-md cursor-pointer' : ''
       }`}
     >
+      <ConfirmModal
+        isOpen={isDeleteModalOpen}
+        title="¿Eliminar esta bóveda?"
+        message={`¿Estás seguro de que deseas eliminar la bóveda "${vault.name}"? Los movimientos asociados seguirán registrados.`}
+        confirmText="Eliminar Bóveda"
+        cancelText="Cancelar"
+        variant="danger"
+        onConfirm={() => handleDelete(vault.id)}
+        onClose={() => setIsDeleteModalOpen(false)}
+      />
+
       {isEditing ? (
         <div onClick={(e) => e.stopPropagation()} className="space-y-2 text-xs">
           <div>
@@ -99,7 +105,7 @@ export const VaultCard: React.FC<VaultCardProps> = ({
           </div>
           <div className="flex justify-between items-center pt-2">
             <button
-              onClick={() => handleDelete(vault.id)}
+              onClick={() => setIsDeleteModalOpen(true)}
               className="text-rose-600 hover:text-rose-800 font-semibold cursor-pointer"
             >
               Eliminar

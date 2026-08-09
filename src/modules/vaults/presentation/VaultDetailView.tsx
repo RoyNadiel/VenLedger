@@ -14,7 +14,7 @@ import {
   Wallet,
   Building2,
   Coins,
-} from 'lucide-react';
+import { ConfirmModal } from '../../shared/presentation/ConfirmModal';
 
 interface VaultDetailViewProps {
   vault: Vault;
@@ -39,6 +39,7 @@ export const VaultDetailView: React.FC<VaultDetailViewProps> = ({
   const [filterType, setFilterType] = useState<
     'all' | 'income' | 'expense' | 'transfer'
   >('all');
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   // Filtrar transacciones pertenecientes únicamente a esta bóveda
   const vaultTransactions = useMemo(() => {
@@ -111,9 +112,24 @@ export const VaultDetailView: React.FC<VaultDetailViewProps> = ({
     vault.currency === 'VES' ? 'Bs.' : vault.currency === 'EUR' ? '€' : '$';
 
   return (
-    <div className="overflow-hidden space-y-6 animate-fade-in">
+    <div className="overflow-hidden space-y-2 md:space-y-4 animate-fade-in">
+      {/* Modal de Confirmación de Eliminación */}
+      <ConfirmModal
+        isOpen={isDeleteModalOpen}
+        title="¿Eliminar esta bóveda?"
+        message={`¿Estás seguro de que deseas eliminar la bóveda "${vault.name}"? Los movimientos asociados seguirán registrados en el historial general.`}
+        confirmText="Eliminar Bóveda"
+        cancelText="Cancelar"
+        variant="danger"
+        onConfirm={() => {
+          onDelete(vault.id);
+          onBack();
+        }}
+        onClose={() => setIsDeleteModalOpen(false)}
+      />
+
       {/* Barra de navegación superior con botón Volver */}
-      <div className="flex items-center justify-between pb-4 border-b border-slate-100">
+      <div className="flex items-center justify-between border-b border-slate-100 pb-2">
         <button
           onClick={onBack}
           className="flex items-center space-x-2 text-xs font-bold text-slate-600 hover:text-sky-700 bg-slate-100 hover:bg-sky-50 px-3 py-2 rounded-xl transition-colors cursor-pointer"
@@ -132,12 +148,7 @@ export const VaultDetailView: React.FC<VaultDetailViewProps> = ({
             <span>Editar</span>
           </button>
           <button
-            onClick={() => {
-              if (window.confirm('¿Seguro que deseas eliminar esta bóveda?')) {
-                onDelete(vault.id);
-                onBack();
-              }
-            }}
+            onClick={() => setIsDeleteModalOpen(true)}
             className="flex items-center space-x-1.5 px-3 py-1.5 text-xs font-semibold text-rose-600 hover:bg-rose-50 rounded-xl transition-colors cursor-pointer border border-rose-200"
             title="Eliminar Bóveda"
           >
