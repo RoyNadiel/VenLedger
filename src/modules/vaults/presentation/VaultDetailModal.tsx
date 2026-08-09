@@ -354,7 +354,11 @@ export const VaultDetailModal: React.FC<VaultDetailModalProps> = ({
                             <span className="flex items-center space-x-1">
                               <Calendar className="w-3 h-3" />
                               <span>
-                                {new Date(tx.createdAt).toLocaleDateString()}
+                                {new Date(tx.createdAt).toLocaleDateString()}{' '}
+                                {new Date(tx.createdAt).toLocaleTimeString([], {
+                                  hour: '2-digit',
+                                  minute: '2-digit',
+                                })}
                               </span>
                             </span>
                             {isTransfer && otherVault && (

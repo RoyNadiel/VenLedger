@@ -75,7 +75,11 @@ export const VaultHistoryList: React.FC<VaultHistoryListProps> = ({
               <div className="text-[10px] sm:text-xs text-slate-400">
                 {isIncomingTransfer && `De: ${source?.name} • `}
                 {isOutgoingTransfer && `A: ${dest?.name} • `}
-                {new Date(tx.createdAt).toLocaleDateString()}
+                {new Date(tx.createdAt).toLocaleDateString()}{' '}
+                {new Date(tx.createdAt).toLocaleTimeString([], {
+                  hour: '2-digit',
+                  minute: '2-digit',
+                })}
               </div>
             </div>
             <div className={`shrink-0 ${amountColor}`}>{amountDisplay}</div>
