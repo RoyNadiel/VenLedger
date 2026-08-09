@@ -1,4 +1,11 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
+import type { Vault } from '../domain/entities';
+import type {
+  Currency,
+  VaultType,
+  ExchangeRates,
+} from '../../shared/domain/types';
+import { Pencil } from 'lucide-react';
 import { ConfirmModal } from '../../shared/presentation/ConfirmModal';
 
 export interface VaultCardProps {
