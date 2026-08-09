@@ -49,9 +49,21 @@ export const VaultCard: React.FC<VaultCardProps> = ({
   const isEditing = editingVault?.id === vault.id;
 
   return (
-    <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs flex flex-col justify-between space-y-3">
+    <div
+      onClick={() => {
+        if (!isEditing && onOpenDetails) {
+          onOpenDetails(vault);
+        }
+      }}
+      className={`bg-white border border-slate-200 rounded-2xl p-4 shadow-xs flex flex-col justify-between space-y-3 transition-all ${
+        !isEditing ? 'hover:border-sky-300 hover:shadow-md cursor-pointer' : ''
+      }`}
+    >
       {isEditing ? (
-        <div className="space-y-2 text-xs">
+        <div
+          onClick={(e) => e.stopPropagation()}
+          className="space-y-2 text-xs"
+        >
           <div>
             <label className="block font-semibold text-slate-500 mb-0.5">
               Nombre
@@ -127,18 +139,30 @@ export const VaultCard: React.FC<VaultCardProps> = ({
                   ? 'Efectivo'
                   : 'Banco Local'}
             </span>
-            <span className="text-xs px-2 py-0.5 rounded-full bg-slate-100 font-medium text-slate-600">
-              {vault.currency}
-            </span>
+            <div className="flex items-center space-x-2">
+              <span className="text-xs px-2 py-0.5 rounded-full bg-slate-100 font-medium text-slate-600">
+                {vault.currency}
+              </span>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleStartEdit(vault);
+                }}
+                className="text-xs text-slate-400 hover:text-sky-600 p-1 transition-colors cursor-pointer rounded-lg hover:bg-sky-50"
+                title="Editar Bóveda"
+              >
+                <Pencil className="w-3.5 h-3.5" />
+              </button>
+            </div>
           </div>
 
           <div>
-            <div className="text-sm font-medium text-slate-800">
+            <div className="text-sm font-bold text-slate-800 group-hover:text-sky-700 transition-colors">
               {vault.name}
             </div>
             <div className="flex items-baseline justify-between mt-1">
               <div>
-                <span className="text-xl font-bold text-slate-900">
+                <span className="text-xl font-black text-slate-900">
                   {vault.currency === 'VES'
                     ? 'Bs.'
                     : vault.currency === 'EUR'
@@ -184,31 +208,6 @@ export const VaultCard: React.FC<VaultCardProps> = ({
                     </span>
                   </div>
                 )}
-              </div>
-
-              <div className="flex items-center space-x-2">
-                <button
-                  onClick={() => {
-                    if (onOpenDetails) {
-                      onOpenDetails(vault);
-                    } else {
-                      setActiveVaultHistoryId(
-                        isHistoryActive ? null : vault.id
-                      );
-                    }
-                  }}
-                  className="text-xs px-2.5 py-1 rounded-lg font-semibold transition-colors shrink-0 flex items-center space-x-1 cursor-pointer bg-sky-50 hover:bg-sky-100 text-sky-700 border border-sky-200"
-                >
-                  <History className="w-3.5 h-3.5" />
-                  <span>Ver Detalle</span>
-                </button>
-                <button
-                  onClick={() => handleStartEdit(vault)}
-                  className="text-xs text-sky-600 hover:underline cursor-pointer font-medium flex items-center space-x-0.5"
-                >
-                  <Pencil className="w-3 h-3" />
-                  <span>Editar</span>
-                </button>
               </div>
             </div>
           </div>
