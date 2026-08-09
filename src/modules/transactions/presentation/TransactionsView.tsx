@@ -3,7 +3,8 @@ import { useTransactionsStore } from './useTransactionsStore';
 import { useVaultsStore } from '../../vaults/presentation/useVaultsStore';
 import { useRatesStore } from '../../rates/presentation/useRatesStore';
 import type { TransactionType } from '../../shared/domain/types';
-import { ArrowLeftRight, Minus, MoveDown, MoveUp, Plus } from 'lucide-react';
+import { TransactionForm } from './TransactionForm';
+import { TransactionItem } from './TransactionItem';
 
 export const TransactionsView: React.FC = () => {
   const { transactions, createTransaction, deleteTransaction } =
@@ -77,7 +78,6 @@ export const TransactionsView: React.FC = () => {
     setNote('');
   };
 
-  // Sugerencia rápida de cálculo de tasa entre cualquier par de monedas
   const handleAutoCalculateDest = () => {
     const numAmount = parseFloat(amount);
     if (isNaN(numAmount) || !sourceVault || !destVault || !rates) return;
@@ -99,156 +99,41 @@ export const TransactionsView: React.FC = () => {
 
     const amountInVES = numAmount * getRateInVES(sourceVault.currency);
     const destRateInVES = getRateInVES(destVault.currency);
-    const calculatedDestAmount = destRateInVES > 0 ? amountInVES / destRateInVES : 0;
+    const calculatedDestAmount =
+      destRateInVES > 0 ? amountInVES / destRateInVES : 0;
 
     setDestinationAmount(calculatedDestAmount.toFixed(2));
   };
 
+  const filteredTxs = filterVaultId
+    ? transactions.filter(
+        (tx) =>
+          tx.vaultId === filterVaultId ||
+          tx.destinationVaultId === filterVaultId
+      )
+    : transactions;
+
   return (
     <div className="space-y-4">
       {/* Formulario de Registro Rápido */}
-      <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs">
-        <h2 className="text-sm font-bold text-slate-800 mb-3">
-          Nuevo Movimiento
-        </h2>
-        <form onSubmit={(e) => void handleSubmit(e)} className="space-y-3">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <div>
-              <label className="block text-xs font-semibold text-slate-500 mb-1">
-                Tipo de Operación
-              </label>
-              <select
-                value={type}
-                onChange={(e) => setType(e.target.value as TransactionType)}
-                className="w-full text-sm border border-slate-300 rounded-xl px-3 py-2 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-sky-400 outline-hidden"
-              >
-                <option value="expense">Gasto (Salida)</option>
-                <option value="income">Ingreso (Entrada)</option>
-                <option value="transfer">
-                  Transferencia / Cambio entre Bóvedas
-                </option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-xs font-semibold text-slate-500 mb-1">
-                {isTransfer ? 'Bóveda Origen (Sale)' : 'Bóveda'}
-              </label>
-              <select
-                value={vaultId}
-                onChange={(e) => setVaultId(e.target.value)}
-                className="w-full text-sm border border-slate-300 rounded-xl px-3 py-2 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-sky-400 outline-hidden"
-                required
-              >
-                <option value="">Seleccionar bóveda...</option>
-                {vaults.map((v) => (
-                  <option key={v.id} value={v.id}>
-                    {v.name} ({v.currency})
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {isTransfer && (
-              <div>
-                <label className="block text-xs font-semibold text-slate-500 mb-1">
-                  Bóveda Destino (Entra)
-                </label>
-                <select
-                  value={destinationVaultId}
-                  onChange={(e) => setDestinationVaultId(e.target.value)}
-                  className="w-full text-sm border border-slate-300 rounded-xl px-3 py-2 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-sky-400 outline-hidden"
-                  required
-                >
-                  <option value="">Seleccionar destino...</option>
-                  {vaults
-                    .filter((v) => v.id !== vaultId)
-                    .map((v) => (
-                      <option key={v.id} value={v.id}>
-                        {v.name} ({v.currency})
-                      </option>
-                    ))}
-                </select>
-              </div>
-            )}
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <div>
-              <label className="block text-xs font-semibold text-slate-500 mb-1">
-                {isTransfer
-                  ? `Monto Retirado (${sourceVault?.currency || 'Origen'})`
-                  : 'Monto'}
-              </label>
-              <input
-                type="number"
-                step="any"
-                placeholder="0.00"
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-                className="w-full text-sm border border-slate-300 rounded-xl px-3 py-2 focus:ring-2 focus:ring-sky-400 outline-hidden"
-                required
-              />
-            </div>
-
-            {isDifferentCurrency && (
-              <div>
-                <div className="flex justify-between items-center mb-1">
-                  <label className="block text-xs font-semibold text-slate-500">
-                    Monto Recibido ({destVault?.currency})
-                  </label>
-                  {rates && (
-                    <button
-                      type="button"
-                      onClick={handleAutoCalculateDest}
-                      className="text-[10px] text-sky-600 hover:underline cursor-pointer"
-                    >
-                      Calc. Tasa
-                    </button>
-                  )}
-                </div>
-                <input
-                  type="number"
-                  step="any"
-                  placeholder="0.00"
-                  value={destinationAmount}
-                  onChange={(e) => setDestinationAmount(e.target.value)}
-                  className="w-full text-sm border border-slate-300 rounded-xl px-3 py-2 focus:ring-2 focus:ring-sky-400 outline-hidden"
-                  required
-                />
-              </div>
-            )}
-
-            <div className={isDifferentCurrency ? '' : 'sm:col-span-2'}>
-              <label className="block text-xs font-semibold text-slate-500 mb-1">
-                Nota / Detalle
-              </label>
-              <input
-                type="text"
-                placeholder={
-                  isTransfer
-                    ? 'Ej. Venta Binance P2P a Banco'
-                    : 'Ej. Mercado, Pago servicio'
-                }
-                value={note}
-                onChange={(e) => setNote(e.target.value)}
-                className="w-full text-sm border border-slate-300 rounded-xl px-3 py-2 focus:ring-2 focus:ring-sky-400 outline-hidden"
-              />
-            </div>
-          </div>
-
-          <div className="flex justify-end pt-1">
-            <button
-              type="submit"
-              className="px-5 py-2 bg-sky-600 hover:bg-sky-700 text-white font-bold text-sm rounded-xl shadow-xs transition-colors cursor-pointer"
-            >
-              {isTransfer
-                ? 'Registrar Transferencia / Cambio'
-                : 'Guardar Movimiento'}
-            </button>
-          </div>
-        </form>
-      </div>
+      <TransactionForm
+        type={type}
+        setType={setType}
+        vaultId={vaultId}
+        setVaultId={setVaultId}
+        destinationVaultId={destinationVaultId}
+        setDestinationVaultId={setDestinationVaultId}
+        amount={amount}
+        setAmount={setAmount}
+        destinationAmount={destinationAmount}
+        setDestinationAmount={setDestinationAmount}
+        note={note}
+        setNote={setNote}
+        vaults={vaults}
+        rates={rates}
+        onSubmit={(e) => void handleSubmit(e)}
+        onAutoCalculateDest={handleAutoCalculateDest}
+      />
 
       {/* Historial de Movimientos */}
       <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs">
@@ -275,154 +160,23 @@ export const TransactionsView: React.FC = () => {
           </div>
         </div>
 
-        {(() => {
-          const filteredTxs = filterVaultId
-            ? transactions.filter(
-                (tx) =>
-                  tx.vaultId === filterVaultId ||
-                  tx.destinationVaultId === filterVaultId
-              )
-            : transactions;
-
-          if (filteredTxs.length === 0) {
-            return (
-              <p className="text-xs text-slate-400 italic py-4 text-center">
-                No hay movimientos registrados para el filtro seleccionado.
-              </p>
-            );
-          }
-
-          return (
-            <div className="divide-y divide-slate-100 max-h-[500px] overflow-y-auto pr-1">
-              {filteredTxs.map((tx) => {
-                const vault = vaults.find((v) => v.id === tx.vaultId);
-                const dest = vaults.find((v) => v.id === tx.destinationVaultId);
-                const isIncome = tx.type === 'income';
-                const isTxTransfer =
-                  tx.type === 'transfer' || tx.type === 'buy_sell';
-
-                // Contextualization when filtering by a specific vault
-                const isFilteredVaultDest =
-                  filterVaultId &&
-                  isTxTransfer &&
-                  tx.destinationVaultId === filterVaultId;
-                const isFilteredVaultSource =
-                  filterVaultId && isTxTransfer && tx.vaultId === filterVaultId;
-
-                let iconSymbol = isIncome ? <Plus /> : <Minus />;
-                let iconClass = isIncome
-                  ? 'bg-emerald-100 text-emerald-700'
-                  : 'bg-rose-100 text-rose-700';
-
-                if (isTxTransfer) {
-                  if (isFilteredVaultDest) {
-                    iconSymbol = <MoveDown />;
-                    iconClass = 'bg-emerald-100 text-emerald-700';
-                  } else if (isFilteredVaultSource) {
-                    iconSymbol = <MoveUp />;
-                    iconClass = 'bg-amber-100 text-amber-700';
-                  } else {
-                    iconSymbol = <ArrowLeftRight />;
-                    iconClass = 'bg-sky-100 text-sky-700';
-                  }
-                }
-
-                return (
-                  <div
-                    key={tx.id}
-                    className="py-3 flex items-center justify-between gap-3"
-                  >
-                    <div className="flex items-center space-x-3 min-w-0">
-                      <span
-                        className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold shrink-0 ${iconClass}`}
-                      >
-                        {iconSymbol}
-                      </span>
-                      <div className="min-w-0">
-                        <div className="text-sm font-medium text-slate-800 truncate">
-                          {tx.note ||
-                            (isTxTransfer
-                              ? isFilteredVaultDest
-                                ? `Recibido de ${vault?.name || 'Bóveda'}`
-                                : `Enviado a ${dest?.name || 'Bóveda'}`
-                              : isIncome
-                                ? 'Ingreso registrado'
-                                : 'Gasto registrado')}
-                        </div>
-                        <div className="text-xs text-slate-400 flex flex-wrap items-center gap-1 mt-0.5">
-                          {isTxTransfer ? (
-                            <span className="font-semibold text-slate-600">
-                              {vault?.name || 'Bóveda'} ➔{' '}
-                              {dest?.name || 'Destino'}
-                            </span>
-                          ) : (
-                            <span className="font-semibold text-slate-600">
-                              {vault?.name || 'Bóveda'}
-                            </span>
-                          )}
-                          <span>•</span>
-                          <span>
-                            {new Date(tx.createdAt).toLocaleDateString()}{' '}
-                            {new Date(tx.createdAt).toLocaleTimeString([], {
-                              hour: '2-digit',
-                              minute: '2-digit',
-                            })}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center space-x-3 shrink-0">
-                      <div className="text-right">
-                        {isTxTransfer ? (
-                          isFilteredVaultDest ? (
-                            <span className="text-sm font-bold text-emerald-600">
-                              +{dest?.currency === 'VES' ? 'Bs.' : '$'}{' '}
-                              {(tx.destinationAmount ?? tx.amount).toFixed(2)}
-                            </span>
-                          ) : isFilteredVaultSource ? (
-                            <span className="text-sm font-bold text-amber-700">
-                              -{vault?.currency === 'VES' ? 'Bs.' : '$'}{' '}
-                              {tx.amount.toFixed(2)}
-                            </span>
-                          ) : (
-                            <div className="flex flex-col items-end text-xs">
-                              <span className="font-bold text-slate-700">
-                                -{vault?.currency === 'VES' ? 'Bs.' : '$'}{' '}
-                                {tx.amount.toFixed(2)}
-                              </span>
-                              <span className="font-bold text-emerald-600">
-                                +{dest?.currency === 'VES' ? 'Bs.' : '$'}{' '}
-                                {(tx.destinationAmount ?? tx.amount).toFixed(2)}
-                              </span>
-                            </div>
-                          )
-                        ) : (
-                          <span
-                            className={`text-sm font-bold ${
-                              isIncome ? 'text-emerald-600' : 'text-slate-900'
-                            }`}
-                          >
-                            {isIncome ? '+' : '-'}
-                            {tx.currency === 'VES' ? 'Bs.' : '$'}{' '}
-                            {tx.amount.toFixed(2)}
-                          </span>
-                        )}
-                      </div>
-                      <button
-                        onClick={() => void deleteTransaction(tx.id)}
-                        className="text-xs text-slate-400 hover:text-rose-600 transition-colors cursor-pointer p-1"
-                        title="Eliminar movimiento"
-                      >
-                        ✕
-                      </button>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          );
-        })()}
+        {filteredTxs.length === 0 ? (
+          <p className="text-xs text-slate-400 italic py-4 text-center">
+            No hay movimientos registrados para el filtro seleccionado.
+          </p>
+        ) : (
+          <div className="divide-y divide-slate-100 max-h-[500px] overflow-y-auto pr-1">
+            {filteredTxs.map((tx) => (
+              <TransactionItem
+                key={tx.id}
+                transaction={tx}
+                vaults={vaults}
+                filterVaultId={filterVaultId}
+                onDelete={(id) => void deleteTransaction(id)}
+              />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
