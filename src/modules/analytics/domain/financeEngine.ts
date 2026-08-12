@@ -138,26 +138,42 @@ export class FinanceEngine {
       const paymentRateInVES = getRateInVES(payment.currency, payment.rateUsed);
       const paidVES = payment.amount * paymentRateInVES;
       totalPaidVES += paidVES;
-      const usdtRate = currentRates.usd_libre || 1;
-      totalPaidUSDT += paidVES / usdtRate;
+      // Usar la tasa P2P del momento del pago para obtener el equivalente USDT real.
+      // usdLibreAtPayment es el campo canónico; rateUsed es fallback para pagos anteriores
+      // en los que la moneda era VES o USDT (donde rateUsed === usd_libre).
+      const libreRate = payment.usdLibreAtPayment > 0
+        ? payment.usdLibreAtPayment
+        : (currentRates.usd_libre || 1);
+      totalPaidUSDT += paidVES / libreRate;
     });
 
     const debtRateInVES = getRateInVES(debt.currency);
     const originalVES = debt.totalAmount * debtRateInVES;
 
-    const remainingVES = Math.max(0, originalVES - totalPaidVES);
-    const remainingAmountOriginal =
-      debtRateInVES > 0 ? remainingVES / debtRateInVES : 0;
-    const remainingAmountUSDT =
-      (currentRates.usd_libre || 1) > 0
-        ? remainingVES / currentRates.usd_libre
-        : 0;
-    const remainingAmountVES_Official =
-      remainingAmountUSDT * (currentRates.usd_official || 1);
-    const remainingAmountVES_Libre =
-      remainingAmountUSDT * (currentRates.usd_libre || 1);
+    // Para fixed_usdt: comparar directamente en USDT — la deuda está congelada en esa unidad.
+    // Para floating_ves: comparar en VES — el valor de la deuda sigue a la tasa oficial.
+    let remainingAmountOriginal: number;
+    let remainingAmountUSDT: number;
+    let remainingAmountVES_Official: number;
+    let remainingAmountVES_Libre: number;
+    let isFullyPaid: boolean;
 
-    const isFullyPaid = remainingVES <= 0.5;
+    if (debt.agreementType === 'fixed_usdt') {
+      const remainingUSDT = Math.max(0, debt.totalAmount - totalPaidUSDT);
+      isFullyPaid = remainingUSDT <= 0.05; // tolerancia de 5 centavos
+      remainingAmountOriginal = remainingUSDT;
+      remainingAmountUSDT = remainingUSDT;
+      remainingAmountVES_Official = remainingUSDT * (currentRates.usd_official || 1);
+      remainingAmountVES_Libre = remainingUSDT * (currentRates.usd_libre || 1);
+    } else {
+      // floating_ves: comparar en VES
+      const remainingVES = Math.max(0, originalVES - totalPaidVES);
+      isFullyPaid = remainingVES <= 0.5;
+      remainingAmountOriginal = debtRateInVES > 0 ? remainingVES / debtRateInVES : 0;
+      remainingAmountUSDT = (currentRates.usd_libre || 1) > 0 ? remainingVES / currentRates.usd_libre : 0;
+      remainingAmountVES_Official = remainingAmountUSDT * (currentRates.usd_official || 1);
+      remainingAmountVES_Libre = remainingAmountUSDT * (currentRates.usd_libre || 1);
+    }
 
     return {
       debtId: debt.id,
