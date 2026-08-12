@@ -19,6 +19,7 @@ export interface TransactionFormProps {
   rates: ExchangeRates | null;
   onSubmit: (e: React.FormEvent) => void;
   onAutoCalculateDest: () => void;
+  onFillMax?: () => void;
 }
 
 export const TransactionForm: React.FC<TransactionFormProps> = ({
@@ -38,6 +39,7 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
   rates,
   onSubmit,
   onAutoCalculateDest,
+  onFillMax,
 }) => {
   const isTransfer = type === 'transfer' || type === 'buy_sell';
   const sourceVault = vaults.find((v) => v.id === vaultId);
@@ -115,11 +117,26 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div>
-            <label className="block text-xs font-semibold text-slate-500 mb-1">
-              {isTransfer
-                ? `Monto Retirado (${sourceVault?.currency || 'Origen'})`
-                : 'Monto'}
-            </label>
+            <div className="flex items-center justify-between mb-1">
+              <label className="block text-xs font-semibold text-slate-500">
+                {isTransfer
+                  ? `Monto Retirado (${sourceVault?.currency || 'Origen'})`
+                  : 'Monto'}
+              </label>
+              {isTransfer && sourceVault && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setAmount(String(sourceVault.balance));
+                    onFillMax?.();
+                  }}
+                  className="text-[10px] font-bold text-sky-600 hover:text-sky-800 bg-sky-50 hover:bg-sky-100 px-1.5 py-0.5 rounded-md transition-colors cursor-pointer"
+                  title={`Saldo disponible: ${sourceVault.balance}`}
+                >
+                  Máx
+                </button>
+              )}
+            </div>
             <input
               type="number"
               step="any"
@@ -129,6 +146,17 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
               className="w-full text-sm border border-slate-300 rounded-xl px-3 py-2 focus:ring-2 focus:ring-sky-400 outline-hidden"
               required
             />
+            {isTransfer && sourceVault && (
+              <div className="mt-1 flex items-center justify-between text-[10px] text-slate-400">
+                <span>Disponible en bóveda:</span>
+                <span className={`font-semibold ${
+                  sourceVault.balance <= 0 ? 'text-rose-500' : 'text-emerald-600'
+                }`}>
+                  {sourceVault.currency === 'VES' ? 'Bs.' : sourceVault.currency === 'EUR' ? '€' : '$'}{' '}
+                  {sourceVault.balance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                </span>
+              </div>
+            )}
           </div>
 
           {isDifferentCurrency && (

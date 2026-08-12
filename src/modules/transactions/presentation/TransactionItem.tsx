@@ -74,7 +74,7 @@ export const TransactionItem: React.FC<TransactionItemProps> = ({
               </span>
             ) : (
               <span className="font-semibold text-slate-600">
-                {vault?.name || 'Bóveda'}
+                {vault?.name ?? (tx.vaultId ? 'Bóveda' : 'Externo')}
               </span>
             )}
             <span>•</span>

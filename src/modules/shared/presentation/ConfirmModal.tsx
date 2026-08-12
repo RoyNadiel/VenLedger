@@ -27,8 +27,16 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
   const isDanger = variant === 'danger';
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-fade-in">
-      <div className="bg-white border border-slate-100 rounded-3xl p-6 max-w-sm w-full shadow-2xl space-y-5">
+    // Backdrop: cierra al click fuera y bloquea propagación hacia elementos debajo
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-fade-in"
+      onClick={(e) => { e.stopPropagation(); onClose(); }}
+    >
+      {/* Contenedor del modal: absorbe clicks para no cerrar al clickear dentro */}
+      <div
+        className="bg-white border border-slate-100 rounded-3xl p-6 max-w-sm w-full shadow-2xl space-y-5"
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="flex items-start justify-between">
           <div className="flex items-center space-x-3">
             <div

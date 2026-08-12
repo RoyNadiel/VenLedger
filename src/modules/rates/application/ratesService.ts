@@ -12,7 +12,7 @@ export class RatesService {
       await db.exchangeRatesCache.put({
         key: 'latest',
         rates: freshRates,
-        fetchedAt: new Date().toISOString(),
+        fetchedAt: freshRates.timestamp || new Date().toISOString(),
       });
       return freshRates;
     } catch (error) {

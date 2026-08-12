@@ -14,6 +14,7 @@ import {
   Wallet,
   Building2,
   Coins,
+} from 'lucide-react';
 import { ConfirmModal } from '../../shared/presentation/ConfirmModal';
 
 interface VaultDetailViewProps {

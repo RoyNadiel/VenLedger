@@ -114,7 +114,7 @@ export const VaultsSummary: React.FC = () => {
   return (
     <div className="space-y-4">
       {/* Tarjetas de Conversión Consolidada */}
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         {/* 1. Bs → USD (compra USD) */}
         <ConversionCard
           title="Bs → USD"
@@ -130,20 +130,7 @@ export const VaultsSummary: React.FC = () => {
           rateLabel={`Tasa BCV: ${rates ? rates.usd_official.toFixed(2) : '...'} Bs/USD`}
         />
 
-        {/* 2. USD → Bs (venta USD) */}
-        <ConversionCard
-          title="USD → Bs"
-          amount={consolidated.totalVES}
-          currencySymbol="Bs."
-          locale="es-VE"
-          cardStyleClass="pastel-green-card"
-          titleColorClass="text-emerald-800"
-          amountColorClass="text-emerald-950"
-          subColorClass="text-emerald-700"
-          rateLabel={`Tasa BCV: ${rates ? rates.usd_official.toFixed(2) : '...'} Bs/USD`}
-        />
-
-        {/* 3. Bs → EUR */}
+        {/* 2. Bs → EUR */}
         <ConversionCard
           title="Bs → EUR"
           amount={
@@ -158,20 +145,7 @@ export const VaultsSummary: React.FC = () => {
           rateLabel={`Tasa BCV Euro: ${rates ? rates.eur_official.toFixed(2) : '...'} Bs/EUR`}
         />
 
-        {/* 4. EUR → Bs */}
-        <ConversionCard
-          title="EUR → Bs"
-          amount={consolidated.totalVES}
-          currencySymbol="Bs."
-          locale="es-VE"
-          cardStyleClass="pastel-purple-card"
-          titleColorClass="text-purple-800"
-          amountColorClass="text-purple-950"
-          subColorClass="text-purple-700"
-          rateLabel={`Tasa BCV Euro: ${rates ? rates.eur_official.toFixed(2) : '...'} Bs/EUR`}
-        />
-
-        {/* 5. Bs → USDT */}
+        {/* 3. Bs → USDT */}
         <ConversionCard
           title="Bs → USDT"
           amount={
@@ -186,8 +160,34 @@ export const VaultsSummary: React.FC = () => {
           rateLabel={`Tasa Binance: ${rates ? rates.usd_libre.toFixed(2) : '...'} Bs/USDT`}
         />
 
-        {/* 6. USDT → Bs */}
+        {/* 4. USD → Bs (venta USD) */}
         <ConversionCard
+          title="Bolivars Totales"
+          amount={consolidated.totalVES}
+          currencySymbol="Bs."
+          locale="es-VE"
+          cardStyleClass="pastel-green-card"
+          titleColorClass="text-emerald-800"
+          amountColorClass="text-emerald-950"
+          subColorClass="text-emerald-700"
+          rateLabel={`Tasa BCV: ${rates ? rates.usd_official.toFixed(2) : '...'} Bs/USD`}
+        />
+
+        {/* 5. EUR → Bs */}
+        {/* <ConversionCard
+          title="EUR → Bs"
+          amount={consolidated.totalVES}
+          currencySymbol="Bs."
+          locale="es-VE"
+          cardStyleClass="pastel-purple-card"
+          titleColorClass="text-purple-800"
+          amountColorClass="text-purple-950"
+          subColorClass="text-purple-700"
+          rateLabel={`Tasa BCV Euro: ${rates ? rates.eur_official.toFixed(2) : '...'} Bs/EUR`}
+        /> */}
+
+        {/* 6. USDT → Bs */}
+        {/* <ConversionCard
           title="USDT → Bs"
           amount={consolidated.totalVES}
           currencySymbol="Bs."
@@ -197,7 +197,7 @@ export const VaultsSummary: React.FC = () => {
           amountColorClass="text-emerald-950"
           subColorClass="text-emerald-700"
           rateLabel={`Tasa Binance: ${rates ? rates.usd_libre.toFixed(2) : '...'} Bs/USDT`}
-        />
+        /> */}
       </div>
 
       {/* Encabezado de Bóvedas y Botón Crear */}

@@ -10,7 +10,7 @@ export interface CreateVaultFormProps {
   setNewCurrency: (val: Currency) => void;
   newBalance: string;
   setNewBalance: (val: string) => void;
-  onSubmit: (e: React.FormEvent) => void;
+  onSubmit: (e: React.SyntheticEvent) => void;
 }
 
 export const CreateVaultForm: React.FC<CreateVaultFormProps> = ({
