@@ -7,6 +7,7 @@ import { ReceiptModal } from './ReceiptModal';
 import type { AgreementType, Currency, DebtType } from '../../shared/domain/types';
 import type { Debt } from '../domain/entities';
 import { CheckCircle2, Clock, History } from 'lucide-react';
+import { convertCurrency, getPaymentRateInfo } from '../../shared/domain/currencyUtils';
 
 export const DebtsView: React.FC = () => {
   const {
@@ -47,43 +48,6 @@ export const DebtsView: React.FC = () => {
 
   const selectedInitialVault = vaults.find((v) => v.id === initialVaultId);
 
-  const getAmountInVaultCurrency = (
-    amount: number,
-    fromCurrency: Currency,
-    toCurrency: Currency
-  ): number => {
-    if (fromCurrency === toCurrency || !rates) return amount;
-
-    let ves = amount;
-    switch (fromCurrency) {
-      case 'VES':
-        ves = amount;
-        break;
-      case 'USD':
-        ves = amount * (rates.usd_official || 1);
-        break;
-      case 'USDT':
-        ves = amount * (rates.usd_libre || 1);
-        break;
-      case 'EUR':
-        ves = amount * (rates.eur_official || 1);
-        break;
-    }
-
-    switch (toCurrency) {
-      case 'VES':
-        return ves;
-      case 'USD':
-        return (rates.usd_official || 1) > 0 ? ves / rates.usd_official : ves;
-      case 'USDT':
-        return (rates.usd_libre || 1) > 0 ? ves / rates.usd_libre : ves;
-      case 'EUR':
-        return (rates.eur_official || 1) > 0 ? ves / rates.eur_official : ves;
-      default:
-        return ves;
-    }
-  };
-
   const handleCreateDebt = async (e: React.FormEvent) => {
     e.preventDefault();
     setCreateError(null);
@@ -99,7 +63,7 @@ export const DebtsView: React.FC = () => {
         ? selectedInitialVault.currency
         : currency;
       const debtInVaultCurrency = selectedInitialVault
-        ? getAmountInVaultCurrency(amount, currency, targetCurrency)
+        ? convertCurrency(amount, currency, targetCurrency, rates)
         : amount;
 
       if (initPay > debtInVaultCurrency + 0.01) {
@@ -134,24 +98,7 @@ export const DebtsView: React.FC = () => {
         ? selectedInitialVault.currency
         : currency;
 
-      let rateUsed: number;
-      let rateType: 'bcv' | 'libre';
-      switch (paymentCurrency) {
-        case 'USD':
-          rateUsed = rates.usd_official;
-          rateType = 'bcv';
-          break;
-        case 'EUR':
-          rateUsed = rates.eur_official;
-          rateType = 'bcv';
-          break;
-        case 'USDT':
-        case 'VES':
-        default:
-          rateUsed = rates.usd_libre;
-          rateType = 'libre';
-          break;
-      }
+      const { rateUsed, rateType } = getPaymentRateInfo(paymentCurrency, rates);
 
       await addPayment({
         debtId: newDebt.id,
@@ -182,10 +129,11 @@ export const DebtsView: React.FC = () => {
     const calc = FinanceEngine.calculateDebtBalance(debt, payments, rates);
 
     const remainingInVaultCurrency = selectedVault
-      ? getAmountInVaultCurrency(
+      ? convertCurrency(
           calc.remainingAmountOriginal,
           debt.currency,
-          selectedVault.currency
+          selectedVault.currency,
+          rates
         )
       : calc.remainingAmountOriginal;
 
@@ -211,24 +159,7 @@ export const DebtsView: React.FC = () => {
       ? selectedVault.currency
       : debt.currency;
 
-    let rateUsed: number;
-    let rateType: 'bcv' | 'libre';
-    switch (paymentCurrency) {
-      case 'USD':
-        rateUsed = rates.usd_official;
-        rateType = 'bcv';
-        break;
-      case 'EUR':
-        rateUsed = rates.eur_official;
-        rateType = 'bcv';
-        break;
-      case 'USDT':
-      case 'VES':
-      default:
-        rateUsed = rates.usd_libre;
-        rateType = 'libre';
-        break;
-    }
+    const { rateUsed, rateType } = getPaymentRateInfo(paymentCurrency, rates);
 
     await addPayment({
       debtId: debt.id,
@@ -356,10 +287,11 @@ export const DebtsView: React.FC = () => {
                   type="button"
                   onClick={() => {
                     const debtAmt = parseFloat(totalAmount) || 0;
-                    const debtInVaultCurrency = getAmountInVaultCurrency(
+                    const debtInVaultCurrency = convertCurrency(
                       debtAmt,
                       currency,
-                      selectedInitialVault.currency
+                      selectedInitialVault.currency,
+                      rates
                     );
                     const maxVal =
                       debtAmt > 0
@@ -543,10 +475,11 @@ export const DebtsView: React.FC = () => {
                                     onClick={() => {
                                       const remOriginal =
                                         calc?.remainingAmountOriginal ?? debt.totalAmount;
-                                      const remInVaultCurrency = getAmountInVaultCurrency(
+                                      const remInVaultCurrency = convertCurrency(
                                         remOriginal,
                                         debt.currency,
-                                        selV.currency
+                                        selV.currency,
+                                        rates
                                       );
                                       const maxVal =
                                         debt.type === 'payable'

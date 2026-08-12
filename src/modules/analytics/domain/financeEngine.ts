@@ -1,6 +1,7 @@
 import type { Vault } from '../../vaults/domain/entities';
 import type { Debt, DebtPayment } from '../../debts/domain/entities';
 import type { AgreementType, ExchangeRates } from '../../shared/domain/types';
+import { getRateInVES } from '../../shared/domain/currencyUtils';
 
 export interface ConsolidatedBalance {
   totalVES: number; // Total patrimonio en Bolívares
@@ -55,23 +56,7 @@ export class FinanceEngine {
     let totalVES = 0;
 
     const vaultBreakdown = vaults.map((vault) => {
-      let equivalentVES = 0;
-
-      switch (vault.currency) {
-        case 'VES':
-          equivalentVES = vault.balance;
-          break;
-        case 'USD':
-          equivalentVES = vault.balance * (rates.usd_official || 0);
-          break;
-        case 'USDT':
-          equivalentVES = vault.balance * (rates.usd_libre || 0);
-          break;
-        case 'EUR':
-          equivalentVES = vault.balance * (rates.eur_official || 0);
-          break;
-      }
-
+      const equivalentVES = vault.balance * getRateInVES(vault.currency, rates);
       totalVES += equivalentVES;
 
       const equivalentUSD =
@@ -114,28 +99,11 @@ export class FinanceEngine {
     payments: DebtPayment[],
     currentRates: ExchangeRates
   ): DebtCalculationResult {
-    const getRateInVES = (curr: string, paymentRateUsed?: number) => {
-      if (curr === 'VES') return 1;
-      if (paymentRateUsed && paymentRateUsed > 0) return paymentRateUsed;
-      switch (curr) {
-        case 'VES':
-          return 1;
-        case 'USD':
-          return currentRates.usd_official || 1;
-        case 'USDT':
-          return currentRates.usd_libre || 1;
-        case 'EUR':
-          return currentRates.eur_official || 1;
-        default:
-          return 1;
-      }
-    };
-
     let totalPaidVES = 0;
     let totalPaidUSDT = 0;
 
     payments.forEach((payment) => {
-      const paymentRateInVES = getRateInVES(payment.currency, payment.rateUsed);
+      const paymentRateInVES = getRateInVES(payment.currency, currentRates, payment.rateUsed);
       const paidVES = payment.amount * paymentRateInVES;
       totalPaidVES += paidVES;
       // Usar la tasa P2P del momento del pago para obtener el equivalente USDT real.
@@ -147,7 +115,7 @@ export class FinanceEngine {
       totalPaidUSDT += paidVES / libreRate;
     });
 
-    const debtRateInVES = getRateInVES(debt.currency);
+    const debtRateInVES = getRateInVES(debt.currency, currentRates);
     const originalVES = debt.totalAmount * debtRateInVES;
 
     // Para fixed_usdt: comparar directamente en USDT — la deuda está congelada en esa unidad.

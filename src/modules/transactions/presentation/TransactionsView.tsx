@@ -5,6 +5,7 @@ import { useRatesStore } from '../../rates/presentation/useRatesStore';
 import type { TransactionType } from '../../shared/domain/types';
 import { TransactionForm } from './TransactionForm';
 import { TransactionItem } from './TransactionItem';
+import { convertCurrency } from '../../shared/domain/currencyUtils';
 
 export const TransactionsView: React.FC = () => {
   const { transactions, createTransaction, deleteTransaction } =
@@ -82,25 +83,12 @@ export const TransactionsView: React.FC = () => {
     const numAmount = parseFloat(amount);
     if (isNaN(numAmount) || !sourceVault || !destVault || !rates) return;
 
-    const getRateInVES = (curr: string) => {
-      switch (curr) {
-        case 'VES':
-          return 1;
-        case 'USD':
-          return rates.usd_official || 1;
-        case 'USDT':
-          return rates.usd_libre || 1;
-        case 'EUR':
-          return rates.eur_official || 1;
-        default:
-          return 1;
-      }
-    };
-
-    const amountInVES = numAmount * getRateInVES(sourceVault.currency);
-    const destRateInVES = getRateInVES(destVault.currency);
-    const calculatedDestAmount =
-      destRateInVES > 0 ? amountInVES / destRateInVES : 0;
+    const calculatedDestAmount = convertCurrency(
+      numAmount,
+      sourceVault.currency,
+      destVault.currency,
+      rates
+    );
 
     setDestinationAmount(calculatedDestAmount.toFixed(2));
   };
