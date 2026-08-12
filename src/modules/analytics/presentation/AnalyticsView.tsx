@@ -104,7 +104,7 @@ export const AnalyticsView: React.FC = () => {
                   ))}
                 </Pie>
                 <Tooltip
-                  formatter={(val: number) => [`$${val.toFixed(2)}`, 'Monto']}
+                  formatter={(value) => [`$${(Number(value) || 0).toFixed(2)}`, 'Monto']}
                   contentStyle={{ backgroundColor: '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0', fontSize: '12px' }}
                 />
               </PieChart>
