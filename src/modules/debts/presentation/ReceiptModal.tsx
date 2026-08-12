@@ -3,6 +3,7 @@ import { toPng } from 'html-to-image';
 import type { Debt, DebtPayment } from '../domain/entities';
 import type { ExchangeRates } from '../../shared/domain/types';
 import { FinanceEngine } from '../../analytics/domain/financeEngine';
+import { getCurrencySymbol } from '../../shared/domain/currencyUtils';
 
 interface ReceiptModalProps {
   debt: Debt;
@@ -46,7 +47,7 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({
 
   const handleShareWhatsApp = () => {
     if (!calc) return;
-    const sym = debt.currency === 'VES' ? 'Bs.' : debt.currency === 'EUR' ? '€' : '$';
+    const sym = getCurrencySymbol(debt.currency);
     const message = encodeURIComponent(
       `🧾 *Comprobante de Abono — VenLedger*\n` +
       `━━━━━━━━━━━━━━━━━━━━\n` +
@@ -64,7 +65,7 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({
     window.open(`https://wa.me/${phone}?text=${message}`, '_blank');
   };
 
-  const sym = debt.currency === 'VES' ? 'Bs.' : debt.currency === 'EUR' ? '€' : '$';
+  const sym = getCurrencySymbol(debt.currency);
   const agreementLabel =
     debt.agreementType === 'floating_ves' ? 'Flotante en Bs.' : 'Congelado en Divisas';
   const isReceivable = debt.type === 'receivable';

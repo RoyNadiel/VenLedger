@@ -7,6 +7,7 @@ import type {
 } from '../../shared/domain/types';
 import { Pencil } from 'lucide-react';
 import { ConfirmModal } from '../../shared/presentation/ConfirmModal';
+import { getCurrencySymbol, getRateInVES } from '../../shared/domain/currencyUtils';
 
 export interface VaultCardProps {
   vault: Vault;
@@ -167,11 +168,7 @@ export const VaultCard: React.FC<VaultCardProps> = ({
             <div className="flex items-baseline justify-between mt-1">
               <div>
                 <span className="text-xl font-black text-slate-900">
-                  {vault.currency === 'VES'
-                    ? 'Bs.'
-                    : vault.currency === 'EUR'
-                      ? '€'
-                      : '$'}{' '}
+                  {getCurrencySymbol(vault.currency)}{' '}
                   {vault.balance.toLocaleString('en-US', {
                     minimumFractionDigits: 2,
                   })}
@@ -199,12 +196,7 @@ export const VaultCard: React.FC<VaultCardProps> = ({
                   <div className="text-xs font-semibold text-slate-500 mt-0.5">
                     ≈ Bs.{' '}
                     {(
-                      vault.balance *
-                      (vault.currency === 'USDT'
-                        ? rates.usd_libre
-                        : vault.currency === 'EUR'
-                          ? rates.eur_official
-                          : rates.usd_official)
+                      vault.balance * getRateInVES(vault.currency, rates)
                     ).toLocaleString('es-VE', {
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2,

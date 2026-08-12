@@ -16,6 +16,7 @@ import {
   Coins,
 } from 'lucide-react';
 import { ConfirmModal } from '../../shared/presentation/ConfirmModal';
+import { convertCurrency, getCurrencySymbol, getRateInVES } from '../../shared/domain/currencyUtils';
 
 interface VaultDetailViewProps {
   vault: Vault;
@@ -96,21 +97,15 @@ export const VaultDetailView: React.FC<VaultDetailViewProps> = ({
   // Calcular equivalencias
   const equivalentInVES = useMemo(() => {
     if (!rates) return null;
-    if (vault.currency === 'VES') return vault.balance;
-    if (vault.currency === 'USDT') return vault.balance * rates.usd_libre;
-    if (vault.currency === 'EUR') return vault.balance * rates.eur_official;
-    return vault.balance * rates.usd_official;
+    return vault.balance * getRateInVES(vault.currency, rates);
   }, [vault, rates]);
 
   const equivalentInUSD = useMemo(() => {
-    if (!rates || rates.usd_official <= 0) return null;
-    if (vault.currency === 'USD') return vault.balance;
-    if (!equivalentInVES) return null;
-    return equivalentInVES / rates.usd_official;
-  }, [vault, rates, equivalentInVES]);
+    if (!rates) return null;
+    return convertCurrency(vault.balance, vault.currency, 'USD', rates);
+  }, [vault, rates]);
 
-  const currencySymbol =
-    vault.currency === 'VES' ? 'Bs.' : vault.currency === 'EUR' ? '€' : '$';
+  const currencySymbol = getCurrencySymbol(vault.currency);
 
   return (
     <div className="overflow-hidden space-y-2 md:space-y-4 animate-fade-in">

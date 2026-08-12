@@ -1,6 +1,7 @@
 import React from 'react';
 import type { TransactionType, ExchangeRates } from '../../shared/domain/types';
 import type { Vault } from '../../vaults/domain/entities';
+import { getCurrencySymbol } from '../../shared/domain/currencyUtils';
 
 export interface TransactionFormProps {
   type: TransactionType;
@@ -152,7 +153,7 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
                 <span className={`font-semibold ${
                   sourceVault.balance <= 0 ? 'text-rose-500' : 'text-emerald-600'
                 }`}>
-                  {sourceVault.currency === 'VES' ? 'Bs.' : sourceVault.currency === 'EUR' ? '€' : '$'}{' '}
+                  {getCurrencySymbol(sourceVault.currency)}{' '}
                   {sourceVault.balance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </span>
               </div>

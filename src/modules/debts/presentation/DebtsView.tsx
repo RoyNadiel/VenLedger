@@ -7,7 +7,7 @@ import { ReceiptModal } from './ReceiptModal';
 import type { AgreementType, Currency, DebtType } from '../../shared/domain/types';
 import type { Debt } from '../domain/entities';
 import { CheckCircle2, Clock, History } from 'lucide-react';
-import { convertCurrency, getPaymentRateInfo } from '../../shared/domain/currencyUtils';
+import { convertCurrency, getCurrencySymbol, getPaymentRateInfo } from '../../shared/domain/currencyUtils';
 
 export const DebtsView: React.FC = () => {
   const {
@@ -431,18 +431,14 @@ export const DebtsView: React.FC = () => {
                       <div>
                         <div className="text-slate-400">Monto Inicial</div>
                         <div className="font-bold text-slate-800">
-                          {debt.currency === 'VES' ? 'Bs.' : '$'}{' '}
+                          {getCurrencySymbol(debt.currency)}{' '}
                           {debt.totalAmount.toFixed(2)}
                         </div>
                       </div>
                       <div>
                         <div className="text-slate-400">Saldo Pendiente</div>
                         <div className="font-extrabold text-sky-950">
-                          {debt.currency === 'VES'
-                            ? 'Bs.'
-                            : debt.currency === 'EUR'
-                              ? '€'
-                              : '$'}{' '}
+                          {getCurrencySymbol(debt.currency)}{' '}
                           {calc
                             ? calc.remainingAmountOriginal.toFixed(2)
                             : '...'}
@@ -614,7 +610,7 @@ export const DebtsView: React.FC = () => {
                       <div>
                         <div className="text-slate-400">Monto Inicial</div>
                         <div className="font-bold text-slate-800">
-                          {debt.currency === 'VES' ? 'Bs.' : '$'}{' '}
+                          {getCurrencySymbol(debt.currency)}{' '}
                           {debt.totalAmount.toFixed(2)}
                         </div>
                       </div>

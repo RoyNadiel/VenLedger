@@ -2,6 +2,7 @@ import React from 'react';
 import type { Transaction } from '../domain/entities';
 import type { Vault } from '../../vaults/domain/entities';
 import { ArrowLeftRight, Minus, MoveDown, MoveUp, Plus, X } from 'lucide-react';
+import { getCurrencySymbol } from '../../shared/domain/currencyUtils';
 
 export interface TransactionItemProps {
   transaction: Transaction;
@@ -94,22 +95,22 @@ export const TransactionItem: React.FC<TransactionItemProps> = ({
           {isTxTransfer ? (
             isFilteredVaultDest ? (
               <span className="text-sm font-bold text-emerald-600">
-                +{dest?.currency === 'VES' ? 'Bs.' : '$'}{' '}
+                +{getCurrencySymbol(dest?.currency ?? 'USD')}{' '}
                 {(tx.destinationAmount ?? tx.amount).toFixed(2)}
               </span>
             ) : isFilteredVaultSource ? (
               <span className="text-sm font-bold text-amber-700">
-                -{vault?.currency === 'VES' ? 'Bs.' : '$'}{' '}
+                -{getCurrencySymbol(vault?.currency ?? 'USD')}{' '}
                 {tx.amount.toFixed(2)}
               </span>
             ) : (
               <div className="flex flex-col items-end text-xs">
                 <span className="font-bold text-slate-700">
-                  -{vault?.currency === 'VES' ? 'Bs.' : '$'}{' '}
+                  -{getCurrencySymbol(vault?.currency ?? 'USD')}{' '}
                   {tx.amount.toFixed(2)}
                 </span>
                 <span className="font-bold text-emerald-600">
-                  +{dest?.currency === 'VES' ? 'Bs.' : '$'}{' '}
+                  +{getCurrencySymbol(dest?.currency ?? 'USD')}{' '}
                   {(tx.destinationAmount ?? tx.amount).toFixed(2)}
                 </span>
               </div>
@@ -121,7 +122,8 @@ export const TransactionItem: React.FC<TransactionItemProps> = ({
               }`}
             >
               {isIncome ? '+' : '-'}
-              {tx.currency === 'VES' ? 'Bs.' : '$'} {tx.amount.toFixed(2)}
+              {getCurrencySymbol(tx.currency)}{' '}
+              {tx.amount.toFixed(2)}
             </span>
           )}
         </div>
