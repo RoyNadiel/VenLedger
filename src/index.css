@@ -1,6 +1,15 @@
 @import 'tailwindcss';
 
 @layer base {
+  html, body, * {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+
+  *::-webkit-scrollbar {
+    display: none; /* Chrome, Safari and Opera */
+  }
+
   body {
     background-color: #f8fafc;
     color: #0f172a;
