@@ -2,41 +2,38 @@ import { db } from './db';
 import type { Vault } from '../../../vaults/domain/entities';
 import type { Category } from '../../../categories/domain/entities';
 
-const SEED_KEY = 'venledger_seeded_v1';
+const SEED_KEY = 'venledger_seeded_v2';
 
 export async function seedInitialDataIfNeeded(): Promise<void> {
   // 1. Limpiar duplicados si existían por ejecuciones dobles en React StrictMode
   await cleanupDuplicateVaults();
 
-  if (localStorage.getItem(SEED_KEY)) {
-    return;
-  }
-  localStorage.setItem(SEED_KEY, 'true');
+  if (!localStorage.getItem(SEED_KEY)) {
+    localStorage.setItem(SEED_KEY, 'true');
 
-  const vaultCount = await db.vaults.count();
-  if (vaultCount === 0) {
+    // Actualizar o sembrar las 3 bóvedas por defecto
     const initialVaults: Vault[] = [
       {
+        id: 'vault-bank-bdv',
+        name: 'Banco Nacional (BDV)',
+        type: 'bank',
+        currency: 'VES',
+        balance: 0,
+        updatedAt: new Date().toISOString(),
+      },
+      {
         id: 'vault-binance-usdt',
-        name: 'Bóveda Binance (USDT)',
+        name: 'Binance P2P',
         type: 'binance',
         currency: 'USDT',
         balance: 0,
         updatedAt: new Date().toISOString(),
       },
       {
-        id: 'vault-cash-usd',
-        name: 'Bóveda Efectivo (USD)',
+        id: 'vault-cash-usdt',
+        name: 'Efectivo',
         type: 'cash',
-        currency: 'USD',
-        balance: 0,
-        updatedAt: new Date().toISOString(),
-      },
-      {
-        id: 'vault-bank-ves',
-        name: 'Bóveda Banco Local / Pago Móvil (Bs)',
-        type: 'bank',
-        currency: 'VES',
+        currency: 'USDT',
         balance: 0,
         updatedAt: new Date().toISOString(),
       },
