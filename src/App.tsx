@@ -57,7 +57,7 @@ export const App: React.FC = () => {
         <div className="max-w-md mx-auto flex justify-around items-center">
           <button
             onClick={() => setActiveTab('dashboard')}
-            className={`flex flex-col items-center py-1 px-2 rounded-xl text-xs font-semibold transition-colors cursor-pointer ${
+            className={`flex flex-col items-center py-1 px-2 rounded-xl text-xs font-semibold transition-all duration-150 active:scale-90 select-none cursor-pointer ${
               activeTab === 'dashboard'
                 ? 'text-sky-600 bg-sky-50'
                 : 'text-slate-400 hover:text-slate-600'
@@ -69,9 +69,9 @@ export const App: React.FC = () => {
 
           <button
             onClick={() => setActiveTab('vaults')}
-            className={`flex flex-col items-center py-1 px-2 rounded-xl text-xs font-semibold transition-colors cursor-pointer ${
+            className={`flex flex-col items-center py-1 px-2 rounded-xl text-xs font-semibold transition-all duration-150 active:scale-90 select-none cursor-pointer ${
               activeTab === 'vaults'
-                ? 'text-sky-600 bg-sky-50'
+                ? 'text-indigo-600 bg-indigo-50'
                 : 'text-slate-400 hover:text-slate-600'
             }`}
           >
@@ -81,9 +81,9 @@ export const App: React.FC = () => {
 
           <button
             onClick={() => setActiveTab('transactions')}
-            className={`flex flex-col items-center py-1 px-2 rounded-xl text-xs font-semibold transition-colors cursor-pointer ${
+            className={`flex flex-col items-center py-1 px-2 rounded-xl text-xs font-semibold transition-all duration-150 active:scale-90 select-none cursor-pointer ${
               activeTab === 'transactions'
-                ? 'text-sky-600 bg-sky-50'
+                ? 'text-emerald-600 bg-emerald-50'
                 : 'text-slate-400 hover:text-slate-600'
             }`}
           >
@@ -93,9 +93,9 @@ export const App: React.FC = () => {
 
           <button
             onClick={() => setActiveTab('debts')}
-            className={`flex flex-col items-center py-1 px-2 rounded-xl text-xs font-semibold transition-colors cursor-pointer ${
+            className={`flex flex-col items-center py-1 px-2 rounded-xl text-xs font-semibold transition-all duration-150 active:scale-90 select-none cursor-pointer ${
               activeTab === 'debts'
-                ? 'text-sky-600 bg-sky-50'
+                ? 'text-rose-600 bg-rose-50'
                 : 'text-slate-400 hover:text-slate-600'
             }`}
           >
@@ -105,9 +105,9 @@ export const App: React.FC = () => {
 
           <button
             onClick={() => setActiveTab('analytics')}
-            className={`flex flex-col items-center py-1 px-2 rounded-xl text-xs font-semibold transition-colors cursor-pointer ${
+            className={`flex flex-col items-center py-1 px-2 rounded-xl text-xs font-semibold transition-all duration-150 active:scale-90 select-none cursor-pointer ${
               activeTab === 'analytics'
-                ? 'text-sky-600 bg-sky-50'
+                ? 'text-purple-600 bg-purple-50'
                 : 'text-slate-400 hover:text-slate-600'
             }`}
           >

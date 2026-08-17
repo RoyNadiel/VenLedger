@@ -23,12 +23,42 @@ interface HeaderProps {
 export const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
   const { pendingCount } = useOutboxStore();
 
-  const navItems: Array<{ id: Tab; label: string; icon: React.ReactNode }> = [
-    { id: 'dashboard', label: 'Dashboard', icon: <LayoutDashboard className="w-4 h-4" /> },
-    { id: 'vaults', label: 'Bóvedas', icon: <Landmark className="w-4 h-4" /> },
-    { id: 'transactions', label: 'Movimientos', icon: <ArrowLeftRight className="w-4 h-4" /> },
-    { id: 'debts', label: 'Deudas', icon: <Handshake className="w-4 h-4" /> },
-    { id: 'analytics', label: 'Salud Financiera', icon: <BarChart3 className="w-4 h-4" /> },
+  const navItems: Array<{
+    id: Tab;
+    label: string;
+    icon: React.ReactNode;
+    activeClass: string;
+  }> = [
+    {
+      id: 'dashboard',
+      label: 'Dashboard',
+      icon: <LayoutDashboard className="w-4 h-4" />,
+      activeClass: 'bg-white text-sky-600 shadow-xs',
+    },
+    {
+      id: 'vaults',
+      label: 'Bóvedas',
+      icon: <Landmark className="w-4 h-4" />,
+      activeClass: 'bg-white text-indigo-600 shadow-xs',
+    },
+    {
+      id: 'transactions',
+      label: 'Movimientos',
+      icon: <ArrowLeftRight className="w-4 h-4" />,
+      activeClass: 'bg-white text-emerald-600 shadow-xs',
+    },
+    {
+      id: 'debts',
+      label: 'Deudas',
+      icon: <Handshake className="w-4 h-4" />,
+      activeClass: 'bg-white text-rose-600 shadow-xs',
+    },
+    {
+      id: 'analytics',
+      label: 'Salud Financiera',
+      icon: <BarChart3 className="w-4 h-4" />,
+      activeClass: 'bg-white text-rose-600 shadow-xs',
+    },
   ];
 
   return (
@@ -38,7 +68,7 @@ export const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
         <button
           type="button"
           onClick={() => setActiveTab('dashboard')}
-          className="flex items-center space-x-3 cursor-pointer text-left focus:outline-none group"
+          className="flex items-center space-x-3 cursor-pointer text-left focus:outline-none group active:scale-95 transition-all duration-150 select-none"
           title="Ir al Resumen / Dashboard"
         >
           <div className="w-9 h-9 rounded-xl bg-sky-500 text-white font-black flex items-center justify-center text-xl shadow-xs group-hover:bg-sky-600 transition-colors">
@@ -56,20 +86,25 @@ export const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
 
         {/* Navegación Desktop (Visible en pantallas medianas y grandes) */}
         <nav className="hidden md:flex items-center space-x-1 bg-slate-100/80 p-1.5 rounded-2xl border border-slate-200/60">
-          {navItems.map((item) => (
-            <button
-              key={item.id}
-              onClick={() => setActiveTab(item.id)}
-              className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                activeTab === item.id
-                  ? 'bg-white text-sky-600 shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-white/50'
-              }`}
-            >
-              <span>{item.icon}</span>
-              <span>{item.label}</span>
-            </button>
-          ))}
+          {navItems.map((item) => {
+            const isActive = activeTab === item.id;
+            return (
+              <button
+                key={item.id}
+                onClick={() => setActiveTab(item.id)}
+                className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all duration-150 active:scale-95 select-none cursor-pointer ${
+                  isActive
+                    ? item.activeClass
+                    : 'text-slate-500 hover:text-slate-800 hover:bg-white/50'
+                }`}
+              >
+                <span className={isActive ? '' : 'text-slate-400'}>
+                  {item.icon}
+                </span>
+                <span>{item.label}</span>
+              </button>
+            );
+          })}
         </nav>
 
         {/* Indicador discreto de estado de sincronización */}
