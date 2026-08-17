@@ -1,6 +1,7 @@
 import type { ExchangeRates } from '../../shared/domain/types';
 
-const RATES_ENDPOINT = 'https://tasa-actual-api-worker.roynadiel.workers.dev/api/v1/bcv';
+const RATES_ENDPOINT =
+  'https://tasa-actual-api-worker.roynadiel.workers.dev/api/v1/bcv';
 
 export class RatesApiClient {
   async fetchLatestRates(): Promise<ExchangeRates> {

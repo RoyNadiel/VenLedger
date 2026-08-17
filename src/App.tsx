@@ -7,7 +7,7 @@ import { VaultsSummary } from './modules/vaults/presentation/VaultsSummary';
 import { TransactionsView } from './modules/transactions/presentation/TransactionsView';
 import { DebtsView } from './modules/debts/presentation/DebtsView';
 import { AnalyticsView } from './modules/analytics/presentation/AnalyticsView';
-import { Landmark, ArrowLeftRight, Handshake, BarChart3 } from 'lucide-react';
+import { LayoutDashboard, Landmark, ArrowLeftRight, Handshake, BarChart3 } from 'lucide-react';
 
 export const App: React.FC = () => {
   const { isInitialized, initError } = useInitialization();
@@ -53,8 +53,20 @@ export const App: React.FC = () => {
       </main>
 
       {/* Navegación por pestañas móvil (oculta en escritorio) */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-md border-t border-slate-200 z-40 px-4 py-2">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-md border-t border-slate-200 z-40 px-2 py-2">
         <div className="max-w-md mx-auto flex justify-around items-center">
+          <button
+            onClick={() => setActiveTab('dashboard')}
+            className={`flex flex-col items-center py-1 px-2 rounded-xl text-xs font-semibold transition-colors cursor-pointer ${
+              activeTab === 'dashboard'
+                ? 'text-sky-600 bg-sky-50'
+                : 'text-slate-400 hover:text-slate-600'
+            }`}
+          >
+            <LayoutDashboard className="w-5 h-5 mb-0.5" />
+            Resumen
+          </button>
+
           <button
             onClick={() => setActiveTab('vaults')}
             className={`flex flex-col items-center py-1 px-2 rounded-xl text-xs font-semibold transition-colors cursor-pointer ${

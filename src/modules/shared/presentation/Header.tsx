@@ -35,19 +35,24 @@ export const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
     <header className="bg-white/90 backdrop-blur-md border-b border-slate-200 sticky top-0 z-30 px-4 py-3 shadow-xs">
       <div className="max-w-[1480px] w-full mx-auto flex items-center justify-between">
         {/* Logo & Marca */}
-        <div className="flex items-center space-x-3">
-          <div className="w-9 h-9 rounded-xl bg-sky-500 text-white font-black flex items-center justify-center text-xl shadow-xs">
+        <button
+          type="button"
+          onClick={() => setActiveTab('dashboard')}
+          className="flex items-center space-x-3 cursor-pointer text-left focus:outline-none group"
+          title="Ir al Resumen / Dashboard"
+        >
+          <div className="w-9 h-9 rounded-xl bg-sky-500 text-white font-black flex items-center justify-center text-xl shadow-xs group-hover:bg-sky-600 transition-colors">
             V
           </div>
           <div>
-            <h1 className="text-xl font-bold tracking-tight text-slate-800">
+            <h1 className="text-xl font-bold tracking-tight text-slate-800 group-hover:text-sky-600 transition-colors">
               VenLedger
             </h1>
             <p className="text-xs text-slate-500 hidden sm:block">
               Control Financiero Venezuela
             </p>
           </div>
-        </div>
+        </button>
 
         {/* Navegación Desktop (Visible en pantallas medianas y grandes) */}
         <nav className="hidden md:flex items-center space-x-1 bg-slate-100/80 p-1.5 rounded-2xl border border-slate-200/60">
