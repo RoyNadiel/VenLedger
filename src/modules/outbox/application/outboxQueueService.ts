@@ -16,7 +16,7 @@ export class OutboxQueueService {
       action,
       payload,
       createdAt: new Date().toISOString(),
-      synced: false,
+      synced: 0,
     };
 
     await db.outboxEvents.add(event);
@@ -29,7 +29,7 @@ export class OutboxQueueService {
   async getPendingEvents(): Promise<OutboxEvent[]> {
     return await db.outboxEvents
       .where('synced')
-      .equals(0) // Dexie almacena booleans como 0 / 1 en índices
+      .equals(0)
       .sortBy('createdAt');
   }
 
@@ -38,7 +38,7 @@ export class OutboxQueueService {
    */
   async markAsSynced(eventId: string): Promise<void> {
     await db.outboxEvents.update(eventId, {
-      synced: true,
+      synced: 1,
       syncedAt: new Date().toISOString(),
     });
   }

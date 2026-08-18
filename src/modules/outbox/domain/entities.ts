@@ -6,7 +6,7 @@ export interface OutboxEvent {
   action: OutboxAction;
   payload: Record<string, unknown>;
   createdAt: string;
-  synced: boolean;
+  synced: 0 | 1;
   syncedAt?: string;
   error?: string;
 }

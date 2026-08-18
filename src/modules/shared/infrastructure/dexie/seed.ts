@@ -6,10 +6,7 @@ import { seedRateHistoryIfNeeded } from '../../../rates/infrastructure/seedRateH
 const SEED_KEY = 'venledger_seeded_v2';
 
 export async function seedInitialDataIfNeeded(): Promise<void> {
-  // 1. Limpiar duplicados si existían por ejecuciones dobles en React StrictMode
-  await cleanupDuplicateVaults();
-
-  // 2. Sembrar historial de tasas desde CSV si aplica
+  // 1. Sembrar historial de tasas desde CSV si aplica
   await seedRateHistoryIfNeeded();
 
   if (!localStorage.getItem(SEED_KEY)) {
@@ -57,23 +54,5 @@ export async function seedInitialDataIfNeeded(): Promise<void> {
     ];
 
     await db.categories.bulkPut(initialCategories);
-  }
-}
-
-async function cleanupDuplicateVaults(): Promise<void> {
-  const allVaults = await db.vaults.toArray();
-  const seenTypes = new Set<string>();
-  const duplicateIdsToDelete: string[] = [];
-
-  for (const vault of allVaults) {
-    if (seenTypes.has(vault.type)) {
-      duplicateIdsToDelete.push(vault.id);
-    } else {
-      seenTypes.add(vault.type);
-    }
-  }
-
-  if (duplicateIdsToDelete.length > 0) {
-    await db.vaults.bulkDelete(duplicateIdsToDelete);
   }
 }
