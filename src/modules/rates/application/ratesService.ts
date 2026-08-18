@@ -1,6 +1,10 @@
 import { db } from '../../shared/infrastructure/dexie/db';
 import type { ExchangeRates } from '../../shared/domain/types';
 import { ratesApiClient } from '../infrastructure/ratesApiClient';
+import {
+  VesImpactEngine,
+  type VesImpactPeriods,
+} from '../domain/vesImpactEngine';
 
 export class RatesService {
   /**
@@ -97,6 +101,31 @@ export class RatesService {
     allRecords.sort((a, b) => a.date.localeCompare(b.date));
     const closest = allRecords.reverse().find((r) => r.date <= targetKey);
     return closest ? closest.usd_official : null;
+  }
+
+  /**
+   * Calcula el impacto monetario (ganancia/pérdida) en USD y Bs para un monto en Bolívares.
+   * Periodos: day1 (Ayer), days7 (7 días), days30 (30 días).
+   */
+  async getVesImpact(
+    vesAmount: number,
+    currentRate: number
+  ): Promise<VesImpactPeriods> {
+    if (!vesAmount || vesAmount <= 0 || !currentRate || currentRate <= 0) {
+      return { day1: null, days7: null, days30: null };
+    }
+
+    const [rate1, rate7, rate30] = await Promise.all([
+      this.getPastRate(1),
+      this.getPastRate(7),
+      this.getPastRate(30),
+    ]);
+
+    return {
+      day1: rate1 ? VesImpactEngine.calculateImpact(vesAmount, currentRate, rate1) : null,
+      days7: rate7 ? VesImpactEngine.calculateImpact(vesAmount, currentRate, rate7) : null,
+      days30: rate30 ? VesImpactEngine.calculateImpact(vesAmount, currentRate, rate30) : null,
+    };
   }
 }
 

@@ -1,13 +1,15 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import type { Vault } from '../domain/entities';
 import type {
   Currency,
   VaultType,
   ExchangeRates,
 } from '../../shared/domain/types';
-import { Pencil } from 'lucide-react';
+import { Pencil, TrendingDown, TrendingUp, Minus } from 'lucide-react';
 import { ConfirmModal } from '../../shared/presentation/ConfirmModal';
 import { getCurrencySymbol, getRateInVES } from '../../shared/domain/currencyUtils';
+import { ratesService } from '../../rates/application/ratesService';
+import type { VesImpactPeriods } from '../../rates/domain/vesImpactEngine';
 
 export interface VaultCardProps {
   vault: Vault;
@@ -44,6 +46,25 @@ export const VaultCard: React.FC<VaultCardProps> = ({
 }) => {
   const isEditing = editingVault?.id === vault.id;
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [vesImpact, setVesImpact] = useState<VesImpactPeriods | null>(null);
+  const [period, setPeriod] = useState<'day1' | 'days7' | 'days30'>('days7');
+
+  useEffect(() => {
+    async function loadImpact() {
+      if (vault.currency === 'VES' && vault.balance > 0 && rates?.usd_official) {
+        const impact = await ratesService.getVesImpact(
+          vault.balance,
+          rates.usd_official
+        );
+        setVesImpact(impact);
+      } else {
+        setVesImpact(null);
+      }
+    }
+    void loadImpact();
+  }, [vault.currency, vault.balance, rates?.usd_official]);
+
+  const activeImpact = vesImpact ? vesImpact[period] : null;
 
   return (
     <div
@@ -208,6 +229,65 @@ export const VaultCard: React.FC<VaultCardProps> = ({
                 )}
               </div>
             </div>
+
+            {/* Selector e Indicador de Pérdida / Ganancia para Bolívares */}
+            {vault.currency === 'VES' && vesImpact && (
+              <div
+                onClick={(e) => e.stopPropagation()}
+                className="mt-3 pt-2 border-t border-slate-100 flex items-center justify-between"
+              >
+                <div className="flex space-x-1 bg-slate-100 p-0.5 rounded-lg text-[10px] font-bold">
+                  {(
+                    [
+                      { key: 'day1', label: 'Ayer' },
+                      { key: 'days7', label: '7d' },
+                      { key: 'days30', label: '30d' },
+                    ] as const
+                  ).map((p) => (
+                    <button
+                      key={p.key}
+                      type="button"
+                      onClick={() => setPeriod(p.key)}
+                      className={`px-1.5 py-0.5 rounded cursor-pointer transition-all ${
+                        period === p.key
+                          ? 'bg-sky-600 text-white shadow-2xs'
+                          : 'text-slate-600 hover:bg-slate-200'
+                      }`}
+                    >
+                      {p.label}
+                    </button>
+                  ))}
+                </div>
+
+                {activeImpact ? (
+                  <span
+                    className={`inline-flex items-center px-1.5 py-0.5 rounded-md text-[11px] font-extrabold border ${
+                      activeImpact.deltaUSD < 0
+                        ? 'bg-rose-50 text-rose-700 border-rose-200'
+                        : activeImpact.deltaUSD > 0
+                        ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                        : 'bg-slate-50 text-slate-600 border-slate-200'
+                    }`}
+                    title={`Pérdida/Ganancia calculada comparado con la tasa de ${
+                      period === 'day1' ? 'ayer' : period === 'days7' ? 'hace 7 días' : 'hace 30 días'
+                    } (${activeImpact.pastRate.toFixed(2)} Bs/USD)`}
+                  >
+                    {activeImpact.deltaUSD < 0 ? (
+                      <TrendingDown className="w-3 h-3 mr-0.5 shrink-0" />
+                    ) : activeImpact.deltaUSD > 0 ? (
+                      <TrendingUp className="w-3 h-3 mr-0.5 shrink-0" />
+                    ) : (
+                      <Minus className="w-3 h-3 mr-0.5 shrink-0" />
+                    )}
+                    {activeImpact.deltaUSD < 0
+                      ? `-$${Math.abs(activeImpact.deltaUSD).toFixed(2)} USD`
+                      : `+$${activeImpact.deltaUSD.toFixed(2)} USD`}
+                  </span>
+                ) : (
+                  <span className="text-[10px] text-slate-400">Sin datos</span>
+                )}
+              </div>
+            )}
           </div>
         </>
       )}

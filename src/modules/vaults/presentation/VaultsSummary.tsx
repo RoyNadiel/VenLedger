@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useVaultsStore } from './useVaultsStore';
 import { useTransactionsStore } from '../../transactions/presentation/useTransactionsStore';
 import { useRatesStore } from '../../rates/presentation/useRatesStore';
+import { ratesService } from '../../rates/application/ratesService';
+import type { VesImpactPeriods } from '../../rates/domain/vesImpactEngine';
 import {
   FinanceEngine,
   type ConsolidatedBalance,
@@ -18,6 +20,7 @@ export const VaultsSummary: React.FC = () => {
   const { vaults, createVault, updateVault, deleteVault } = useVaultsStore();
   const { transactions, createTransaction } = useTransactionsStore();
   const { rates } = useRatesStore();
+  const [vesImpact, setVesImpact] = useState<VesImpactPeriods | null>(null);
 
   const [selectedVaultForDetails, setSelectedVaultForDetails] =
     useState<Vault | null>(null);
@@ -43,6 +46,21 @@ export const VaultsSummary: React.FC = () => {
         totalVES_Libre: 0,
         vaultBreakdown: [],
       };
+
+  useEffect(() => {
+    async function loadConsolidatedImpact() {
+      if (consolidated.totalVES > 0 && rates?.usd_official) {
+        const impact = await ratesService.getVesImpact(
+          consolidated.totalVES,
+          rates.usd_official
+        );
+        setVesImpact(impact);
+      } else {
+        setVesImpact(null);
+      }
+    }
+    void loadConsolidatedImpact();
+  }, [consolidated.totalVES, rates?.usd_official]);
 
   const handleCreateSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -128,6 +146,7 @@ export const VaultsSummary: React.FC = () => {
           amountColorClass="text-sky-950"
           subColorClass="text-sky-700"
           rateLabel={`Tasa BCV: ${rates ? rates.usd_official.toFixed(2) : '...'} Bs/USD`}
+          vesImpact={vesImpact}
         />
 
         {/* 2. Bs → EUR */}
@@ -171,6 +190,7 @@ export const VaultsSummary: React.FC = () => {
           amountColorClass="text-emerald-950"
           subColorClass="text-emerald-700"
           rateLabel={`Tasa BCV: ${rates ? rates.usd_official.toFixed(2) : '...'} Bs/USD`}
+          vesImpact={vesImpact}
         />
       </div>
 
