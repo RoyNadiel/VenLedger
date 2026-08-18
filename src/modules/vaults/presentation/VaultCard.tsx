@@ -7,7 +7,10 @@ import type {
 } from '../../shared/domain/types';
 import { Pencil, TrendingDown, TrendingUp, Minus } from 'lucide-react';
 import { ConfirmModal } from '../../shared/presentation/ConfirmModal';
-import { getCurrencySymbol, getRateInVES } from '../../shared/domain/currencyUtils';
+import {
+  getCurrencySymbol,
+  getRateInVES,
+} from '../../shared/domain/currencyUtils';
 import { ratesService } from '../../rates/application/ratesService';
 import type { VesImpactPeriods } from '../../rates/domain/vesImpactEngine';
 
@@ -47,11 +50,15 @@ export const VaultCard: React.FC<VaultCardProps> = ({
   const isEditing = editingVault?.id === vault.id;
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [vesImpact, setVesImpact] = useState<VesImpactPeriods | null>(null);
-  const [period, setPeriod] = useState<'day1' | 'days7' | 'days30'>('days7');
+  const [period, setPeriod] = useState<'day1' | 'days7' | 'days30'>('day1');
 
   useEffect(() => {
     async function loadImpact() {
-      if (vault.currency === 'VES' && vault.balance > 0 && rates?.usd_official) {
+      if (
+        vault.currency === 'VES' &&
+        vault.balance > 0 &&
+        rates?.usd_official
+      ) {
         const impact = await ratesService.getVesImpact(
           vault.balance,
           rates.usd_official
@@ -74,7 +81,9 @@ export const VaultCard: React.FC<VaultCardProps> = ({
         }
       }}
       className={`bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-xs flex flex-col justify-between space-y-3 transition-all ${
-        !isEditing ? 'hover:border-sky-300 dark:hover:border-sky-700 hover:shadow-md cursor-pointer' : ''
+        !isEditing
+          ? 'hover:border-sky-300 dark:hover:border-sky-700 hover:shadow-md cursor-pointer'
+          : ''
       }`}
     >
       <ConfirmModal
@@ -265,11 +274,15 @@ export const VaultCard: React.FC<VaultCardProps> = ({
                       activeImpact.deltaUSD < 0
                         ? 'bg-rose-50 dark:bg-rose-950/50 text-rose-700 dark:text-rose-300 border-rose-200 dark:border-rose-800'
                         : activeImpact.deltaUSD > 0
-                        ? 'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800'
-                        : 'bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700'
+                          ? 'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800'
+                          : 'bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700'
                     }`}
                     title={`Pérdida/Ganancia calculada comparado con la tasa de ${
-                      period === 'day1' ? 'ayer' : period === 'days7' ? 'hace 7 días' : 'hace 30 días'
+                      period === 'day1'
+                        ? 'ayer'
+                        : period === 'days7'
+                          ? 'hace 7 días'
+                          : 'hace 30 días'
                     } (${activeImpact.pastRate.toFixed(2)} Bs/USD)`}
                   >
                     {activeImpact.deltaUSD < 0 ? (
@@ -280,8 +293,8 @@ export const VaultCard: React.FC<VaultCardProps> = ({
                       <Minus className="w-3 h-3 mr-0.5 shrink-0" />
                     )}
                     {activeImpact.deltaUSD < 0
-                      ? `-$${Math.abs(activeImpact.deltaUSD).toFixed(2)} USD`
-                      : `+$${activeImpact.deltaUSD.toFixed(2)} USD`}
+                      ? `-$${Math.abs(activeImpact.deltaUSD).toFixed(2)} USD (${activeImpact.deltaVES.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} Bs.)`
+                      : `+$${activeImpact.deltaUSD.toFixed(2)} USD (+${activeImpact.deltaVES.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} Bs.)`}
                   </span>
                 ) : (
                   <div className="h-5 w-16 bg-slate-100 dark:bg-slate-800 animate-pulse rounded-md"></div>

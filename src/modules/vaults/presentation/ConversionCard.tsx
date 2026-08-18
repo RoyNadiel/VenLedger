@@ -105,9 +105,7 @@ export const ConversionCard: React.FC<ConversionCardProps> = ({
                 <Minus className="w-3.5 h-3.5 mr-1 shrink-0 stroke-[2.5]" />
               )}
               <span>
-                {currencySymbol === 'Bs.'
-                  ? `${activeImpact.deltaVES < 0 ? '' : '+'}${activeImpact.deltaVES.toLocaleString('es-VE', { minimumFractionDigits: 0, maximumFractionDigits: 2 })} Bs.`
-                  : `${activeImpact.deltaUSD < 0 ? '-' : '+'}$${Math.abs(activeImpact.deltaUSD).toFixed(2)} USD`}
+                {`${activeImpact.deltaUSD < 0 ? '-' : '+'}$${Math.abs(activeImpact.deltaUSD).toFixed(2)} USD (${activeImpact.deltaVES < 0 ? '' : '+'}${activeImpact.deltaVES.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} Bs.)`}
               </span>
             </span>
           )}
