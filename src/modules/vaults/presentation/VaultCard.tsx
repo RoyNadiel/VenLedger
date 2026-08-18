@@ -231,12 +231,12 @@ export const VaultCard: React.FC<VaultCardProps> = ({
             </div>
 
             {/* Selector e Indicador de Pérdida / Ganancia para Bolívares */}
-            {vault.currency === 'VES' && vesImpact && (
+            {vault.currency === 'VES' && (
               <div
                 onClick={(e) => e.stopPropagation()}
-                className="mt-3 pt-2 border-t border-slate-100 flex items-center justify-between"
+                className="mt-3 pt-2 border-t border-slate-100 flex items-center justify-between min-h-[32px]"
               >
-                <div className="flex space-x-1 bg-slate-100 p-0.5 rounded-lg text-[10px] font-bold">
+                <div className="inline-flex items-center p-0.5 bg-slate-900/5 rounded-full border border-slate-900/5 backdrop-blur-xs">
                   {(
                     [
                       { key: 'day1', label: 'Ayer' },
@@ -248,10 +248,10 @@ export const VaultCard: React.FC<VaultCardProps> = ({
                       key={p.key}
                       type="button"
                       onClick={() => setPeriod(p.key)}
-                      className={`px-1.5 py-0.5 rounded cursor-pointer transition-all ${
+                      className={`px-2.5 py-0.5 rounded-full text-xs transition-all duration-150 cursor-pointer select-none ${
                         period === p.key
-                          ? 'bg-sky-600 text-white shadow-2xs'
-                          : 'text-slate-600 hover:bg-slate-200'
+                          ? 'bg-white text-sky-950 font-bold shadow-xs ring-1 ring-slate-900/10 scale-[1.02]'
+                          : 'text-slate-500 hover:text-slate-800 font-semibold'
                       }`}
                     >
                       {p.label}
@@ -284,7 +284,7 @@ export const VaultCard: React.FC<VaultCardProps> = ({
                       : `+$${activeImpact.deltaUSD.toFixed(2)} USD`}
                   </span>
                 ) : (
-                  <span className="text-[10px] text-slate-400">Sin datos</span>
+                  <div className="h-5 w-16 bg-slate-100 animate-pulse rounded-md"></div>
                 )}
               </div>
             )}

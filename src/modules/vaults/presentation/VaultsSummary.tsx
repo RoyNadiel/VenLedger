@@ -132,7 +132,7 @@ export const VaultsSummary: React.FC = () => {
   return (
     <div className="space-y-4">
       {/* Tarjetas de Conversión Consolidada */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <div className="grid grid-cols-1 min-[440px]:grid-cols-2 md:grid-cols-4 gap-2.5 sm:gap-3">
         {/* 1. Bs → USD (compra USD) */}
         <ConversionCard
           title="Bs → USD"
