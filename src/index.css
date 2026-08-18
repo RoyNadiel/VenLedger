@@ -1,5 +1,7 @@
 @import 'tailwindcss';
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @layer base {
   html, body, * {
     -ms-overflow-style: none; /* IE and Edge */
@@ -15,36 +17,114 @@
     color: #0f172a;
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
     -webkit-tap-highlight-color: transparent;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  html.dark body {
+    background-color: #0f172a;
+    color: #f8fafc;
   }
 }
 
 /* Estilos de tarjeta pastel y utilidades */
+/* Estilos de tarjeta pastel y utilidades */
 .pastel-blue-card {
   background: linear-gradient(135deg, #e0f2fe 0%, #f0f9ff 100%);
   border: 1px solid #bae6fd;
+}
+.dark .pastel-blue-card {
+  background: linear-gradient(135deg, #0f2744 0%, #1e3a8a 100%);
+  border-color: #1e40af;
+  color: #f0f9ff;
 }
 
 .pastel-pink-card {
   background: linear-gradient(135deg, #fce7f3 0%, #fdf2f8 100%);
   border: 1px solid #fbcfe8;
 }
+.dark .pastel-pink-card {
+  background: linear-gradient(135deg, #4c0519 0%, #831843 100%);
+  border-color: #9f1239;
+  color: #fdf2f8;
+}
 
 .pastel-green-card {
   background: linear-gradient(135deg, #dcfce7 0%, #f0fdf4 100%);
   border: 1px solid #bbf7d0;
+}
+.dark .pastel-green-card {
+  background: linear-gradient(135deg, #052e16 0%, #064e3b 100%);
+  border-color: #047857;
+  color: #f0fdf4;
 }
 
 .pastel-yellow-card {
   background: linear-gradient(135deg, #fef3c7 0%, #fffbeb 100%);
   border: 1px solid #fde68a;
 }
+.dark .pastel-yellow-card {
+  background: linear-gradient(135deg, #451a03 0%, #78350f 100%);
+  border-color: #b45309;
+  color: #fffbeb;
+}
 
 .pastel-red-card {
   background: linear-gradient(135deg, #fee2e2 0%, #fef2f2 100%);
   border: 1px solid #fecaca;
+}
+.dark .pastel-red-card {
+  background: linear-gradient(135deg, #450a0a 0%, #7f1d1d 100%);
+  border-color: #b91c1c;
+  color: #fef2f2;
 }
 
 .pastel-purple-card {
   background: linear-gradient(135deg, #f3e8ff 0%, #faf5ff 100%);
   border: 1px solid #e9d5ff;
 }
+.dark .pastel-purple-card {
+  background: linear-gradient(135deg, #3b0764 0%, #581c87 100%);
+  border-color: #7e22ce;
+  color: #faf5ff;
+}
+
+/* Reglas globales de tarjetas y contenedores para el modo oscuro */
+html.dark .bg-white {
+  background-color: #1e293b !important;
+  color: #f8fafc;
+}
+html.dark .bg-slate-50 {
+  background-color: #0f172a !important;
+  color: #f8fafc;
+}
+html.dark .border-slate-200,
+html.dark .border-slate-300,
+html.dark .border-slate-100 {
+  border-color: #334155 !important;
+}
+html.dark .text-slate-800,
+html.dark .text-slate-900,
+html.dark .text-slate-700 {
+  color: #f1f5f9 !important;
+}
+html.dark .text-slate-600,
+html.dark .text-slate-500 {
+  color: #94a3b8 !important;
+}
+
+
+/* ── Circular Wave View Transition ── */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+::view-transition-old(root) {
+  z-index: 1;
+}
+
+::view-transition-new(root) {
+  z-index: 9999;
+}
+

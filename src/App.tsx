@@ -7,7 +7,13 @@ import { VaultsSummary } from './modules/vaults/presentation/VaultsSummary';
 import { TransactionsView } from './modules/transactions/presentation/TransactionsView';
 import { DebtsView } from './modules/debts/presentation/DebtsView';
 import { AnalyticsView } from './modules/analytics/presentation/AnalyticsView';
-import { LayoutDashboard, Landmark, ArrowLeftRight, Handshake, BarChart3 } from 'lucide-react';
+import {
+  LayoutDashboard,
+  Landmark,
+  ArrowLeftRight,
+  Handshake,
+  BarChart3,
+} from 'lucide-react';
 
 export const App: React.FC = () => {
   const { isInitialized, initError } = useInitialization();
@@ -40,11 +46,10 @@ export const App: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 text-slate-900 pb-20 md:pb-8">
+    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 pb-20 md:pb-8 transition-colors">
       <Header activeTab={activeTab} setActiveTab={setActiveTab} />
       <RatesBar />
-
-      <main className="max-w-[1480px] w-full mx-auto p-2 md:p-4 flex-1">
+      <main className="max-w-[1480px] w-full mx-auto p-2 flex-1">
         {activeTab === 'dashboard' && <DashboardView />}
         {activeTab === 'vaults' && <VaultsSummary />}
         {activeTab === 'transactions' && <TransactionsView />}
@@ -53,7 +58,7 @@ export const App: React.FC = () => {
       </main>
 
       {/* Navegación por pestañas móvil (oculta en escritorio) */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-md border-t border-slate-200 z-40 px-2 py-2">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 z-40 px-2 py-2 transition-colors">
         <div className="max-w-md mx-auto flex justify-around items-center">
           <button
             onClick={() => setActiveTab('dashboard')}
