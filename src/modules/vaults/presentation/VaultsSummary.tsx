@@ -16,7 +16,13 @@ import { CreateVaultForm } from './CreateVaultForm';
 import { VaultCard } from './VaultCard';
 import { VaultDetailView } from './VaultDetailView';
 
-export const VaultsSummary: React.FC = () => {
+interface VaultsSummaryProps {
+  hideSummaryOnMobile?: boolean;
+}
+
+export const VaultsSummary: React.FC<VaultsSummaryProps> = ({
+  hideSummaryOnMobile = false,
+}) => {
   const { vaults, createVault, updateVault, deleteVault } = useVaultsStore();
   const { transactions, createTransaction } = useTransactionsStore();
   const { rates } = useRatesStore();
@@ -132,7 +138,11 @@ export const VaultsSummary: React.FC = () => {
   return (
     <div className="space-y-4">
       {/* Tarjetas de Conversión Consolidada */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3">
+      <div
+        className={`${
+          hideSummaryOnMobile ? 'hidden md:grid' : 'grid'
+        } grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-1 sm:gap-3`}
+      >
         {/* 1. Bs → USD (compra USD) */}
         <ConversionCard
           title="Bs → USD"

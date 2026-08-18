@@ -38,7 +38,7 @@ export const ConversionCard: React.FC<ConversionCardProps> = ({
       <div>
         <div className="flex flex-wrap items-center justify-between gap-1.5 min-h-[26px]">
           <div
-            className={`text-xs sm:text-sm font-bold ${titleColorClass} uppercase tracking-wider shrink-0`}
+            className={`text-sm sm:text-base font-bold ${titleColorClass} uppercase tracking-wider shrink-0`}
           >
             {title}
           </div>
@@ -69,7 +69,7 @@ export const ConversionCard: React.FC<ConversionCardProps> = ({
           )}
         </div>
 
-        <div className="flex items-center justify-between gap-2 mt-2 min-w-0 flex-wrap">
+        <div className="flex items-center justify-between gap-2 mt-1 min-w-0 flex-wrap">
           <span
             className={`text-xl lg:text-2xl font-black dark:text-white ${amountColorClass} shrink-0`}
           >
@@ -115,7 +115,7 @@ export const ConversionCard: React.FC<ConversionCardProps> = ({
       </div>
 
       <div
-        className={`text-xs sm:text-sm font-medium ${subColorClass} mt-3.5 truncate`}
+        className={`text-xs sm:text-sm font-medium ${subColorClass} truncate`}
       >
         {rateLabel}
       </div>

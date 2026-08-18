@@ -51,7 +51,7 @@ export const App: React.FC = () => {
       <RatesBar />
       <main className="max-w-[1480px] w-full mx-auto p-2 flex-1">
         {activeTab === 'dashboard' && <DashboardView />}
-        {activeTab === 'vaults' && <VaultsSummary />}
+        {activeTab === 'vaults' && <VaultsSummary hideSummaryOnMobile />}
         {activeTab === 'transactions' && <TransactionsView />}
         {activeTab === 'debts' && <DebtsView />}
         {activeTab === 'analytics' && <AnalyticsView />}
