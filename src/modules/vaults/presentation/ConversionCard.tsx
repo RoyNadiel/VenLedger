@@ -71,7 +71,7 @@ export const ConversionCard: React.FC<ConversionCardProps> = ({
 
         <div className="mt-1">
           <span
-            className={`text-xl lg:text-2xl font-black dark:text-white ${amountColorClass} block truncate`}
+            className={`text-xl lg:text-3xl font-black dark:text-white ${amountColorClass} block truncate`}
           >
             {currencySymbol}{' '}
             {amount.toLocaleString(locale, {
@@ -83,13 +83,15 @@ export const ConversionCard: React.FC<ConversionCardProps> = ({
       </div>
 
       <div className="flex flex-wrap items-center justify-between gap-1 mt-2 pt-1.5 border-t border-slate-900/5 dark:border-slate-100/10">
-        <span className={`text-xs font-medium ${subColorClass} truncate`}>
+        <span
+          className={`text-xs lg:text-sm font-medium ${subColorClass} truncate`}
+        >
           {rateLabel}
         </span>
 
         {activeImpact && (
           <span
-            className={`inline-flex items-center px-1.5 py-0.5 rounded-md text-[10px] sm:text-[11px] font-extrabold border shrink-0 ${
+            className={`inline-flex items-center px-1.5 py-0.5 rounded-md text-[11px] font-extrabold border shrink-0 ${
               activeImpact.deltaUSD < 0
                 ? 'bg-rose-100 dark:bg-rose-950 text-rose-800 dark:text-rose-200 border-rose-200 dark:border-rose-800'
                 : activeImpact.deltaUSD > 0

@@ -145,7 +145,7 @@ export const VaultsSummary: React.FC<VaultsSummaryProps> = ({
       <div
         className={`${
           hideSummaryOnMobile ? 'hidden md:grid' : 'grid'
-        } grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-1 sm:gap-3`}
+        } grid-cols-1 sm:grid-cols-2 xl:grid-cols-[0.9fr_0.9fr_1fr_1.3fr] gap-1 sm:gap-2`}
       >
         {/* 1. Bs → USD (compra USD) */}
         <ConversionCard
