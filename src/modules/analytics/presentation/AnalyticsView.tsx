@@ -57,16 +57,16 @@ export const AnalyticsView: React.FC = () => {
     <div className="space-y-4">
       {/* Termómetro de Poder de Compra del USDT */}
       {purchasingPower && (
-        <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs">
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-xs transition-colors">
           <div className="flex items-center justify-between">
-            <h2 className="text-sm font-bold text-slate-800">Termómetro de Poder de Compra</h2>
+            <h2 className="text-sm font-bold text-slate-800 dark:text-slate-100">Termómetro de Poder de Compra</h2>
             <span
               className={`text-xs font-bold px-2.5 py-0.5 rounded-full ${
                 purchasingPower.status === 'gained'
-                  ? 'bg-emerald-100 text-emerald-800'
+                  ? 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300'
                   : purchasingPower.status === 'lost'
-                  ? 'bg-rose-100 text-rose-800'
-                  : 'bg-slate-100 text-slate-800'
+                  ? 'bg-rose-100 dark:bg-rose-950/60 text-rose-800 dark:text-rose-300'
+                  : 'bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-300'
               }`}
             >
               {purchasingPower.status === 'gained'
@@ -77,12 +77,12 @@ export const AnalyticsView: React.FC = () => {
             </span>
           </div>
 
-          <p className="text-xs text-slate-500 mt-1">
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
             Tus ahorros en USDT (${purchasingPower.usdtBalance.toFixed(2)}) equivalen hoy a{' '}
-            <strong className="text-slate-800">Bs. {purchasingPower.currentValueInVES.toLocaleString()}</strong> en el mercado P2P.
+            <strong className="text-slate-800 dark:text-slate-200">Bs. {purchasingPower.currentValueInVES.toLocaleString()}</strong> en el mercado P2P.
           </p>
 
-          <div className="mt-3 w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
+          <div className="mt-3 w-full bg-slate-100 dark:bg-slate-800 rounded-full h-2.5 overflow-hidden">
             <div
               className={`h-2.5 rounded-full transition-all duration-500 ${
                 purchasingPower.percentageChange >= 0 ? 'bg-emerald-500' : 'bg-rose-500'
@@ -94,10 +94,10 @@ export const AnalyticsView: React.FC = () => {
       )}
 
       {/* Gráfico de Distribución de Gastos */}
-      <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs">
-        <h2 className="text-sm font-bold text-slate-800 mb-2">Distribución de Gastos por Categoría</h2>
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-xs transition-colors">
+        <h2 className="text-sm font-bold text-slate-800 dark:text-slate-100 mb-2">Distribución de Gastos por Categoría</h2>
         {pieData.length === 0 ? (
-          <div className="text-xs text-slate-400 italic text-center py-8">
+          <div className="text-xs text-slate-400 dark:text-slate-500 italic text-center py-8">
             No hay gastos suficientes para generar el gráfico.
           </div>
         ) : (
@@ -119,7 +119,7 @@ export const AnalyticsView: React.FC = () => {
                 </Pie>
                 <Tooltip
                   formatter={(value) => [`$${(Number(value) || 0).toFixed(2)}`, 'Monto']}
-                  contentStyle={{ backgroundColor: '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0', fontSize: '12px' }}
+                  contentStyle={{ backgroundColor: '#0f172a', color: '#f8fafc', borderRadius: '12px', border: '1px solid #334155', fontSize: '12px' }}
                 />
               </PieChart>
             </ResponsiveContainer>

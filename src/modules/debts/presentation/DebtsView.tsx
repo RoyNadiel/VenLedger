@@ -180,8 +180,8 @@ export const DebtsView: React.FC = () => {
   return (
     <div className="space-y-4 animate-fade-in">
       {/* Formulario para registrar nueva deuda */}
-      <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs">
-        <h2 className="text-sm font-bold text-slate-800 mb-3">
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-xs transition-colors">
+        <h2 className="text-sm font-bold text-slate-800 dark:text-slate-100 mb-3">
           Registrar Nueva Deuda / Préstamo
         </h2>
         <form
@@ -189,7 +189,7 @@ export const DebtsView: React.FC = () => {
           className="grid grid-cols-1 sm:grid-cols-3 gap-3"
         >
           <div>
-            <label className="block text-xs font-semibold text-slate-500 mb-1">
+            <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">
               Contacto / Persona
             </label>
             <input
@@ -197,13 +197,13 @@ export const DebtsView: React.FC = () => {
               placeholder="Ej. Juan Pérez"
               value={contactName}
               onChange={(e) => setContactName(e.target.value)}
-              className="w-full text-sm border border-slate-300 rounded-xl px-3 py-2 focus:ring-2 focus:ring-sky-400 outline-hidden"
+              className="w-full text-sm border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-sky-400 outline-hidden"
               required
             />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-500 mb-1">
+            <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">
               Teléfono WhatsApp (Opcional)
             </label>
             <input
@@ -211,18 +211,18 @@ export const DebtsView: React.FC = () => {
               placeholder="+58412..."
               value={contactPhone}
               onChange={(e) => setContactPhone(e.target.value)}
-              className="w-full text-sm border border-slate-300 rounded-xl px-3 py-2 focus:ring-2 focus:ring-sky-400 outline-hidden"
+              className="w-full text-sm border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-sky-400 outline-hidden"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-500 mb-1">
+            <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">
               Tipo de Deuda
             </label>
             <select
               value={type}
               onChange={(e) => setType(e.target.value as DebtType)}
-              className="w-full text-sm border border-slate-300 rounded-xl px-3 py-2 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-sky-400 outline-hidden"
+              className="w-full text-sm border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-sky-400 outline-hidden"
             >
               <option value="receivable">Por Cobrar (Me deben)</option>
               <option value="payable">Por Pagar (Yo debo)</option>
@@ -230,7 +230,7 @@ export const DebtsView: React.FC = () => {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-500 mb-1">
+            <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">
               Monto Original
             </label>
             <input
@@ -239,19 +239,19 @@ export const DebtsView: React.FC = () => {
               placeholder="0.00"
               value={totalAmount}
               onChange={(e) => setTotalAmount(e.target.value)}
-              className="w-full text-sm border border-slate-300 rounded-xl px-3 py-2 focus:ring-2 focus:ring-sky-400 outline-hidden"
+              className="w-full text-sm border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-sky-400 outline-hidden"
               required
             />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-500 mb-1">
+            <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">
               Moneda Base
             </label>
             <select
               value={currency}
               onChange={(e) => setCurrency(e.target.value as Currency)}
-              className="w-full text-sm border border-slate-300 rounded-xl px-3 py-2 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-sky-400 outline-hidden"
+              className="w-full text-sm border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-sky-400 outline-hidden"
             >
               <option value="USD">USD ($)</option>
               <option value="USDT">USDT (Cryptocurrency)</option>
@@ -261,7 +261,7 @@ export const DebtsView: React.FC = () => {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-500 mb-1">
+            <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">
               Tipo de Acuerdo
             </label>
             <select
@@ -269,7 +269,7 @@ export const DebtsView: React.FC = () => {
               onChange={(e) =>
                 setAgreementType(e.target.value as AgreementType)
               }
-              className="w-full text-sm border border-slate-300 rounded-xl px-3 py-2 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-sky-400 outline-hidden"
+              className="w-full text-sm border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-sky-400 outline-hidden"
             >
               <option value="fixed_usdt">Congelado en Divisas</option>
               <option value="floating_ves">Flotante en Bolívares</option>
@@ -279,7 +279,7 @@ export const DebtsView: React.FC = () => {
           {/* Abono Inicial Opcional */}
           <div>
             <div className="flex items-center justify-between mb-1">
-              <label className="block text-xs font-semibold text-slate-500">
+              <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400">
                 Abono Inicial (Opcional)
               </label>
               {selectedInitialVault && (
@@ -302,7 +302,7 @@ export const DebtsView: React.FC = () => {
                     setInitialPayment(maxVal > 0 ? maxVal.toFixed(2) : '');
                     setCreateError(null);
                   }}
-                  className="text-[10px] font-bold text-sky-600 hover:text-sky-800 bg-sky-50 hover:bg-sky-100 px-1.5 py-0.5 rounded-md transition-colors cursor-pointer"
+                  className="text-[10px] font-bold text-sky-600 dark:text-sky-400 hover:text-sky-800 bg-sky-50 dark:bg-sky-950/60 hover:bg-sky-100 px-1.5 py-0.5 rounded-md transition-colors cursor-pointer"
                 >
                   Máx ({selectedInitialVault.balance.toFixed(2)} {selectedInitialVault.currency})
                 </button>
@@ -317,12 +317,12 @@ export const DebtsView: React.FC = () => {
                 setInitialPayment(e.target.value);
                 setCreateError(null);
               }}
-              className="w-full text-sm border border-slate-300 rounded-xl px-3 py-2 focus:ring-2 focus:ring-sky-400 outline-hidden"
+              className="w-full text-sm border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-sky-400 outline-hidden"
             />
           </div>
 
           <div className="sm:col-span-2">
-            <label className="block text-xs font-semibold text-slate-500 mb-1">
+            <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">
               Bóveda para Abono Inicial
             </label>
             <select
@@ -331,7 +331,7 @@ export const DebtsView: React.FC = () => {
                 setInitialVaultId(e.target.value);
                 setCreateError(null);
               }}
-              className="w-full text-sm border border-slate-300 rounded-xl px-3 py-2 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-sky-400 outline-hidden"
+              className="w-full text-sm border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-sky-400 outline-hidden"
             >
               <option value="">Sin bóveda (no afecta saldos)</option>
               {vaults.map((v) => (
@@ -343,7 +343,7 @@ export const DebtsView: React.FC = () => {
           </div>
 
           {createError && (
-            <div className="sm:col-span-3 text-xs font-bold text-rose-600 bg-rose-50 border border-rose-200 rounded-xl p-2.5">
+            <div className="sm:col-span-3 text-xs font-bold text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-800 rounded-xl p-2.5">
               ⚠️ {createError}
             </div>
           )}

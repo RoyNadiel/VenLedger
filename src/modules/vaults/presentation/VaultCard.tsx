@@ -73,8 +73,8 @@ export const VaultCard: React.FC<VaultCardProps> = ({
           onOpenDetails(vault);
         }
       }}
-      className={`bg-white border border-slate-200 rounded-2xl p-4 shadow-xs flex flex-col justify-between space-y-3 transition-all ${
-        !isEditing ? 'hover:border-sky-300 hover:shadow-md cursor-pointer' : ''
+      className={`bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-xs flex flex-col justify-between space-y-3 transition-all ${
+        !isEditing ? 'hover:border-sky-300 dark:hover:border-sky-700 hover:shadow-md cursor-pointer' : ''
       }`}
     >
       <ConfirmModal
@@ -91,25 +91,25 @@ export const VaultCard: React.FC<VaultCardProps> = ({
       {isEditing ? (
         <div onClick={(e) => e.stopPropagation()} className="space-y-2 text-xs">
           <div>
-            <label className="block font-semibold text-slate-500 mb-0.5">
+            <label className="block font-semibold text-slate-500 dark:text-slate-400 mb-0.5">
               Nombre
             </label>
             <input
               type="text"
               value={editName}
               onChange={(e) => setEditName(e.target.value)}
-              className="w-full border border-sky-400 rounded-lg px-2 py-1 outline-hidden"
+              className="w-full border border-sky-400 dark:border-sky-600 rounded-lg px-2 py-1 outline-hidden bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100"
             />
           </div>
           <div className="grid grid-cols-2 gap-2">
             <div>
-              <label className="block font-semibold text-slate-500 mb-0.5">
+              <label className="block font-semibold text-slate-500 dark:text-slate-400 mb-0.5">
                 Tipo
               </label>
               <select
                 value={editType}
                 onChange={(e) => setEditType(e.target.value as VaultType)}
-                className="w-full border border-sky-400 rounded-lg px-2 py-1 bg-white outline-hidden"
+                className="w-full border border-sky-400 dark:border-sky-600 rounded-lg px-2 py-1 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 outline-hidden"
               >
                 <option value="bank">Banco</option>
                 <option value="cash">Efectivo</option>
@@ -117,13 +117,13 @@ export const VaultCard: React.FC<VaultCardProps> = ({
               </select>
             </div>
             <div>
-              <label className="block font-semibold text-slate-500 mb-0.5">
+              <label className="block font-semibold text-slate-500 dark:text-slate-400 mb-0.5">
                 Moneda
               </label>
               <select
                 value={editCurrency}
                 onChange={(e) => setEditCurrency(e.target.value as Currency)}
-                className="w-full border border-sky-400 rounded-lg px-2 py-1 bg-white outline-hidden"
+                className="w-full border border-sky-400 dark:border-sky-600 rounded-lg px-2 py-1 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 outline-hidden"
               >
                 <option value="USD">USD</option>
                 <option value="USDT">USDT</option>
@@ -135,14 +135,14 @@ export const VaultCard: React.FC<VaultCardProps> = ({
           <div className="flex justify-between items-center pt-2">
             <button
               onClick={() => setIsDeleteModalOpen(true)}
-              className="text-rose-600 hover:text-rose-800 font-semibold cursor-pointer"
+              className="text-rose-600 dark:text-rose-400 hover:text-rose-800 font-semibold cursor-pointer"
             >
               Eliminar
             </button>
             <div className="flex space-x-2">
               <button
                 onClick={() => setEditingVault(null)}
-                className="px-2.5 py-1 bg-slate-200 text-slate-700 rounded-lg font-medium cursor-pointer"
+                className="px-2.5 py-1 bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-lg font-medium cursor-pointer"
               >
                 Cancelar
               </button>
@@ -158,7 +158,7 @@ export const VaultCard: React.FC<VaultCardProps> = ({
       ) : (
         <>
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+            <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
               {vault.type === 'binance'
                 ? 'Binance'
                 : vault.type === 'cash'
@@ -166,7 +166,7 @@ export const VaultCard: React.FC<VaultCardProps> = ({
                   : 'Banco Local'}
             </span>
             <div className="flex items-center space-x-2">
-              <span className="text-xs px-2 py-0.5 rounded-full bg-slate-100 font-medium text-slate-600">
+              <span className="text-xs px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 font-medium text-slate-600 dark:text-slate-300">
                 {vault.currency}
               </span>
               <button
@@ -174,7 +174,7 @@ export const VaultCard: React.FC<VaultCardProps> = ({
                   e.stopPropagation();
                   handleStartEdit(vault);
                 }}
-                className="text-xs text-slate-400 hover:text-sky-600 p-1 transition-colors cursor-pointer rounded-lg hover:bg-sky-50"
+                className="text-xs text-slate-400 hover:text-sky-600 dark:hover:text-sky-400 p-1 transition-colors cursor-pointer rounded-lg hover:bg-sky-50 dark:hover:bg-slate-800"
                 title="Editar Bóveda"
               >
                 <Pencil className="w-3.5 h-3.5" />
@@ -183,12 +183,12 @@ export const VaultCard: React.FC<VaultCardProps> = ({
           </div>
 
           <div>
-            <div className="text-sm font-bold text-slate-800 group-hover:text-sky-700 transition-colors">
+            <div className="text-sm font-bold text-slate-800 dark:text-slate-100 group-hover:text-sky-700 transition-colors">
               {vault.name}
             </div>
             <div className="flex items-baseline justify-between mt-1">
               <div>
-                <span className="text-xl font-black text-slate-900">
+                <span className="text-xl font-black text-slate-900 dark:text-white">
                   {getCurrencySymbol(vault.currency)}{' '}
                   {vault.balance.toLocaleString('en-US', {
                     minimumFractionDigits: 2,
@@ -198,7 +198,7 @@ export const VaultCard: React.FC<VaultCardProps> = ({
                 {vault.currency === 'VES' &&
                   rates &&
                   rates.usd_official > 0 && (
-                    <div className="text-xs font-semibold text-slate-500 mt-0.5">
+                    <div className="text-xs font-semibold text-slate-500 dark:text-slate-400 mt-0.5">
                       ≈ ${' '}
                       {(vault.balance / rates.usd_official).toLocaleString(
                         'en-US',
@@ -207,14 +207,14 @@ export const VaultCard: React.FC<VaultCardProps> = ({
                           maximumFractionDigits: 2,
                         }
                       )}{' '}
-                      <span className="text-[10px] text-slate-400 font-normal">
+                      <span className="text-[10px] text-slate-400 dark:text-slate-500 font-normal">
                         (Tasa BCV)
                       </span>
                     </div>
                   )}
                 {/* Equivalente en Bs para Bóvedas en Divisas */}
                 {vault.currency !== 'VES' && rates && (
-                  <div className="text-xs font-semibold text-slate-500 mt-0.5">
+                  <div className="text-xs font-semibold text-slate-500 dark:text-slate-400 mt-0.5">
                     ≈ Bs.{' '}
                     {(
                       vault.balance * getRateInVES(vault.currency, rates)
@@ -222,7 +222,7 @@ export const VaultCard: React.FC<VaultCardProps> = ({
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2,
                     })}{' '}
-                    <span className="text-[10px] text-slate-400 font-normal">
+                    <span className="text-[10px] text-slate-400 dark:text-slate-500 font-normal">
                       ({vault.currency === 'USDT' ? 'Binance' : 'BCV'})
                     </span>
                   </div>
@@ -234,9 +234,9 @@ export const VaultCard: React.FC<VaultCardProps> = ({
             {vault.currency === 'VES' && (
               <div
                 onClick={(e) => e.stopPropagation()}
-                className="mt-3 pt-2 border-t border-slate-100 flex items-center justify-between min-h-[32px]"
+                className="mt-3 pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between min-h-[32px]"
               >
-                <div className="inline-flex items-center p-0.5 bg-slate-900/5 rounded-full border border-slate-900/5 backdrop-blur-xs">
+                <div className="inline-flex items-center p-0.5 bg-slate-900/5 dark:bg-slate-100/10 rounded-full border border-slate-900/5 dark:border-slate-100/10 backdrop-blur-xs">
                   {(
                     [
                       { key: 'day1', label: 'Ayer' },
@@ -250,8 +250,8 @@ export const VaultCard: React.FC<VaultCardProps> = ({
                       onClick={() => setPeriod(p.key)}
                       className={`px-2.5 py-0.5 rounded-full text-xs transition-all duration-150 cursor-pointer select-none ${
                         period === p.key
-                          ? 'bg-white text-sky-950 font-bold shadow-xs ring-1 ring-slate-900/10 scale-[1.02]'
-                          : 'text-slate-500 hover:text-slate-800 font-semibold'
+                          ? 'bg-white dark:bg-slate-800 text-sky-950 dark:text-sky-200 font-bold shadow-xs ring-1 ring-slate-900/10 dark:ring-slate-100/10 scale-[1.02]'
+                          : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 font-semibold'
                       }`}
                     >
                       {p.label}
@@ -263,10 +263,10 @@ export const VaultCard: React.FC<VaultCardProps> = ({
                   <span
                     className={`inline-flex items-center px-1.5 py-0.5 rounded-md text-[11px] font-extrabold border ${
                       activeImpact.deltaUSD < 0
-                        ? 'bg-rose-50 text-rose-700 border-rose-200'
+                        ? 'bg-rose-50 dark:bg-rose-950/50 text-rose-700 dark:text-rose-300 border-rose-200 dark:border-rose-800'
                         : activeImpact.deltaUSD > 0
-                        ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
-                        : 'bg-slate-50 text-slate-600 border-slate-200'
+                        ? 'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800'
+                        : 'bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700'
                     }`}
                     title={`Pérdida/Ganancia calculada comparado con la tasa de ${
                       period === 'day1' ? 'ayer' : period === 'days7' ? 'hace 7 días' : 'hace 30 días'
@@ -284,7 +284,7 @@ export const VaultCard: React.FC<VaultCardProps> = ({
                       : `+$${activeImpact.deltaUSD.toFixed(2)} USD`}
                   </span>
                 ) : (
-                  <div className="h-5 w-16 bg-slate-100 animate-pulse rounded-md"></div>
+                  <div className="h-5 w-16 bg-slate-100 dark:bg-slate-800 animate-pulse rounded-md"></div>
                 )}
               </div>
             )}
