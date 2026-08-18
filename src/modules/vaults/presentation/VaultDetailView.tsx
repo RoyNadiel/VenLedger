@@ -60,12 +60,13 @@ export const VaultDetailView: React.FC<VaultDetailViewProps> = ({
     let totalExpense = 0;
 
     vaultTransactions.forEach((t) => {
+      const isTxTransfer = t.type === 'transfer' || t.type === 'buy_sell';
       if (t.vaultId === vault.id) {
         if (t.type === 'income') totalIncome += t.amount;
         if (t.type === 'expense') totalExpense += t.amount;
-        if (t.type === 'transfer') totalExpense += t.amount; // Salida de esta bóveda
-      } else if (t.destinationVaultId === vault.id && t.type === 'transfer') {
-        totalIncome += t.amount; // Entrada por transferencia
+        if (isTxTransfer) totalExpense += t.amount; // Salida de esta bóveda
+      } else if (t.destinationVaultId === vault.id && isTxTransfer) {
+        totalIncome += t.destinationAmount ?? t.amount; // Entrada por transferencia
       }
     });
 

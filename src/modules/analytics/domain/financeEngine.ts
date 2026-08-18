@@ -117,6 +117,9 @@ export class FinanceEngine {
 
     const debtRateInVES = getRateInVES(debt.currency, currentRates);
     const originalVES = debt.totalAmount * debtRateInVES;
+    const originalUSDT = (currentRates.usd_libre || 1) > 0
+      ? originalVES / currentRates.usd_libre
+      : debt.totalAmount;
 
     // Para fixed_usdt: comparar directamente en USDT — la deuda está congelada en esa unidad.
     // Para floating_ves: comparar en VES — el valor de la deuda sigue a la tasa oficial.
@@ -127,10 +130,14 @@ export class FinanceEngine {
     let isFullyPaid: boolean;
 
     if (debt.agreementType === 'fixed_usdt') {
-      const remainingUSDT = Math.max(0, debt.totalAmount - totalPaidUSDT);
+      const remainingUSDT = Math.max(0, originalUSDT - totalPaidUSDT);
       isFullyPaid = remainingUSDT <= 0.05; // tolerancia de 5 centavos
-      remainingAmountOriginal = remainingUSDT;
       remainingAmountUSDT = remainingUSDT;
+      remainingAmountOriginal = debt.currency === 'USDT' || debt.currency === 'USD'
+        ? remainingUSDT
+        : debtRateInVES > 0
+          ? (remainingUSDT * (currentRates.usd_libre || 1)) / debtRateInVES
+          : remainingUSDT;
       remainingAmountVES_Official = remainingUSDT * (currentRates.usd_official || 1);
       remainingAmountVES_Libre = remainingUSDT * (currentRates.usd_libre || 1);
     } else {

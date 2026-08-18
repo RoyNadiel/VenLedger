@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 import { useTransactionsStore } from '../../transactions/presentation/useTransactionsStore';
 import { useVaultsStore } from '../../vaults/presentation/useVaultsStore';
 import { useRatesStore } from '../../rates/presentation/useRatesStore';
+import { ratesService } from '../../rates/application/ratesService';
 import { FinanceEngine } from '../domain/financeEngine';
+import { convertCurrency } from '../../shared/domain/currencyUtils';
 
 const PASTEL_COLORS = ['#38bdf8', '#f472b6', '#34d399', '#fbbf24', '#a78bfa', '#f87171'];
 
@@ -11,6 +13,15 @@ export const AnalyticsView: React.FC = () => {
   const { transactions } = useTransactionsStore();
   const { vaults } = useVaultsStore();
   const { rates } = useRatesStore();
+  const [pastRate, setPastRate] = useState<number | null>(null);
+
+  useEffect(() => {
+    async function loadPastRate() {
+      const rate = await ratesService.getPastRate(30);
+      setPastRate(rate);
+    }
+    void loadPastRate();
+  }, []);
 
   // 1. Agrupar gastos por categoría/nota para el gráfico de pastel
   const expenses = transactions.filter((tx) => tx.type === 'expense');
@@ -18,12 +29,15 @@ export const AnalyticsView: React.FC = () => {
 
   expenses.forEach((tx) => {
     const key = tx.note || 'General';
-    categoryTotals[key] = (categoryTotals[key] || 0) + tx.amount;
+    const amountInUSD = rates
+      ? convertCurrency(tx.amount, tx.currency, 'USD', rates)
+      : tx.amount;
+    categoryTotals[key] = (categoryTotals[key] || 0) + amountInUSD;
   });
 
   const pieData = Object.keys(categoryTotals).map((key) => ({
     name: key,
-    value: categoryTotals[key],
+    value: Number(categoryTotals[key].toFixed(2)),
   }));
 
   // 2. Medidor del poder de compra del USDT
@@ -31,10 +45,10 @@ export const AnalyticsView: React.FC = () => {
     ? FinanceEngine.calculateConsolidatedBalance(vaults, rates)
     : { totalUSDT: 0 };
 
-  const purchasingPower = rates
+  const purchasingPower = rates && pastRate
     ? FinanceEngine.calculatePurchasingPower(
         consolidated.totalUSDT,
-        rates.usd_libre * 0.95, // Ejemplo de tasa histórica base para comparativa
+        pastRate,
         rates.usd_libre
       )
     : null;
