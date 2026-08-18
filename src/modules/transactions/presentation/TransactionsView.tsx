@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useTransactionsStore } from './useTransactionsStore';
 import { useVaultsStore } from '../../vaults/presentation/useVaultsStore';
 import { useRatesStore } from '../../rates/presentation/useRatesStore';
+import { useCategoriesStore } from '../../categories/presentation/useCategoriesStore';
 import type { TransactionType } from '../../shared/domain/types';
 import { TransactionForm } from './TransactionForm';
 import { TransactionItem } from './TransactionItem';
@@ -12,12 +13,14 @@ export const TransactionsView: React.FC = () => {
     useTransactionsStore();
   const { vaults } = useVaultsStore();
   const { rates } = useRatesStore();
+  const { categories } = useCategoriesStore();
 
   const [type, setType] = useState<TransactionType>('expense');
   const [vaultId, setVaultId] = useState('');
   const [destinationVaultId, setDestinationVaultId] = useState('');
   const [amount, setAmount] = useState('');
   const [destinationAmount, setDestinationAmount] = useState('');
+  const [categoryId, setCategoryId] = useState('');
   const [note, setNote] = useState('');
   const [filterVaultId, setFilterVaultId] = useState('');
 
@@ -69,6 +72,7 @@ export const TransactionsView: React.FC = () => {
         vaultId: selectedVault.id,
         amount: numAmount,
         currency: selectedVault.currency,
+        categoryId: categoryId || undefined,
         type,
         note,
       });
@@ -77,6 +81,7 @@ export const TransactionsView: React.FC = () => {
     setAmount('');
     setDestinationAmount('');
     setNote('');
+    setCategoryId('');
   };
 
   const handleAutoCalculateDest = () => {
@@ -115,28 +120,31 @@ export const TransactionsView: React.FC = () => {
         setAmount={setAmount}
         destinationAmount={destinationAmount}
         setDestinationAmount={setDestinationAmount}
+        categoryId={categoryId}
+        setCategoryId={setCategoryId}
         note={note}
         setNote={setNote}
         vaults={vaults}
+        categories={categories}
         rates={rates}
         onSubmit={(e) => void handleSubmit(e)}
         onAutoCalculateDest={handleAutoCalculateDest}
       />
 
       {/* Historial de Movimientos */}
-      <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs">
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-xs transition-colors">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
-          <h2 className="text-sm font-bold text-slate-800">
+          <h2 className="text-sm font-bold text-slate-800 dark:text-slate-100">
             Historial Reciente
           </h2>
           <div className="flex items-center space-x-2">
-            <label className="text-xs font-semibold text-slate-500">
+            <label className="text-xs font-semibold text-slate-500 dark:text-slate-400">
               Filtrar:
             </label>
             <select
               value={filterVaultId}
               onChange={(e) => setFilterVaultId(e.target.value)}
-              className="text-xs border border-slate-300 rounded-xl px-2.5 py-1 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-sky-400 outline-hidden"
+              className="text-xs border border-slate-300 dark:border-slate-700 rounded-xl px-2.5 py-1 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-sky-400 outline-hidden"
             >
               <option value="">Todas las bóvedas</option>
               {vaults.map((v) => (
@@ -149,11 +157,11 @@ export const TransactionsView: React.FC = () => {
         </div>
 
         {filteredTxs.length === 0 ? (
-          <p className="text-xs text-slate-400 italic py-4 text-center">
+          <p className="text-xs text-slate-400 dark:text-slate-500 italic py-4 text-center">
             No hay movimientos registrados para el filtro seleccionado.
           </p>
         ) : (
-          <div className="divide-y divide-slate-100 max-h-[500px] overflow-y-auto pr-1">
+          <div className="divide-y divide-slate-100 dark:divide-slate-800 max-h-[500px] overflow-y-auto pr-1">
             {filteredTxs.map((tx) => (
               <TransactionItem
                 key={tx.id}

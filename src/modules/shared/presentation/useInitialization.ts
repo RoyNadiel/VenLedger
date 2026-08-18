@@ -4,6 +4,7 @@ import { useVaultsStore } from '../../vaults/presentation/useVaultsStore';
 import { useRatesStore } from '../../rates/presentation/useRatesStore';
 import { useTransactionsStore } from '../../transactions/presentation/useTransactionsStore';
 import { useDebtsStore } from '../../debts/presentation/useDebtsStore';
+import { useCategoriesStore } from '../../categories/presentation/useCategoriesStore';
 import { useOutboxStore } from '../../outbox/presentation/useOutboxStore';
 
 export function useInitialization() {
@@ -22,6 +23,7 @@ export function useInitialization() {
           useVaultsStore.getState().loadVaults(),
           useTransactionsStore.getState().loadTransactions(),
           useDebtsStore.getState().loadDebts(),
+          useCategoriesStore.getState().loadCategories(),
           useOutboxStore.getState().refreshOutboxState(),
         ]);
 

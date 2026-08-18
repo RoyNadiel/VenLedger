@@ -1,6 +1,7 @@
 import React from 'react';
 import type { TransactionType, ExchangeRates } from '../../shared/domain/types';
 import type { Vault } from '../../vaults/domain/entities';
+import type { Category } from '../../categories/domain/entities';
 import { getCurrencySymbol } from '../../shared/domain/currencyUtils';
 
 export interface TransactionFormProps {
@@ -14,9 +15,12 @@ export interface TransactionFormProps {
   setAmount: (amount: string) => void;
   destinationAmount: string;
   setDestinationAmount: (amount: string) => void;
+  categoryId?: string;
+  setCategoryId?: (id: string) => void;
   note: string;
   setNote: (note: string) => void;
   vaults: Vault[];
+  categories?: Category[];
   rates: ExchangeRates | null;
   onSubmit: (e: React.FormEvent) => void;
   onAutoCalculateDest: () => void;
@@ -34,9 +38,12 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
   setAmount,
   destinationAmount,
   setDestinationAmount,
+  categoryId = '',
+  setCategoryId,
   note,
   setNote,
   vaults,
+  categories = [],
   rates,
   onSubmit,
   onAutoCalculateDest,
@@ -51,19 +58,25 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
     destVault &&
     sourceVault.currency !== destVault.currency;
 
+  const filteredCategories = categories.filter(
+    (c) => c.type === (type === 'income' ? 'income' : 'expense')
+  );
+
   return (
-    <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs">
-      <h2 className="text-sm font-bold text-slate-800 mb-3">Nuevo Movimiento</h2>
+    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-xs transition-colors">
+      <h2 className="text-sm font-bold text-slate-800 dark:text-slate-100 mb-3">
+        Nuevo Movimiento
+      </h2>
       <form onSubmit={onSubmit} className="space-y-3">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div>
-            <label className="block text-xs font-semibold text-slate-500 mb-1">
+            <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">
               Tipo de Operación
             </label>
             <select
               value={type}
               onChange={(e) => setType(e.target.value as TransactionType)}
-              className="w-full text-sm border border-slate-300 rounded-xl px-3 py-2 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-sky-400 outline-hidden"
+              className="w-full text-sm border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-sky-400 outline-hidden"
             >
               <option value="expense">Gasto (Salida)</option>
               <option value="income">Ingreso (Entrada)</option>
@@ -74,13 +87,13 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-500 mb-1">
+            <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">
               {isTransfer ? 'Bóveda Origen (Sale)' : 'Bóveda'}
             </label>
             <select
               value={vaultId}
               onChange={(e) => setVaultId(e.target.value)}
-              className="w-full text-sm border border-slate-300 rounded-xl px-3 py-2 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-sky-400 outline-hidden"
+              className="w-full text-sm border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-sky-400 outline-hidden"
               required
             >
               <option value="">Seleccionar bóveda...</option>
@@ -92,15 +105,15 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
             </select>
           </div>
 
-          {isTransfer && (
+          {isTransfer ? (
             <div>
-              <label className="block text-xs font-semibold text-slate-500 mb-1">
+              <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">
                 Bóveda Destino (Entra)
               </label>
               <select
                 value={destinationVaultId}
                 onChange={(e) => setDestinationVaultId(e.target.value)}
-                className="w-full text-sm border border-slate-300 rounded-xl px-3 py-2 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-sky-400 outline-hidden"
+                className="w-full text-sm border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-sky-400 outline-hidden"
                 required
               >
                 <option value="">Seleccionar destino...</option>
@@ -113,13 +126,31 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
                   ))}
               </select>
             </div>
+          ) : (
+            <div>
+              <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">
+                Categoría (Opcional)
+              </label>
+              <select
+                value={categoryId}
+                onChange={(e) => setCategoryId?.(e.target.value)}
+                className="w-full text-sm border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-sky-400 outline-hidden"
+              >
+                <option value="">Sin categoría...</option>
+                {filteredCategories.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.name}
+                  </option>
+                ))}
+              </select>
+            </div>
           )}
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div>
             <div className="flex items-center justify-between mb-1">
-              <label className="block text-xs font-semibold text-slate-500">
+              <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400">
                 {isTransfer
                   ? `Monto Retirado (${sourceVault?.currency || 'Origen'})`
                   : 'Monto'}
@@ -131,7 +162,7 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
                     setAmount(String(sourceVault.balance));
                     onFillMax?.();
                   }}
-                  className="text-[10px] font-bold text-sky-600 hover:text-sky-800 bg-sky-50 hover:bg-sky-100 px-1.5 py-0.5 rounded-md transition-colors cursor-pointer"
+                  className="text-[10px] font-bold text-sky-600 dark:text-sky-400 hover:text-sky-800 bg-sky-50 dark:bg-sky-950/60 hover:bg-sky-100 px-1.5 py-0.5 rounded-md transition-colors cursor-pointer"
                   title={`Saldo disponible: ${sourceVault.balance}`}
                 >
                   Máx
@@ -144,14 +175,14 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
               placeholder="0.00"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
-              className="w-full text-sm border border-slate-300 rounded-xl px-3 py-2 focus:ring-2 focus:ring-sky-400 outline-hidden"
+              className="w-full text-sm border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-sky-400 outline-hidden"
               required
             />
             {isTransfer && sourceVault && (
               <div className="mt-1 flex items-center justify-between text-[10px] text-slate-400">
                 <span>Disponible en bóveda:</span>
                 <span className={`font-semibold ${
-                  sourceVault.balance <= 0 ? 'text-rose-500' : 'text-emerald-600'
+                  sourceVault.balance <= 0 ? 'text-rose-500' : 'text-emerald-600 dark:text-emerald-400'
                 }`}>
                   {getCurrencySymbol(sourceVault.currency)}{' '}
                   {sourceVault.balance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
@@ -163,14 +194,14 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
           {isDifferentCurrency && (
             <div>
               <div className="flex justify-between items-center mb-1">
-                <label className="block text-xs font-semibold text-slate-500">
+                <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400">
                   Monto Recibido ({destVault?.currency})
                 </label>
                 {rates && (
                   <button
                     type="button"
                     onClick={onAutoCalculateDest}
-                    className="text-[10px] text-sky-600 hover:underline cursor-pointer"
+                    className="text-[10px] text-sky-600 dark:text-sky-400 hover:underline cursor-pointer"
                   >
                     Calc. Tasa
                   </button>
@@ -182,14 +213,14 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
                 placeholder="0.00"
                 value={destinationAmount}
                 onChange={(e) => setDestinationAmount(e.target.value)}
-                className="w-full text-sm border border-slate-300 rounded-xl px-3 py-2 focus:ring-2 focus:ring-sky-400 outline-hidden"
+                className="w-full text-sm border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-sky-400 outline-hidden"
                 required
               />
             </div>
           )}
 
           <div className={isDifferentCurrency ? '' : 'sm:col-span-2'}>
-            <label className="block text-xs font-semibold text-slate-500 mb-1">
+            <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">
               Nota / Detalle
             </label>
             <input
@@ -201,7 +232,7 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
               }
               value={note}
               onChange={(e) => setNote(e.target.value)}
-              className="w-full text-sm border border-slate-300 rounded-xl px-3 py-2 focus:ring-2 focus:ring-sky-400 outline-hidden"
+              className="w-full text-sm border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-sky-400 outline-hidden"
             />
           </div>
         </div>

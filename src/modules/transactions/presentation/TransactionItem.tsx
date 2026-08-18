@@ -58,7 +58,7 @@ export const TransactionItem: React.FC<TransactionItemProps> = ({
           {iconSymbol}
         </span>
         <div className="min-w-0">
-          <div className="text-sm font-medium text-slate-800 truncate">
+          <div className="text-sm font-medium text-slate-800 dark:text-slate-100 truncate">
             {tx.note ||
               (isTxTransfer
                 ? isFilteredVaultDest
@@ -68,13 +68,13 @@ export const TransactionItem: React.FC<TransactionItemProps> = ({
                   ? 'Ingreso registrado'
                   : 'Gasto registrado')}
           </div>
-          <div className="text-xs text-slate-400 flex flex-wrap items-center gap-1 mt-0.5">
+          <div className="text-xs text-slate-400 dark:text-slate-500 flex flex-wrap items-center gap-1 mt-0.5">
             {isTxTransfer ? (
-              <span className="font-semibold text-slate-600">
+              <span className="font-semibold text-slate-600 dark:text-slate-300">
                 {vault?.name || 'Bóveda'} ➔ {dest?.name || 'Destino'}
               </span>
             ) : (
-              <span className="font-semibold text-slate-600">
+              <span className="font-semibold text-slate-600 dark:text-slate-300">
                 {vault?.name ?? (tx.vaultId ? 'Bóveda' : 'Externo')}
               </span>
             )}
@@ -94,22 +94,22 @@ export const TransactionItem: React.FC<TransactionItemProps> = ({
         <div className="text-right">
           {isTxTransfer ? (
             isFilteredVaultDest ? (
-              <span className="text-sm font-bold text-emerald-600">
+              <span className="text-sm font-bold text-emerald-600 dark:text-emerald-400">
                 +{getCurrencySymbol(dest?.currency ?? 'USD')}{' '}
                 {(tx.destinationAmount ?? tx.amount).toFixed(2)}
               </span>
             ) : isFilteredVaultSource ? (
-              <span className="text-sm font-bold text-amber-700">
+              <span className="text-sm font-bold text-amber-700 dark:text-amber-400">
                 -{getCurrencySymbol(vault?.currency ?? 'USD')}{' '}
                 {tx.amount.toFixed(2)}
               </span>
             ) : (
               <div className="flex flex-col items-end text-xs">
-                <span className="font-bold text-slate-700">
+                <span className="font-bold text-slate-700 dark:text-slate-300">
                   -{getCurrencySymbol(vault?.currency ?? 'USD')}{' '}
                   {tx.amount.toFixed(2)}
                 </span>
-                <span className="font-bold text-emerald-600">
+                <span className="font-bold text-emerald-600 dark:text-emerald-400">
                   +{getCurrencySymbol(dest?.currency ?? 'USD')}{' '}
                   {(tx.destinationAmount ?? tx.amount).toFixed(2)}
                 </span>
@@ -118,7 +118,7 @@ export const TransactionItem: React.FC<TransactionItemProps> = ({
           ) : (
             <span
               className={`text-sm font-bold ${
-                isIncome ? 'text-emerald-600' : 'text-slate-900'
+                isIncome ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-900 dark:text-slate-100'
               }`}
             >
               {isIncome ? '+' : '-'}
@@ -129,7 +129,7 @@ export const TransactionItem: React.FC<TransactionItemProps> = ({
         </div>
         <button
           onClick={() => onDelete(tx.id)}
-          className="text-slate-400 hover:text-rose-600 transition-colors cursor-pointer p-1"
+          className="text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 transition-colors cursor-pointer p-1"
           title="Eliminar movimiento"
         >
           <X className="w-4 h-4" />
