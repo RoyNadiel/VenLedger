@@ -9,7 +9,16 @@ import type { ExchangeRates } from '../../domain/types';
 export interface ExchangeRatesCacheRecord {
   key: string; // 'latest'
   rates: ExchangeRates;
-  fetchedAt: string;
+  fetchedAt: string; // Fecha en que la app hizo el fetch
+  rateTimestamp?: string; // Fecha oficial emitida por el BCV / API
+}
+
+export interface RateHistoryRecord {
+  date: string; // 'YYYY-MM-DD'
+  usd_official: number;
+  eur_official: number;
+  usd_libre: number;
+  timestamp?: string;
 }
 
 export class VenLedgerDatabase extends Dexie {
@@ -20,6 +29,7 @@ export class VenLedgerDatabase extends Dexie {
   debtPayments!: Table<DebtPayment, string>;
   outboxEvents!: Table<OutboxEvent, string>;
   exchangeRatesCache!: Table<ExchangeRatesCacheRecord, string>;
+  rateHistory!: Table<RateHistoryRecord, string>;
 
   constructor() {
     super('VenLedgerDatabase');
@@ -32,6 +42,10 @@ export class VenLedgerDatabase extends Dexie {
       debtPayments: 'id, debtId, createdAt',
       outboxEvents: 'id, synced, createdAt, table',
       exchangeRatesCache: 'key',
+    });
+
+    this.version(2).stores({
+      rateHistory: 'date',
     });
   }
 }

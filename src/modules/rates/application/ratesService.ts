@@ -1,6 +1,10 @@
 import { db } from '../../shared/infrastructure/dexie/db';
 import type { ExchangeRates } from '../../shared/domain/types';
 import { ratesApiClient } from '../infrastructure/ratesApiClient';
+import {
+  RateVariationEngine,
+  type RateVariations,
+} from '../domain/rateVariationEngine';
 
 export class RatesService {
   /**
@@ -27,11 +31,29 @@ export class RatesService {
 
     try {
       const freshRates = await ratesApiClient.fetchLatestRates();
+      const nowIso = new Date().toISOString();
+      const officialTimestamp = freshRates.timestamp || nowIso;
+      const dateKey = officialTimestamp.split('T')[0];
+
+      // 1. Guardar en caché principal (separando fecha de consulta e indicador oficial de la tasa)
       await db.exchangeRatesCache.put({
         key: 'latest',
         rates: freshRates,
-        fetchedAt: new Date().toISOString(),
+        fetchedAt: nowIso,
+        rateTimestamp: officialTimestamp,
       });
+
+      // 2. Guardar en tabla de historial diario
+      if (dateKey && freshRates.usd_official > 0) {
+        await db.rateHistory.put({
+          date: dateKey,
+          usd_official: freshRates.usd_official,
+          eur_official: freshRates.eur_official,
+          usd_libre: freshRates.usd_libre,
+          timestamp: officialTimestamp,
+        });
+      }
+
       return freshRates;
     } catch (error) {
       console.warn(
@@ -50,6 +72,78 @@ export class RatesService {
         timestamp: new Date().toISOString(),
       };
     }
+  }
+
+  /**
+   * Retorna la información extendida cacheada de las tasas (incluyendo rateTimestamp y fetchedAt).
+   */
+  async getCachedRecord() {
+    return await db.exchangeRatesCache.get('latest');
+  }
+
+  /**
+   * Obtiene la tasa oficial de hace N días (o la más cercana en el historial).
+   */
+  async getPastRate(daysAgo: number): Promise<number | null> {
+    const targetDate = new Date();
+    targetDate.setDate(targetDate.getDate() - daysAgo);
+    const targetKey = targetDate.toISOString().split('T')[0];
+
+    const exactMatch = await db.rateHistory.get(targetKey);
+    if (exactMatch && exactMatch.usd_official > 0) {
+      return exactMatch.usd_official;
+    }
+
+    // Si no hay coincidencia exacta, busca la captura más cercana anterior a la fecha objetivo
+    const allRecords = await db.rateHistory.toArray();
+    if (allRecords.length === 0) return null;
+
+    allRecords.sort((a, b) => a.date.localeCompare(b.date));
+    const closest = allRecords.reverse().find((r) => r.date <= targetKey);
+    return closest ? closest.usd_official : null;
+  }
+
+  /**
+   * Calcula el porcentaje de ganancia/pérdida del poder adquisitivo para 2d, 7d, 15d y 30d.
+   */
+  async getRateVariations(currentUsdRate: number): Promise<RateVariations> {
+    if (!currentUsdRate || currentUsdRate <= 1) {
+      return { days2: null, days7: null, days15: null, days30: null };
+    }
+
+    const [rate2, rate7, rate15, rate30] = await Promise.all([
+      this.getPastRate(2),
+      this.getPastRate(7),
+      this.getPastRate(15),
+      this.getPastRate(30),
+    ]);
+
+    return {
+      days2: rate2
+        ? RateVariationEngine.calculatePurchasingPowerChange(
+            currentUsdRate,
+            rate2
+          )
+        : null,
+      days7: rate7
+        ? RateVariationEngine.calculatePurchasingPowerChange(
+            currentUsdRate,
+            rate7
+          )
+        : null,
+      days15: rate15
+        ? RateVariationEngine.calculatePurchasingPowerChange(
+            currentUsdRate,
+            rate15
+          )
+        : null,
+      days30: rate30
+        ? RateVariationEngine.calculatePurchasingPowerChange(
+            currentUsdRate,
+            rate30
+          )
+        : null,
+    };
   }
 }
 

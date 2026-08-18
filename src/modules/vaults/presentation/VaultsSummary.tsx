@@ -17,7 +17,7 @@ import { VaultDetailView } from './VaultDetailView';
 export const VaultsSummary: React.FC = () => {
   const { vaults, createVault, updateVault, deleteVault } = useVaultsStore();
   const { transactions, createTransaction } = useTransactionsStore();
-  const { rates } = useRatesStore();
+  const { rates, variations } = useRatesStore();
 
   const [selectedVaultForDetails, setSelectedVaultForDetails] =
     useState<Vault | null>(null);
@@ -128,6 +128,7 @@ export const VaultsSummary: React.FC = () => {
           amountColorClass="text-sky-950"
           subColorClass="text-sky-700"
           rateLabel={`Tasa BCV: ${rates ? rates.usd_official.toFixed(2) : '...'} Bs/USD`}
+          variations={variations}
         />
 
         {/* 2. Bs → EUR */}
@@ -171,6 +172,7 @@ export const VaultsSummary: React.FC = () => {
           amountColorClass="text-emerald-950"
           subColorClass="text-emerald-700"
           rateLabel={`Tasa BCV: ${rates ? rates.usd_official.toFixed(2) : '...'} Bs/USD`}
+          variations={variations}
         />
 
         {/* 5. EUR → Bs */}

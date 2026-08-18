@@ -1,12 +1,16 @@
 import { db } from './db';
 import type { Vault } from '../../../vaults/domain/entities';
 import type { Category } from '../../../categories/domain/entities';
+import { seedRateHistoryIfNeeded } from '../../../rates/infrastructure/seedRateHistory';
 
 const SEED_KEY = 'venledger_seeded_v2';
 
 export async function seedInitialDataIfNeeded(): Promise<void> {
   // 1. Limpiar duplicados si existían por ejecuciones dobles en React StrictMode
   await cleanupDuplicateVaults();
+
+  // 2. Sembrar historial de tasas desde CSV si aplica
+  await seedRateHistoryIfNeeded();
 
   if (!localStorage.getItem(SEED_KEY)) {
     localStorage.setItem(SEED_KEY, 'true');
