@@ -16,7 +16,7 @@ export default defineConfig({
         short_name: 'VenLedger',
         description: 'Aplicación PWA mobile-first para control financiero personal y deudas en Venezuela',
         theme_color: '#0284c7',
-        background_color: '#f8fafc',
+        background_color: '#0f172a',
         display: 'standalone',
         orientation: 'portrait',
         start_url: '/',
