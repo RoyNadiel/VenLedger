@@ -8,71 +8,44 @@ interface ThemeToggleProps {
 
 export const ThemeToggle: React.FC<ThemeToggleProps> = ({ className = '' }) => {
   const [theme, setTheme] = useState<'light' | 'dark'>(() => {
-    if (typeof window !== 'undefined') {
-      const savedTheme = localStorage.getItem('theme');
-      if (savedTheme === 'dark' || savedTheme === 'light') {
-        return savedTheme;
-      }
-      return window.matchMedia('(prefers-color-scheme: dark)').matches
-        ? 'dark'
-        : 'light';
+    if (typeof window === 'undefined') return 'light';
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark' || savedTheme === 'light') {
+      return savedTheme;
     }
-    return 'light';
+    return window.matchMedia('(prefers-color-scheme: dark)').matches
+      ? 'dark'
+      : 'light';
   });
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const savedTheme = localStorage.getItem('theme');
-      let initialDark = false;
-      if (savedTheme) {
-        initialDark = savedTheme === 'dark';
-      } else {
-        initialDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      }
+    document.documentElement.classList.toggle('dark', theme === 'dark');
+  }, [theme]);
 
-      if (initialDark) {
-        document.documentElement.classList.add('dark');
-        setTheme('dark');
-      } else {
-        document.documentElement.classList.remove('dark');
-        setTheme('light');
-      }
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
 
-      const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-      const handleChange = (e: MediaQueryListEvent) => {
-        if (!localStorage.getItem('theme')) {
-          if (e.matches) {
-            document.documentElement.classList.add('dark');
-            setTheme('dark');
-          } else {
-            document.documentElement.classList.remove('dark');
-            setTheme('light');
-          }
-        }
-      };
-
-      mediaQuery.addEventListener('change', handleChange);
-      return () => mediaQuery.removeEventListener('change', handleChange);
-    }
-  }, []);
-
-  const toggleTheme = (e?: React.MouseEvent<HTMLButtonElement>) => {
-    const currentlyDark = document.documentElement.classList.contains('dark');
-
-    const updateThemeDOM = () => {
-      if (currentlyDark) {
-        document.documentElement.classList.remove('dark');
-        localStorage.setItem('theme', 'light');
-        setTheme('light');
-      } else {
-        document.documentElement.classList.add('dark');
-        localStorage.setItem('theme', 'dark');
-        setTheme('dark');
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    const handleChange = (e: MediaQueryListEvent) => {
+      if (!localStorage.getItem('theme')) {
+        setTheme(e.matches ? 'dark' : 'light');
       }
     };
 
-    if (!(document as any).startViewTransition) {
-      updateThemeDOM();
+    mediaQuery.addEventListener('change', handleChange);
+    return () => mediaQuery.removeEventListener('change', handleChange);
+  }, []);
+
+  const toggleTheme = (e?: React.MouseEvent<HTMLButtonElement>) => {
+    const nextTheme = theme === 'dark' ? 'light' : 'dark';
+
+    const applyThemeChange = () => {
+      localStorage.setItem('theme', nextTheme);
+      setTheme(nextTheme);
+    };
+
+    if (!('startViewTransition' in document)) {
+      applyThemeChange();
       return;
     }
 
@@ -86,7 +59,7 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({ className = '' }) => {
 
     const transition = (document as any).startViewTransition(() => {
       flushSync(() => {
-        updateThemeDOM();
+        applyThemeChange();
       });
     });
 
