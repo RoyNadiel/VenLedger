@@ -55,9 +55,13 @@ export const VaultsSummary: React.FC<VaultsSummaryProps> = ({
 
   useEffect(() => {
     async function loadConsolidatedImpact() {
-      if (consolidated.totalVES > 0 && rates?.usd_official) {
+      const vesVaultsBalance = vaults
+        .filter((v) => v.currency === 'VES')
+        .reduce((acc, v) => acc + v.balance, 0);
+
+      if (vesVaultsBalance > 0 && rates?.usd_official) {
         const impact = await ratesService.getVesImpact(
-          consolidated.totalVES,
+          vesVaultsBalance,
           rates.usd_official
         );
         setVesImpact(impact);
@@ -66,7 +70,7 @@ export const VaultsSummary: React.FC<VaultsSummaryProps> = ({
       }
     }
     void loadConsolidatedImpact();
-  }, [consolidated.totalVES, rates?.usd_official]);
+  }, [vaults, rates?.usd_official]);
 
   const handleCreateSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -156,7 +160,6 @@ export const VaultsSummary: React.FC<VaultsSummaryProps> = ({
           amountColorClass="text-sky-950 dark:text-sky-300"
           subColorClass="text-sky-700 dark:text-sky-600"
           rateLabel={`Tasa BCV: ${rates ? rates.usd_official.toFixed(2) : '...'} Bs/USD`}
-          vesImpact={vesImpact}
         />
 
         {/* 2. Bs → EUR */}
