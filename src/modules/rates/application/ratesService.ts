@@ -7,12 +7,18 @@ import {
 } from '../domain/vesImpactEngine';
 
 export class RatesService {
+  private pastRateCache = new Map<number, number | null>();
+
   /**
    * Obtiene las tasas cambiarias.
    * Si forceRefresh = false, reutiliza la caché de IndexedDB si la última consulta fue realizada el mismo día.
    * Si forceRefresh = true, consulta la API directamente.
    */
   async getRates(forceRefresh = false): Promise<ExchangeRates> {
+    if (forceRefresh) {
+      this.pastRateCache.clear();
+    }
+
     if (!forceRefresh) {
       const cached = await db.exchangeRatesCache.get('latest');
       if (cached && cached.fetchedAt) {
@@ -85,22 +91,32 @@ export class RatesService {
    * Obtiene la tasa oficial de hace N días (o la más cercana en el historial).
    */
   async getPastRate(daysAgo: number): Promise<number | null> {
+    if (this.pastRateCache.has(daysAgo)) {
+      return this.pastRateCache.get(daysAgo)!;
+    }
+
     const targetDate = new Date();
     targetDate.setDate(targetDate.getDate() - daysAgo);
     const targetKey = targetDate.toISOString().split('T')[0];
 
     const exactMatch = await db.rateHistory.get(targetKey);
     if (exactMatch && exactMatch.usd_official > 0) {
+      this.pastRateCache.set(daysAgo, exactMatch.usd_official);
       return exactMatch.usd_official;
     }
 
     // Si no hay coincidencia exacta, busca la captura más cercana anterior a la fecha objetivo
     const allRecords = await db.rateHistory.toArray();
-    if (allRecords.length === 0) return null;
+    if (allRecords.length === 0) {
+      this.pastRateCache.set(daysAgo, null);
+      return null;
+    }
 
     allRecords.sort((a, b) => a.date.localeCompare(b.date));
     const closest = allRecords.reverse().find((r) => r.date <= targetKey);
-    return closest ? closest.usd_official : null;
+    const result = closest ? closest.usd_official : null;
+    this.pastRateCache.set(daysAgo, result);
+    return result;
   }
 
   /**
