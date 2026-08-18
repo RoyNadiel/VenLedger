@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import type { RateVariations } from '../../rates/domain/rateVariationEngine';
+import type { RateVariations, MoneyVariations } from '../../rates/domain/rateVariationEngine';
 import { TrendingDown, TrendingUp, Minus } from 'lucide-react';
 
 export interface ConversionCardProps {
@@ -13,6 +13,7 @@ export interface ConversionCardProps {
   subColorClass: string;
   rateLabel: string;
   variations?: RateVariations | null;
+  moneyVariations?: MoneyVariations | null;
 }
 
 export const ConversionCard: React.FC<ConversionCardProps> = ({
@@ -26,12 +27,14 @@ export const ConversionCard: React.FC<ConversionCardProps> = ({
   subColorClass,
   rateLabel,
   variations,
+  moneyVariations,
 }) => {
   const [selectedPeriod, setSelectedPeriod] = useState<
     'days2' | 'days7' | 'days15' | 'days30'
   >('days7');
 
   const currentVal = variations ? variations[selectedPeriod] : null;
+  const currentMoney = moneyVariations ? moneyVariations[selectedPeriod] : null;
 
   return (
     <div className={`${cardStyleClass} p-4 rounded-2xl shadow-xs flex flex-col justify-between`}>
@@ -43,7 +46,7 @@ export const ConversionCard: React.FC<ConversionCardProps> = ({
             {title}
           </div>
 
-          {variations && (
+          {(variations || moneyVariations) && (
             <div className="flex items-center space-x-1 bg-white/60 p-0.5 rounded-lg border border-slate-200/60 text-[10px]">
               {(['days2', 'days7', 'days15', 'days30'] as const).map((period) => (
                 <button
@@ -96,6 +99,26 @@ export const ConversionCard: React.FC<ConversionCardProps> = ({
             </span>
           )}
         </div>
+
+        {/* Despliegue de dinero ganado/perdido nominalmente en USD o Bs. */}
+        {currentMoney && Math.abs(currentMoney.deltaUSD) > 0.01 && (
+          <div
+            className={`text-[11px] font-bold mt-1 ${
+              currentMoney.deltaUSD < 0 ? 'text-rose-600' : 'text-emerald-600'
+            }`}
+          >
+            {currentMoney.deltaUSD < 0 ? 'Pérdida estimada: ' : 'Ganancia estimada: '}
+            {currencySymbol === 'Bs.'
+              ? `${currentMoney.deltaVES.toLocaleString('es-VE', {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })} Bs.`
+              : `${currencySymbol}${Math.abs(currentMoney.deltaUSD).toLocaleString('en-US', {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}`}
+          </div>
+        )}
       </div>
 
       <div className={`text-[10px] sm:text-xs ${subColorClass} mt-2`}>

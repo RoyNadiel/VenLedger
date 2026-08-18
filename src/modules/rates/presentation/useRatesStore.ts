@@ -8,6 +8,7 @@ interface RatesState {
   rateTimestamp: string | null;
   fetchedAt: string | null;
   variations: RateVariations | null;
+  ratePercentVariations: RateVariations | null;
   isLoading: boolean;
   error: string | null;
   fetchRates: (forceRefresh?: boolean) => Promise<void>;
@@ -18,6 +19,7 @@ export const useRatesStore = create<RatesState>((set) => ({
   rateTimestamp: null,
   fetchedAt: null,
   variations: null,
+  ratePercentVariations: null,
   isLoading: false,
   error: null,
   fetchRates: async (forceRefresh = false) => {
@@ -28,12 +30,16 @@ export const useRatesStore = create<RatesState>((set) => ({
       const variations = rates
         ? await ratesService.getRateVariations(rates.usd_official)
         : null;
+      const ratePercentVariations = rates
+        ? await ratesService.getRatePercentVariations(rates.usd_official)
+        : null;
 
       set({
         rates,
         rateTimestamp: cachedRecord?.rateTimestamp || rates?.timestamp || null,
         fetchedAt: cachedRecord?.fetchedAt || null,
         variations,
+        ratePercentVariations,
         isLoading: false,
       });
     } catch (err) {

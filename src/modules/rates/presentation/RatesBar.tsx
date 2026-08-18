@@ -3,7 +3,8 @@ import { useRatesStore } from './useRatesStore';
 import { RefreshCw } from 'lucide-react';
 
 export const RatesBar: React.FC = () => {
-  const { rates, rateTimestamp, isLoading, fetchRates } = useRatesStore();
+  const { rates, rateTimestamp, ratePercentVariations, isLoading, fetchRates } =
+    useRatesStore();
 
   const formattedDate = rateTimestamp
     ? new Date(rateTimestamp).toLocaleDateString('es-VE', {
@@ -13,6 +14,8 @@ export const RatesBar: React.FC = () => {
       })
     : null;
 
+  const rate7dVar = ratePercentVariations?.days7;
+
   return (
     <div className="bg-sky-50/70 border-b border-sky-100 px-2 sm:px-4 py-1.5 sm:py-2 text-xs font-medium text-slate-700">
       <div className="max-w-[1480px] mx-auto flex items-center justify-between gap-1.5 sm:gap-4">
@@ -21,8 +24,22 @@ export const RatesBar: React.FC = () => {
             <span className="text-slate-500 font-semibold text-xs sm:text-sm shrink-0">
               <span className="hidden sm:inline">Tasa </span>BCV USD:
             </span>
-            <span className="font-bold text-sky-800 bg-white px-1 sm:px-2 py-0.5 rounded-md border border-sky-300 text-xs sm:text-sm shrink-0">
-              {rates ? `${rates.usd_official.toFixed(2)}` : '...'}
+            <span className="font-bold text-sky-800 bg-white px-1 sm:px-2 py-0.5 rounded-md border border-sky-300 text-xs sm:text-sm shrink-0 flex items-center space-x-1">
+              <span>{rates ? `${rates.usd_official.toFixed(2)}` : '...'}</span>
+              {rate7dVar !== null && rate7dVar !== undefined && (
+                <span
+                  className={`text-[10px] font-extrabold px-1 rounded ${
+                    rate7dVar > 0
+                      ? 'bg-amber-100 text-amber-800'
+                      : rate7dVar < 0
+                      ? 'bg-emerald-100 text-emerald-800'
+                      : 'bg-slate-100 text-slate-600'
+                  }`}
+                  title={`Variación de la tasa en 7 días: ${rate7dVar > 0 ? '+' : ''}${rate7dVar.toFixed(1)}%`}
+                >
+                  {rate7dVar > 0 ? `+${rate7dVar.toFixed(1)}%` : `${rate7dVar.toFixed(1)}%`}
+                </span>
+              )}
             </span>
           </div>
 

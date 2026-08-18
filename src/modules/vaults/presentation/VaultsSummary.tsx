@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useVaultsStore } from './useVaultsStore';
 import { useTransactionsStore } from '../../transactions/presentation/useTransactionsStore';
 import { useRatesStore } from '../../rates/presentation/useRatesStore';
+import { ratesService } from '../../rates/application/ratesService';
+import type { MoneyVariations } from '../../rates/domain/rateVariationEngine';
 import {
   FinanceEngine,
   type ConsolidatedBalance,
@@ -18,6 +20,8 @@ export const VaultsSummary: React.FC = () => {
   const { vaults, createVault, updateVault, deleteVault } = useVaultsStore();
   const { transactions, createTransaction } = useTransactionsStore();
   const { rates, variations } = useRatesStore();
+
+  const [moneyVariations, setMoneyVariations] = useState<MoneyVariations | null>(null);
 
   const [selectedVaultForDetails, setSelectedVaultForDetails] =
     useState<Vault | null>(null);
@@ -43,6 +47,21 @@ export const VaultsSummary: React.FC = () => {
         totalVES_Libre: 0,
         vaultBreakdown: [],
       };
+
+  useEffect(() => {
+    async function updateMoneyVar() {
+      if (consolidated.totalVES > 0 && rates?.usd_official) {
+        const mv = await ratesService.getMoneyVariations(
+          consolidated.totalVES,
+          rates.usd_official
+        );
+        setMoneyVariations(mv);
+      } else {
+        setMoneyVariations(null);
+      }
+    }
+    void updateMoneyVar();
+  }, [consolidated.totalVES, rates?.usd_official]);
 
   const handleCreateSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -129,6 +148,7 @@ export const VaultsSummary: React.FC = () => {
           subColorClass="text-sky-700"
           rateLabel={`Tasa BCV: ${rates ? rates.usd_official.toFixed(2) : '...'} Bs/USD`}
           variations={variations}
+          moneyVariations={moneyVariations}
         />
 
         {/* 2. Bs → EUR */}
@@ -173,6 +193,7 @@ export const VaultsSummary: React.FC = () => {
           subColorClass="text-emerald-700"
           rateLabel={`Tasa BCV: ${rates ? rates.usd_official.toFixed(2) : '...'} Bs/USD`}
           variations={variations}
+          moneyVariations={moneyVariations}
         />
 
         {/* 5. EUR → Bs */}
