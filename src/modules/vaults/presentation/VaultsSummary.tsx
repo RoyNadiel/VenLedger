@@ -1,9 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useVaultsStore } from './useVaultsStore';
 import { useTransactionsStore } from '../../transactions/presentation/useTransactionsStore';
 import { useRatesStore } from '../../rates/presentation/useRatesStore';
-import { ratesService } from '../../rates/application/ratesService';
-import type { MoneyVariations } from '../../rates/domain/rateVariationEngine';
 import {
   FinanceEngine,
   type ConsolidatedBalance,
@@ -19,9 +17,7 @@ import { VaultDetailView } from './VaultDetailView';
 export const VaultsSummary: React.FC = () => {
   const { vaults, createVault, updateVault, deleteVault } = useVaultsStore();
   const { transactions, createTransaction } = useTransactionsStore();
-  const { rates, variations } = useRatesStore();
-
-  const [moneyVariations, setMoneyVariations] = useState<MoneyVariations | null>(null);
+  const { rates } = useRatesStore();
 
   const [selectedVaultForDetails, setSelectedVaultForDetails] =
     useState<Vault | null>(null);
@@ -47,21 +43,6 @@ export const VaultsSummary: React.FC = () => {
         totalVES_Libre: 0,
         vaultBreakdown: [],
       };
-
-  useEffect(() => {
-    async function updateMoneyVar() {
-      if (consolidated.totalVES > 0 && rates?.usd_official) {
-        const mv = await ratesService.getMoneyVariations(
-          consolidated.totalVES,
-          rates.usd_official
-        );
-        setMoneyVariations(mv);
-      } else {
-        setMoneyVariations(null);
-      }
-    }
-    void updateMoneyVar();
-  }, [consolidated.totalVES, rates?.usd_official]);
 
   const handleCreateSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -147,8 +128,6 @@ export const VaultsSummary: React.FC = () => {
           amountColorClass="text-sky-950"
           subColorClass="text-sky-700"
           rateLabel={`Tasa BCV: ${rates ? rates.usd_official.toFixed(2) : '...'} Bs/USD`}
-          variations={variations}
-          moneyVariations={moneyVariations}
         />
 
         {/* 2. Bs → EUR */}
@@ -192,35 +171,7 @@ export const VaultsSummary: React.FC = () => {
           amountColorClass="text-emerald-950"
           subColorClass="text-emerald-700"
           rateLabel={`Tasa BCV: ${rates ? rates.usd_official.toFixed(2) : '...'} Bs/USD`}
-          variations={variations}
-          moneyVariations={moneyVariations}
         />
-
-        {/* 5. EUR → Bs */}
-        {/* <ConversionCard
-          title="EUR → Bs"
-          amount={consolidated.totalVES}
-          currencySymbol="Bs."
-          locale="es-VE"
-          cardStyleClass="pastel-purple-card"
-          titleColorClass="text-purple-800"
-          amountColorClass="text-purple-950"
-          subColorClass="text-purple-700"
-          rateLabel={`Tasa BCV Euro: ${rates ? rates.eur_official.toFixed(2) : '...'} Bs/EUR`}
-        /> */}
-
-        {/* 6. USDT → Bs */}
-        {/* <ConversionCard
-          title="USDT → Bs"
-          amount={consolidated.totalVES}
-          currencySymbol="Bs."
-          locale="es-VE"
-          cardStyleClass="pastel-green-card"
-          titleColorClass="text-emerald-800"
-          amountColorClass="text-emerald-950"
-          subColorClass="text-emerald-700"
-          rateLabel={`Tasa Binance: ${rates ? rates.usd_libre.toFixed(2) : '...'} Bs/USDT`}
-        /> */}
       </div>
 
       {/* Encabezado de Bóvedas y Botón Crear */}

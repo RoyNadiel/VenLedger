@@ -1,10 +1,6 @@
 import { db } from '../../shared/infrastructure/dexie/db';
 import type { ExchangeRates } from '../../shared/domain/types';
 import { ratesApiClient } from '../infrastructure/ratesApiClient';
-import {
-  RateVariationEngine,
-  type RateVariations,
-} from '../domain/rateVariationEngine';
 
 export class RatesService {
   /**
@@ -101,114 +97,6 @@ export class RatesService {
     allRecords.sort((a, b) => a.date.localeCompare(b.date));
     const closest = allRecords.reverse().find((r) => r.date <= targetKey);
     return closest ? closest.usd_official : null;
-  }
-
-  /**
-   * Calcula la variación porcentual pura de la tasa cambiaria para 2d, 7d, 15d y 30d (para usar en RatesBar).
-   */
-  async getRatePercentVariations(currentUsdRate: number): Promise<RateVariations> {
-    if (!currentUsdRate || currentUsdRate <= 1) {
-      return { days2: null, days7: null, days15: null, days30: null };
-    }
-
-    const [rate2, rate7, rate15, rate30] = await Promise.all([
-      this.getPastRate(2),
-      this.getPastRate(7),
-      this.getPastRate(15),
-      this.getPastRate(30),
-    ]);
-
-    return {
-      days2: rate2
-        ? RateVariationEngine.calculateRatePercentChange(currentUsdRate, rate2)
-        : null,
-      days7: rate7
-        ? RateVariationEngine.calculateRatePercentChange(currentUsdRate, rate7)
-        : null,
-      days15: rate15
-        ? RateVariationEngine.calculateRatePercentChange(currentUsdRate, rate15)
-        : null,
-      days30: rate30
-        ? RateVariationEngine.calculateRatePercentChange(currentUsdRate, rate30)
-        : null,
-    };
-  }
-
-  /**
-   * Calcula la variación porcentual del poder adquisitivo en USD para 2d, 7d, 15d y 30d.
-   */
-  async getRateVariations(currentUsdRate: number): Promise<RateVariations> {
-    if (!currentUsdRate || currentUsdRate <= 1) {
-      return { days2: null, days7: null, days15: null, days30: null };
-    }
-
-    const [rate2, rate7, rate15, rate30] = await Promise.all([
-      this.getPastRate(2),
-      this.getPastRate(7),
-      this.getPastRate(15),
-      this.getPastRate(30),
-    ]);
-
-    return {
-      days2: rate2
-        ? RateVariationEngine.calculatePurchasingPowerChange(
-            currentUsdRate,
-            rate2
-          )
-        : null,
-      days7: rate7
-        ? RateVariationEngine.calculatePurchasingPowerChange(
-            currentUsdRate,
-            rate7
-          )
-        : null,
-      days15: rate15
-        ? RateVariationEngine.calculatePurchasingPowerChange(
-            currentUsdRate,
-            rate15
-          )
-        : null,
-      days30: rate30
-        ? RateVariationEngine.calculatePurchasingPowerChange(
-            currentUsdRate,
-            rate30
-          )
-        : null,
-    };
-  }
-
-  /**
-   * Calcula el dinero ganado/perdido en USD y en Bs para un monto en Bolívares en 2d, 7d, 15d y 30d.
-   */
-  async getMoneyVariations(
-    vesAmount: number,
-    currentUsdRate: number
-  ) {
-    if (!vesAmount || !currentUsdRate || currentUsdRate <= 1) {
-      return { days2: null, days7: null, days15: null, days30: null };
-    }
-
-    const [rate2, rate7, rate15, rate30] = await Promise.all([
-      this.getPastRate(2),
-      this.getPastRate(7),
-      this.getPastRate(15),
-      this.getPastRate(30),
-    ]);
-
-    return {
-      days2: rate2
-        ? RateVariationEngine.calculateMoneyValueChange(vesAmount, currentUsdRate, rate2)
-        : null,
-      days7: rate7
-        ? RateVariationEngine.calculateMoneyValueChange(vesAmount, currentUsdRate, rate7)
-        : null,
-      days15: rate15
-        ? RateVariationEngine.calculateMoneyValueChange(vesAmount, currentUsdRate, rate15)
-        : null,
-      days30: rate30
-        ? RateVariationEngine.calculateMoneyValueChange(vesAmount, currentUsdRate, rate30)
-        : null,
-    };
   }
 }
 
