@@ -1,5 +1,6 @@
 import React from 'react';
 import { useOutboxStore } from '../../outbox/presentation/useOutboxStore';
+import { VenLedgerLogo } from './VenLedgerLogo';
 import {
   LayoutDashboard,
   Landmark,
@@ -57,7 +58,7 @@ export const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
       id: 'analytics',
       label: 'Salud Financiera',
       icon: <BarChart3 className="w-4 h-4" />,
-      activeClass: 'bg-white text-rose-600 shadow-xs',
+      activeClass: 'bg-white text-purple-600 shadow-xs',
     },
   ];
 
@@ -68,12 +69,10 @@ export const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
         <button
           type="button"
           onClick={() => setActiveTab('dashboard')}
-          className="flex items-center space-x-3 cursor-pointer text-left focus:outline-none group active:scale-95 transition-all duration-150 select-none"
+          className="flex items-center space-x-2.5 cursor-pointer text-left focus:outline-none group active:scale-95 transition-all duration-150 select-none"
           title="Ir al Resumen / Dashboard"
         >
-          <div className="w-9 h-9 rounded-xl bg-sky-500 text-white font-black flex items-center justify-center text-xl shadow-xs group-hover:bg-sky-600 transition-colors">
-            V
-          </div>
+          <VenLedgerLogo size={36} />
           <div>
             <h1 className="text-xl font-bold tracking-tight text-slate-800 group-hover:text-sky-600 transition-colors">
               VenLedger
@@ -107,21 +106,25 @@ export const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
           })}
         </nav>
 
-        {/* Indicador discreto de estado de sincronización */}
+        {/* Lado Derecho Header: Botón Rápido + Nuevo y Sync discreto */}
         <div className="flex items-center space-x-2">
-          {pendingCount === 0 ? (
-            <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800 border border-emerald-200">
-              <span className="w-2 h-2 mr-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-              Sincronizado
-            </span>
-          ) : (
+          {/* <button
+            type="button"
+            onClick={() => setActiveTab('transactions')}
+            className="flex items-center space-x-1 px-3 py-1.5 bg-sky-600 hover:bg-sky-700 active:scale-95 text-white font-bold text-xs rounded-xl shadow-xs transition-all duration-150 select-none cursor-pointer"
+            title="Registrar nuevo movimiento"
+          >
+            <Plus className="w-4 h-4 stroke-[2.5]" />
+            <span className="hidden sm:inline">Nuevo</span>
+          </button> */}
+
+          {pendingCount > 0 && (
             <span
-              className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-800 border border-amber-200"
-              title="Cambios guardados localmente en cola"
+              className="inline-flex items-center px-2 py-1 rounded-full text-[11px] font-bold bg-amber-100 text-amber-800 border border-amber-200"
+              title={`${pendingCount} cambio(s) pendiente(s) por sincronizar`}
             >
-              <span className="w-2 h-2 mr-1.5 rounded-full bg-amber-500"></span>
-              {pendingCount}{' '}
-              {pendingCount === 1 ? 'cambio local' : 'cambios locales'}
+              <span className="w-2 h-2 mr-1 rounded-full bg-amber-500 animate-pulse"></span>
+              {pendingCount}
             </span>
           )}
         </div>

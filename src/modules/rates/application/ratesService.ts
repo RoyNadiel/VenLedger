@@ -4,15 +4,33 @@ import { ratesApiClient } from '../infrastructure/ratesApiClient';
 
 export class RatesService {
   /**
-   * Obtiene las tasas cambiarias más recientes (intenta API, de lo contrario devuelve las cacheadas).
+   * Obtiene las tasas cambiarias.
+   * Si forceRefresh = false, reutiliza la caché de IndexedDB si la última consulta fue realizada el mismo día.
+   * Si forceRefresh = true, consulta la API directamente.
    */
-  async getRates(): Promise<ExchangeRates> {
+  async getRates(forceRefresh = false): Promise<ExchangeRates> {
+    if (!forceRefresh) {
+      const cached = await db.exchangeRatesCache.get('latest');
+      if (cached && cached.fetchedAt) {
+        const lastDate = new Date(cached.fetchedAt).toDateString();
+        const todayDate = new Date().toDateString();
+        const hasValidData =
+          cached.rates &&
+          cached.rates.usd_official !== 1 &&
+          cached.rates.usd_official > 1;
+
+        if (lastDate === todayDate && hasValidData) {
+          return cached.rates;
+        }
+      }
+    }
+
     try {
       const freshRates = await ratesApiClient.fetchLatestRates();
       await db.exchangeRatesCache.put({
         key: 'latest',
         rates: freshRates,
-        fetchedAt: freshRates.timestamp || new Date().toISOString(),
+        fetchedAt: new Date().toISOString(),
       });
       return freshRates;
     } catch (error) {

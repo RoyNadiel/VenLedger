@@ -38,7 +38,7 @@ export const RatesBar: React.FC = () => {
         </div>
 
         <button
-          onClick={() => void fetchRates()}
+          onClick={() => void fetchRates(true)}
           disabled={isLoading}
           className="text-sky-600 hover:text-sky-800 transition-colors shrink-0 flex items-center space-x-1 disabled:opacity-50 cursor-pointer font-bold p-1 sm:p-0"
           title="Actualizar Tasas"

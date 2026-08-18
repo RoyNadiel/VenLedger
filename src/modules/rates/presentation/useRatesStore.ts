@@ -6,17 +6,17 @@ interface RatesState {
   rates: ExchangeRates | null;
   isLoading: boolean;
   error: string | null;
-  fetchRates: () => Promise<void>;
+  fetchRates: (forceRefresh?: boolean) => Promise<void>;
 }
 
 export const useRatesStore = create<RatesState>((set) => ({
   rates: null,
   isLoading: false,
   error: null,
-  fetchRates: async () => {
+  fetchRates: async (forceRefresh = false) => {
     set({ isLoading: true, error: null });
     try {
-      const rates = await ratesService.getRates();
+      const rates = await ratesService.getRates(forceRefresh);
       set({ rates, isLoading: false });
     } catch (err) {
       set({
