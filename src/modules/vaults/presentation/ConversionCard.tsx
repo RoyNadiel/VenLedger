@@ -27,7 +27,7 @@ export const ConversionCard: React.FC<ConversionCardProps> = ({
   rateLabel,
   vesImpact,
 }) => {
-  const [period, setPeriod] = useState<'day1' | 'days7' | 'days30'>('days7');
+  const [period, setPeriod] = useState<'day1' | 'days7' | 'days30'>('day1');
 
   const activeImpact = vesImpact ? vesImpact[period] : null;
 
