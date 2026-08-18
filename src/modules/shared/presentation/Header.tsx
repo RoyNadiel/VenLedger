@@ -1,5 +1,5 @@
 import React from 'react';
-import { useOutboxStore } from '../../outbox/presentation/useOutboxStore';
+// import { useOutboxStore } from '../../outbox/presentation/useOutboxStore';
 import { VenLedgerLogo } from './VenLedgerLogo';
 import { ThemeToggle } from './ThemeToggle';
 import {
@@ -23,7 +23,7 @@ interface HeaderProps {
 }
 
 export const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
-  const { pendingCount } = useOutboxStore();
+  // const { pendingCount } = useOutboxStore();
 
   const navItems: Array<{
     id: Tab;
@@ -115,15 +115,15 @@ export const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
         <div className="flex items-center space-x-2">
           <ThemeToggle />
 
-          {pendingCount > 0 && (
+          {/* {pendingCount > 0 && (
             <span
-              className="inline-flex items-center px-2 py-1 rounded-full text-[11px] font-bold bg-amber-100 text-amber-800 border border-amber-200"
+              className="inline-flex items-center p-2 rounded-full text-[11px] font-bold bg-amber-100 dark:bg-amber-950 dark:text-white dark:border-amber-600 text-amber-800 border border-amber-200"
               title={`${pendingCount} cambio(s) pendiente(s) por sincronizar`}
             >
               <span className="w-2 h-2 mr-1 rounded-full bg-amber-500 animate-pulse"></span>
               {pendingCount}
             </span>
-          )}
+          )} */}
         </div>
       </div>
     </header>
