@@ -33,7 +33,7 @@ export const ConversionCard: React.FC<ConversionCardProps> = ({
 
   return (
     <div
-      className={`${cardStyleClass} h-fit p-2 sm:p-3.5 rounded-2xl shadow-xs flex flex-col justify-between min-w-0`}
+      className={`${cardStyleClass} h-full p-2 sm:p-3.5 rounded-2xl shadow-xs flex flex-col justify-between min-w-0`}
     >
       <div>
         <div className="flex flex-wrap items-center justify-between gap-1.5 min-h-[26px]">
@@ -84,10 +84,10 @@ export const ConversionCard: React.FC<ConversionCardProps> = ({
             <span
               className={`inline-flex items-center px-2 py-1 rounded-lg text-xs font-black border shrink-0 ${
                 activeImpact.deltaUSD < 0
-                  ? 'bg-rose-100 text-rose-800 border-rose-200'
+                  ? 'bg-rose-100 dark:bg-rose-950 text-rose-800 dark:text-rose-200 border-rose-200 dark:border-rose-800'
                   : activeImpact.deltaUSD > 0
-                    ? 'bg-emerald-100 text-emerald-800 border-emerald-200'
-                    : 'bg-slate-100 text-slate-700 border-slate-200'
+                    ? 'bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-200 border-emerald-200 dark:border-emerald-800'
+                    : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 border-slate-200 dark:border-slate-800'
               }`}
               title={`Impacto comparado con la tasa de ${
                 period === 'day1'
@@ -113,7 +113,7 @@ export const ConversionCard: React.FC<ConversionCardProps> = ({
       </div>
 
       <div
-        className={`text-xs sm:text-sm font-medium ${subColorClass} truncate`}
+        className={`text-xs sm:text-sm font-medium mt-1 ${subColorClass} truncate`}
       >
         {rateLabel}
       </div>
