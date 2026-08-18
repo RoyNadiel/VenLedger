@@ -33,7 +33,7 @@ export const ConversionCard: React.FC<ConversionCardProps> = ({
 
   return (
     <div
-      className={`${cardStyleClass} p-3.5 sm:p-5 rounded-2xl shadow-xs flex flex-col justify-between min-w-0`}
+      className={`${cardStyleClass} h-fit p-2 sm:p-3.5 rounded-2xl shadow-xs flex flex-col justify-between min-w-0`}
     >
       <div>
         <div className="flex flex-wrap items-center justify-between gap-1.5 min-h-[26px]">
@@ -44,7 +44,7 @@ export const ConversionCard: React.FC<ConversionCardProps> = ({
           </div>
 
           {vesImpact && (
-            <div className="inline-flex items-center p-0.5 bg-slate-900/5 rounded-full border border-slate-900/5 backdrop-blur-xs shrink-0">
+            <div className="inline-flex items-center p-0.5 bg-slate-900/5 dark:bg-slate-100/10 rounded-full border border-slate-900/5 dark:border-slate-100/10 backdrop-blur-xs shrink-0">
               {(
                 [
                   { key: 'day1', label: 'Ayer' },
@@ -58,8 +58,8 @@ export const ConversionCard: React.FC<ConversionCardProps> = ({
                   onClick={() => setPeriod(p.key)}
                   className={`px-2.5 py-0.5 rounded-full text-xs transition-all duration-150 cursor-pointer select-none ${
                     period === p.key
-                      ? 'bg-white text-sky-950 font-bold shadow-xs ring-1 ring-slate-900/10 scale-[1.02]'
-                      : 'text-slate-500 hover:text-slate-800 font-semibold'
+                      ? 'bg-white dark:bg-slate-800 text-sky-950 dark:text-sky-200 font-bold shadow-xs ring-1 ring-slate-900/10 dark:ring-slate-100/10 scale-[1.02]'
+                      : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 font-semibold'
                   }`}
                 >
                   {p.label}
@@ -71,7 +71,7 @@ export const ConversionCard: React.FC<ConversionCardProps> = ({
 
         <div className="flex items-center justify-between gap-2 mt-2 min-w-0 flex-wrap">
           <span
-            className={`text-xl sm:text-3xl font-black ${amountColorClass} shrink-0`}
+            className={`text-xl lg:text-2xl font-black dark:text-white ${amountColorClass} shrink-0`}
           >
             {currencySymbol}{' '}
             {amount.toLocaleString(locale, {
@@ -114,7 +114,9 @@ export const ConversionCard: React.FC<ConversionCardProps> = ({
         </div>
       </div>
 
-      <div className={`text-xs sm:text-sm font-medium ${subColorClass} mt-3.5 truncate`}>
+      <div
+        className={`text-xs sm:text-sm font-medium ${subColorClass} mt-3.5 truncate`}
+      >
         {rateLabel}
       </div>
     </div>

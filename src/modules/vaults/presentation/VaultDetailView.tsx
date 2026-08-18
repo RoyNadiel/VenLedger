@@ -16,7 +16,11 @@ import {
   Coins,
 } from 'lucide-react';
 import { ConfirmModal } from '../../shared/presentation/ConfirmModal';
-import { convertCurrency, getCurrencySymbol, getRateInVES } from '../../shared/domain/currencyUtils';
+import {
+  convertCurrency,
+  getCurrencySymbol,
+  getRateInVES,
+} from '../../shared/domain/currencyUtils';
 
 interface VaultDetailViewProps {
   vault: Vault;
@@ -128,7 +132,7 @@ export const VaultDetailView: React.FC<VaultDetailViewProps> = ({
       <div className="flex items-center justify-between border-b border-slate-100 pb-2">
         <button
           onClick={onBack}
-          className="flex items-center space-x-2 text-xs font-bold text-slate-600 hover:text-sky-700 bg-slate-100 hover:bg-sky-50 px-3 py-2 rounded-xl transition-colors cursor-pointer"
+          className="flex items-center space-x-2 text-xs font-bold text-slate-600 hover:text-sky-700 bg-slate-100 dark:bg-slate-800/80 hover:bg-sky-50 dark:hover:bg-slate-700/80 px-3 py-2 rounded-xl transition-colors cursor-pointer"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Volver a Bóvedas</span>
@@ -156,7 +160,7 @@ export const VaultDetailView: React.FC<VaultDetailViewProps> = ({
 
       {/* Encabezado e Información de la Bóveda */}
       <div className="flex items-center space-x-3">
-        <div className="p-3 rounded-2xl bg-sky-100/80 text-sky-700 shrink-0">
+        <div className="p-3 rounded-2xl bg-sky-100 dark:bg-slate-800/80 text-sky-700 shrink-0">
           {vault.type === 'binance' ? (
             <Coins className="w-6 h-6" />
           ) : vault.type === 'bank' ? (
@@ -167,7 +171,7 @@ export const VaultDetailView: React.FC<VaultDetailViewProps> = ({
         </div>
         <div>
           <div className="flex items-center space-x-2">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+            <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-slate-400">
               {vault.type === 'binance'
                 ? 'Binance'
                 : vault.type === 'cash'
@@ -264,7 +268,7 @@ export const VaultDetailView: React.FC<VaultDetailViewProps> = ({
           </h3>
 
           {/* Filtros de Tipo */}
-          <div className="flex items-center space-x-1 bg-slate-100 p-1 rounded-xl text-xs">
+          <div className="flex items-center space-x-1 bg-slate-100 dark:bg-slate-800 p-1 rounded-xl text-xs">
             {(['all', 'income', 'expense', 'transfer'] as const).map((type) => (
               <button
                 key={type}
@@ -295,7 +299,7 @@ export const VaultDetailView: React.FC<VaultDetailViewProps> = ({
             placeholder="Buscar por nota o concepto..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full text-xs border border-slate-200 rounded-xl pl-9 pr-3 py-2 focus:ring-2 focus:ring-sky-400 outline-hidden bg-slate-50/50 focus:bg-white"
+            className="w-full text-xs border border-slate-200 dark:border-slate-700 rounded-xl pl-9 pr-3 py-2 focus:ring-2 focus:ring-sky-400 outline-hidden bg-slate-50/50 dark:bg-slate-800/50 focus:bg-white"
           />
         </div>
 
@@ -318,7 +322,7 @@ export const VaultDetailView: React.FC<VaultDetailViewProps> = ({
               return (
                 <div
                   key={tx.id}
-                  className="p-3 bg-white border border-slate-200/80 rounded-xl flex items-center justify-between gap-3 hover:border-sky-200 transition-colors"
+                  className="p-3 bg-white border border-slate-200/80 dark:bg-slate-800/80 dark:border-slate-700/80 rounded-xl flex items-center justify-between gap-3 hover:border-sky-200 dark:hover:border-sky-800 transition-colors"
                 >
                   <div className="flex items-center space-x-3 min-w-0">
                     <div

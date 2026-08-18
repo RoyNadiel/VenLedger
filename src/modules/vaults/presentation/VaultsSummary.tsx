@@ -132,7 +132,7 @@ export const VaultsSummary: React.FC = () => {
   return (
     <div className="space-y-4">
       {/* Tarjetas de Conversión Consolidada */}
-      <div className="grid grid-cols-1 min-[440px]:grid-cols-2 md:grid-cols-4 gap-2.5 sm:gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3">
         {/* 1. Bs → USD (compra USD) */}
         <ConversionCard
           title="Bs → USD"
@@ -142,9 +142,9 @@ export const VaultsSummary: React.FC = () => {
           currencySymbol="$"
           locale="en-US"
           cardStyleClass="pastel-blue-card"
-          titleColorClass="text-sky-800"
-          amountColorClass="text-sky-950"
-          subColorClass="text-sky-700"
+          titleColorClass="text-sky-800 dark:text-sky-400"
+          amountColorClass="text-sky-950 dark:text-sky-300"
+          subColorClass="text-sky-700 dark:text-sky-600"
           rateLabel={`Tasa BCV: ${rates ? rates.usd_official.toFixed(2) : '...'} Bs/USD`}
           vesImpact={vesImpact}
         />
@@ -158,9 +158,9 @@ export const VaultsSummary: React.FC = () => {
           currencySymbol="€"
           locale="de-DE"
           cardStyleClass="pastel-pink-card"
-          titleColorClass="text-pink-800"
-          amountColorClass="text-pink-950"
-          subColorClass="text-pink-700"
+          titleColorClass="text-pink-800 dark:text-pink-400"
+          amountColorClass="text-pink-950 dark:text-pink-300"
+          subColorClass="text-pink-700 dark:text-pink-600"
           rateLabel={`Tasa BCV Euro: ${rates ? rates.eur_official.toFixed(2) : '...'} Bs/EUR`}
         />
 
@@ -173,9 +173,9 @@ export const VaultsSummary: React.FC = () => {
           currencySymbol="$"
           locale="en-US"
           cardStyleClass="pastel-yellow-card"
-          titleColorClass="text-amber-800"
-          amountColorClass="text-amber-950"
-          subColorClass="text-amber-700"
+          titleColorClass="text-amber-800 dark:text-amber-400"
+          amountColorClass="text-amber-950 dark:text-amber-300"
+          subColorClass="text-amber-700 dark:text-amber-600"
           rateLabel={`Tasa Binance: ${rates ? rates.usd_libre.toFixed(2) : '...'} Bs/USDT`}
         />
 
@@ -186,9 +186,9 @@ export const VaultsSummary: React.FC = () => {
           currencySymbol="Bs."
           locale="es-VE"
           cardStyleClass="pastel-green-card"
-          titleColorClass="text-emerald-800"
-          amountColorClass="text-emerald-950"
-          subColorClass="text-emerald-700"
+          titleColorClass="text-emerald-800 dark:text-emerald-400"
+          amountColorClass="text-emerald-950 dark:text-emerald-300"
+          subColorClass="text-emerald-700 dark:text-emerald-600"
           rateLabel={`Tasa BCV: ${rates ? rates.usd_official.toFixed(2) : '...'} Bs/USD`}
           vesImpact={vesImpact}
         />
