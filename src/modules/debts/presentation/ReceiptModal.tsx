@@ -53,9 +53,9 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({
       `━━━━━━━━━━━━━━━━━━━━\n` +
       `👤 *Contacto:* ${debt.contactName}\n` +
       `💰 *Monto Original:* ${sym} ${debt.totalAmount.toFixed(2)}\n` +
-      `✅ *Total Abonado:* $ ${calc.totalPaidUSDT.toFixed(2)}\n` +
+      `✅ *Total Abonado:* ${sym} ${calc.totalPaidInDebtCurrency.toFixed(2)}\n` +
       `   _(Bs. ${calc.totalPaidVES.toFixed(2)})_\n` +
-      `📌 *Saldo Pendiente:* $ ${calc.remainingAmountUSDT.toFixed(2)}\n` +
+      `📌 *Saldo Pendiente:* ${sym} ${calc.remainingAmountOriginal.toFixed(2)}\n` +
       `   _(Bs. BCV ${calc.remainingAmountVES_Official.toFixed(2)} | P2P ${calc.remainingAmountVES_Libre.toFixed(2)})_\n` +
       `📅 *Fecha:* ${new Date().toLocaleDateString('es-VE', { dateStyle: 'long' })}\n` +
       `━━━━━━━━━━━━━━━━━━━━\n` +
@@ -70,7 +70,7 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({
     debt.agreementType === 'floating_ves' ? 'Flotante en Bs.' : 'Congelado en Divisas';
   const isReceivable = debt.type === 'receivable';
 
-  const isPaid = calc && calc.remainingAmountUSDT <= 0;
+  const isPaid = calc && calc.remainingAmountOriginal <= 0;
 
   // Accent color based on type
   const accentColor = isReceivable ? '#0369a1' : '#b91c1c';
@@ -229,7 +229,7 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({
               <div style={{
                 fontSize: '22px', fontWeight: 900, color: '#15803d',
               }}>
-                $ {calc?.totalPaidUSDT.toFixed(2) ?? '—'}
+                {sym} {calc?.totalPaidInDebtCurrency.toFixed(2) ?? '—'}
               </div>
             </div>
 
@@ -256,7 +256,7 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({
                 fontSize: '22px', fontWeight: 900,
                 color: isPaid ? '#15803d' : '#c2410c',
               }}>
-                $ {calc?.remainingAmountUSDT.toFixed(2) ?? '—'}
+                {sym} {calc?.remainingAmountOriginal.toFixed(2) ?? '—'}
               </div>
             </div>
 

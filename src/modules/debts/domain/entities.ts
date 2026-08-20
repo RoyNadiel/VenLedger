@@ -22,7 +22,6 @@ export interface DebtPayment {
   currency: Currency;
   rateUsed: number;          // Tasa de la moneda del pago → VES
   rateType: 'bcv' | 'libre';
-  usdLibreAtPayment: number; // Tasa P2P (Bs/USDT) en el momento del pago
   vaultId?: string;          // Bóveda asociada donde entra o sale el dinero
   createdAt: string;
   note?: string;
