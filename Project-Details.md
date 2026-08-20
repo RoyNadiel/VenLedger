@@ -101,6 +101,11 @@ Campos requeridos por movimiento:
   - **`infrastructure/`**: Implementaciones concretas de repositorios (Dexie.js IndexedDB), adaptadores de API de tasas, cola de sincronización Outbox.
   - **`presentation/`**: Componentes React, hooks de UI y tiendas de estado (Zustand).
 
+- **Principio de Neutralidad Multimoneda ("No Reina Ninguna Moneda"):**
+  - **Igualdad de Divisas:** Ninguna divisa (USD, EUR, USDT, VES) es privilegiada sobre otra. Cada entidad se gestiona de forma neutra en su divisa base.
+  - **Amortización en Moneda Origen:** Los abonos se convierten y acumulan directamente en la divisa de la deuda (`debt.currency`), utilizando la tasa de mercado/oficial o tasa manual personalizada aplicable a ese pago.
+  - **Simetría y Modelo Limpio:** Se evitan campos asimétricos o atados a una sola divisa (ej. `usdLibreAtPayment`), manteniendo las entidades y funciones de cálculo 100% homogéneas.
+
 ---
 
 ## 6. Stack Tecnológico Definido
