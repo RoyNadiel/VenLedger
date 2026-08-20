@@ -34,12 +34,14 @@ export const DebtsView: React.FC = () => {
   const [agreementType, setAgreementType] =
     useState<AgreementType>('fixed_usdt');
   const [initialPayment, setInitialPayment] = useState('');
+  const [initialPaymentCustomRate, setInitialPaymentCustomRate] = useState('');
   const [initialVaultId, setInitialVaultId] = useState('');
   const [createError, setCreateError] = useState<string | null>(null);
 
   // Estado para registrar abono
   const [paymentDebtId, setPaymentDebtId] = useState<string | null>(null);
   const [paymentAmount, setPaymentAmount] = useState('');
+  const [paymentCustomRate, setPaymentCustomRate] = useState('');
   const [paymentVaultId, setPaymentVaultId] = useState('');
   const [paymentError, setPaymentError] = useState<string | null>(null);
 
@@ -47,6 +49,7 @@ export const DebtsView: React.FC = () => {
   const completedDebts = debts.filter((d) => d.status === 'paid');
 
   const selectedInitialVault = vaults.find((v) => v.id === initialVaultId);
+  const hasInitialPaymentVal = parseFloat(initialPayment) > 0;
 
   const handleCreateDebt = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -98,15 +101,16 @@ export const DebtsView: React.FC = () => {
         ? selectedInitialVault.currency
         : currency;
 
-      const { rateUsed, rateType } = getPaymentRateInfo(paymentCurrency, rates);
+      const customRate = parseFloat(initialPaymentCustomRate);
+      const hasCustomRate = !isNaN(customRate) && customRate > 0;
+      const defaultRateInfo = getPaymentRateInfo(paymentCurrency, rates);
 
       await addPayment({
         debtId: newDebt.id,
         amount: initPay,
         currency: paymentCurrency,
-        rateUsed,
-        rateType,
-        usdLibreAtPayment: rates.usd_libre,
+        rateUsed: hasCustomRate ? customRate : defaultRateInfo.rateUsed,
+        rateType: hasCustomRate ? 'libre' : defaultRateInfo.rateType,
         vaultId: initialVaultId || undefined,
       });
     }
@@ -115,6 +119,7 @@ export const DebtsView: React.FC = () => {
     setContactPhone('');
     setTotalAmount('');
     setInitialPayment('');
+    setInitialPaymentCustomRate('');
     setInitialVaultId('');
     setCreateError(null);
   };
@@ -159,19 +164,21 @@ export const DebtsView: React.FC = () => {
       ? selectedVault.currency
       : debt.currency;
 
-    const { rateUsed, rateType } = getPaymentRateInfo(paymentCurrency, rates);
+    const customRate = parseFloat(paymentCustomRate);
+    const hasCustomRate = !isNaN(customRate) && customRate > 0;
+    const defaultRateInfo = getPaymentRateInfo(paymentCurrency, rates);
 
     await addPayment({
       debtId: debt.id,
       amount,
       currency: paymentCurrency,
-      rateUsed,
-      rateType,
-      usdLibreAtPayment: rates.usd_libre,
+      rateUsed: hasCustomRate ? customRate : defaultRateInfo.rateUsed,
+      rateType: hasCustomRate ? 'libre' : defaultRateInfo.rateType,
       vaultId: paymentVaultId || undefined,
     });
 
     setPaymentAmount('');
+    setPaymentCustomRate('');
     setPaymentVaultId('');
     setPaymentDebtId(null);
     setPaymentError(null);
@@ -321,7 +328,7 @@ export const DebtsView: React.FC = () => {
             />
           </div>
 
-          <div className="sm:col-span-2">
+          <div className={hasInitialPaymentVal ? "sm:col-span-1" : "sm:col-span-2"}>
             <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">
               Bóveda para Abono Inicial
             </label>
@@ -341,6 +348,22 @@ export const DebtsView: React.FC = () => {
               ))}
             </select>
           </div>
+
+          {hasInitialPaymentVal && (
+            <div>
+              <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">
+                Tasa Manual (Opcional)
+              </label>
+              <input
+                type="number"
+                step="any"
+                placeholder="Ej. 45.00 Bs/$"
+                value={initialPaymentCustomRate}
+                onChange={(e) => setInitialPaymentCustomRate(e.target.value)}
+                className="w-full text-sm border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-sky-400 outline-hidden"
+              />
+            </div>
+          )}
 
           {createError && (
             <div className="sm:col-span-3 text-xs font-bold text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-800 rounded-xl p-2.5">
@@ -506,6 +529,17 @@ export const DebtsView: React.FC = () => {
                                 </option>
                               ))}
                             </select>
+                            <input
+                              type="number"
+                              step="any"
+                              placeholder="Tasa manual (opcional)"
+                              value={paymentCustomRate}
+                              onChange={(e) => {
+                                setPaymentCustomRate(e.target.value);
+                                setPaymentError(null);
+                              }}
+                              className="w-full sm:w-44 text-xs px-2 py-1 border border-slate-300 rounded-lg focus:outline-hidden bg-slate-50 placeholder:text-slate-400"
+                            />
                             <div className="flex space-x-1 shrink-0">
                               <button
                                 onClick={() => void handleAddPayment(debt)}
@@ -516,6 +550,7 @@ export const DebtsView: React.FC = () => {
                               <button
                                 onClick={() => {
                                   setPaymentDebtId(null);
+                                  setPaymentCustomRate('');
                                   setPaymentError(null);
                                 }}
                                 className="px-2 py-1 bg-slate-200 text-slate-700 text-xs font-semibold rounded-lg cursor-pointer"
@@ -617,7 +652,8 @@ export const DebtsView: React.FC = () => {
                       <div>
                         <div className="text-slate-400">Total Abonado</div>
                         <div className="font-extrabold text-emerald-700">
-                          $ {calc ? calc.totalPaidUSDT.toFixed(2) : '0.00'}
+                          {getCurrencySymbol(debt.currency)}{' '}
+                          {calc ? calc.totalPaidInDebtCurrency.toFixed(2) : '0.00'}
                         </div>
                       </div>
                     </div>
