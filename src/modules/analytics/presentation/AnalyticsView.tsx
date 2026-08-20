@@ -49,7 +49,7 @@ export const AnalyticsView: React.FC = () => {
     ? FinanceEngine.calculatePurchasingPower(
         consolidated.totalUSDT,
         pastRate,
-        rates.usd_libre
+        rates
       )
     : null;
 
