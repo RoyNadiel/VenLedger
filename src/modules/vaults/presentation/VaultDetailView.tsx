@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import type { Vault } from '../domain/entities';
 import type { ExchangeRates } from '../../shared/domain/types';
 import type { Transaction } from '../../transactions/domain/entities';
@@ -41,6 +41,10 @@ export const VaultDetailView: React.FC<VaultDetailViewProps> = ({
   onEdit,
   onDelete,
 }) => {
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+  }, [vault.id]);
+
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState<
     'all' | 'income' | 'expense' | 'transfer'

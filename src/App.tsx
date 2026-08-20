@@ -3,6 +3,7 @@ import { Routes, Route, NavLink, Navigate } from 'react-router-dom';
 import { useInitialization } from './modules/shared/presentation/useInitialization';
 import { Header } from './modules/shared/presentation/Header';
 import { RatesBar } from './modules/rates/presentation/RatesBar';
+import { ScrollToTop } from './modules/shared/presentation/ScrollToTop';
 import { DashboardView } from './modules/analytics/presentation/DashboardView';
 import { VaultsSummary } from './modules/vaults/presentation/VaultsSummary';
 import { VaultDetailRoute } from './modules/vaults/presentation/VaultDetailRoute';
@@ -56,6 +57,7 @@ export const App: React.FC = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 pb-20 md:pb-8 transition-colors">
+      <ScrollToTop />
       <Header />
       <RatesBar />
       <main className="max-w-[1440px] w-full mx-auto p-4 flex-1">
