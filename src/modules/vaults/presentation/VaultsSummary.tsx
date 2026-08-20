@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useVaultsStore } from './useVaultsStore';
 import { useTransactionsStore } from '../../transactions/presentation/useTransactionsStore';
 import { useRatesStore } from '../../rates/presentation/useRatesStore';
@@ -14,7 +15,6 @@ import { Plus, X } from 'lucide-react';
 import { ConversionCard } from './ConversionCard';
 import { CreateVaultForm } from './CreateVaultForm';
 import { VaultCard } from './VaultCard';
-import { VaultDetailView } from './VaultDetailView';
 
 interface VaultsSummaryProps {
   hideSummaryOnMobile?: boolean;
@@ -23,13 +23,12 @@ interface VaultsSummaryProps {
 export const VaultsSummary: React.FC<VaultsSummaryProps> = ({
   hideSummaryOnMobile = false,
 }) => {
+  const navigate = useNavigate();
   const { vaults, createVault, updateVault, deleteVault } = useVaultsStore();
-  const { transactions, createTransaction } = useTransactionsStore();
+  const { createTransaction } = useTransactionsStore();
   const { rates } = useRatesStore();
   const [vesImpact, setVesImpact] = useState<VesImpactPeriods | null>(null);
 
-  const [selectedVaultForDetails, setSelectedVaultForDetails] =
-    useState<Vault | null>(null);
   const [isCreating, setIsCreating] = useState(false);
   const [newName, setNewName] = useState('');
   const [newType, setNewType] = useState<VaultType>('cash');
@@ -121,23 +120,6 @@ export const VaultsSummary: React.FC<VaultsSummaryProps> = ({
   const handleDelete = async (id: string) => {
     await deleteVault(id);
   };
-
-  if (selectedVaultForDetails) {
-    return (
-      <VaultDetailView
-        vault={selectedVaultForDetails}
-        rates={rates}
-        transactions={transactions}
-        vaults={vaults}
-        onBack={() => setSelectedVaultForDetails(null)}
-        onEdit={(v) => {
-          setSelectedVaultForDetails(null);
-          handleStartEdit(v);
-        }}
-        onDelete={(id) => void handleDelete(id)}
-      />
-    );
-  }
 
   return (
     <div className="space-y-4">
@@ -243,7 +225,7 @@ export const VaultsSummary: React.FC<VaultsSummaryProps> = ({
             handleStartEdit={handleStartEdit}
             handleSaveEdit={() => void handleSaveEdit()}
             handleDelete={(id) => void handleDelete(id)}
-            onOpenDetails={setSelectedVaultForDetails}
+            onOpenDetails={(v) => navigate(`/vaults/${v.id}`)}
           />
         ))}
       </div>
