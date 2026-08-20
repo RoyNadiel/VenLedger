@@ -7,10 +7,10 @@ export interface ConversionCardProps {
   amount: number;
   currencySymbol: string;
   locale?: 'en-US' | 'es-VE' | 'de-DE';
-  cardStyleClass: string;
-  titleColorClass: string;
-  amountColorClass: string;
-  subColorClass: string;
+  cardStyleClass?: string;
+  titleColorClass?: string;
+  amountColorClass?: string;
+  subColorClass?: string;
   rateLabel: string;
   vesImpact?: VesImpactPeriods | null;
 }
@@ -20,10 +20,6 @@ export const ConversionCard: React.FC<ConversionCardProps> = ({
   amount,
   currencySymbol,
   locale = 'en-US',
-  cardStyleClass,
-  titleColorClass,
-  amountColorClass,
-  subColorClass,
   rateLabel,
   vesImpact,
 }) => {
@@ -32,19 +28,15 @@ export const ConversionCard: React.FC<ConversionCardProps> = ({
   const activeImpact = vesImpact ? vesImpact[period] : null;
 
   return (
-    <div
-      className={`${cardStyleClass} h-fit p-3 sm:p-3.5 rounded-2xl shadow-xs flex flex-col justify-between min-w-0`}
-    >
+    <div className="acme-card h-fit p-4 rounded-md border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 flex flex-col justify-between min-w-0 transition-colors">
       <div>
-        <div className="flex flex-wrap items-center justify-between gap-1.5 min-h-[26px]">
-          <div
-            className={`text-sm sm:text-base font-bold ${titleColorClass} uppercase tracking-wider shrink-0`}
-          >
+        <div className="flex flex-wrap items-center justify-between gap-2 min-h-[26px]">
+          <div className="text-xs font-title-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
             {title}
           </div>
 
           {vesImpact && (
-            <div className="inline-flex items-center p-0.5 bg-slate-900/5 dark:bg-slate-100/10 rounded-full border border-slate-900/5 dark:border-slate-100/10 backdrop-blur-xs shrink-0">
+            <div className="inline-flex items-center p-0.5 bg-zinc-100 dark:bg-zinc-800 rounded border border-zinc-200 dark:border-zinc-700">
               {(
                 [
                   { key: 'day1', label: 'Ayer' },
@@ -56,10 +48,10 @@ export const ConversionCard: React.FC<ConversionCardProps> = ({
                   key={p.key}
                   type="button"
                   onClick={() => setPeriod(p.key)}
-                  className={`px-2 py-0.5 rounded-full text-[11px] transition-all duration-150 cursor-pointer select-none ${
+                  className={`px-2 py-0.5 rounded text-[10px] font-title-semibold transition-all duration-150 cursor-pointer select-none ${
                     period === p.key
-                      ? 'bg-white dark:bg-slate-800 text-sky-950 dark:text-sky-200 font-bold shadow-xs ring-1 ring-slate-900/10 dark:ring-slate-100/10 scale-[1.02]'
-                      : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 font-semibold'
+                      ? 'bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900'
+                      : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
                   }`}
                 >
                   {p.label}
@@ -69,10 +61,8 @@ export const ConversionCard: React.FC<ConversionCardProps> = ({
           )}
         </div>
 
-        <div className="mt-1">
-          <span
-            className={`text-xl lg:text-3xl font-black dark:text-white ${amountColorClass} block truncate`}
-          >
+        <div className="mt-2">
+          <span className="text-2xl lg:text-3xl font-title-bold text-zinc-900 dark:text-zinc-100 block truncate tracking-tight">
             {currencySymbol}{' '}
             {amount.toLocaleString(locale, {
               minimumFractionDigits: 2,
@@ -82,39 +72,30 @@ export const ConversionCard: React.FC<ConversionCardProps> = ({
         </div>
       </div>
 
-      <div className="flex flex-wrap items-center justify-between gap-1 mt-2 pt-1.5 border-t border-slate-900/5 dark:border-slate-100/10">
-        <span
-          className={`text-xs lg:text-sm font-medium ${subColorClass} truncate`}
-        >
+      <div className="flex flex-wrap items-center justify-between gap-1 mt-3 pt-2.5 border-t border-zinc-100 dark:border-zinc-800/80">
+        <span className="text-xs font-title-semibold text-zinc-500 dark:text-zinc-400 truncate">
           {rateLabel}
         </span>
 
         {activeImpact && (
           <span
-            className={`inline-flex items-center px-1.5 py-0.5 rounded-md text-[11px] font-extrabold border shrink-0 ${
+            className={`inline-flex items-center px-1.5 py-0.5 rounded text-[11px] font-title-semibold border ${
               activeImpact.deltaUSD < 0
-                ? 'bg-rose-100 dark:bg-rose-950 text-rose-800 dark:text-rose-200 border-rose-200 dark:border-rose-800'
+                ? 'bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-400 border-red-200 dark:border-red-900'
                 : activeImpact.deltaUSD > 0
-                  ? 'bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-200 border-emerald-200 dark:border-emerald-800'
-                  : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 border-slate-200 dark:border-slate-800'
+                  ? 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-900'
+                  : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 border-zinc-200 dark:border-zinc-700'
             }`}
-            title={`Impacto comparado con la tasa de ${
-              period === 'day1'
-                ? 'ayer'
-                : period === 'days7'
-                  ? 'hace 7 días'
-                  : 'hace 30 días'
-            } (${activeImpact.pastRate.toFixed(2)} Bs/USD)`}
           >
             {activeImpact.deltaUSD < 0 ? (
-              <TrendingDown className="w-3 h-3 mr-0.5 shrink-0 stroke-[2.5]" />
+              <TrendingDown className="w-3 h-3 mr-1 shrink-0" />
             ) : activeImpact.deltaUSD > 0 ? (
-              <TrendingUp className="w-3 h-3 mr-0.5 shrink-0 stroke-[2.5]" />
+              <TrendingUp className="w-3 h-3 mr-1 shrink-0" />
             ) : (
-              <Minus className="w-3 h-3 mr-0.5 shrink-0 stroke-[2.5]" />
+              <Minus className="w-3 h-3 mr-1 shrink-0" />
             )}
             <span>
-              {`${activeImpact.deltaUSD < 0 ? '-' : '+'}$${Math.abs(activeImpact.deltaUSD).toFixed(2)} USD (${activeImpact.deltaVES < 0 ? '' : '+'}${activeImpact.deltaVES.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} Bs.)`}
+              {`${activeImpact.deltaUSD < 0 ? '-' : '+'}$${Math.abs(activeImpact.deltaUSD).toFixed(2)} USD`}
             </span>
           </span>
         )}
