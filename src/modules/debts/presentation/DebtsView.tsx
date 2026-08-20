@@ -6,8 +6,9 @@ import { FinanceEngine } from '../../analytics/domain/financeEngine';
 import { ReceiptModal } from './ReceiptModal';
 import type { AgreementType, Currency, DebtType } from '../../shared/domain/types';
 import type { Debt } from '../domain/entities';
-import { CheckCircle2, Clock, History } from 'lucide-react';
+import { CheckCircle2, Clock, History, Landmark, Wallet, Coins, ArrowUpRight, ArrowDownRight } from 'lucide-react';
 import { convertCurrency, getCurrencySymbol, getPaymentRateInfo } from '../../shared/domain/currencyUtils';
+import { CustomSelect, type SelectOption } from '../../shared/presentation/CustomSelect';
 
 export const DebtsView: React.FC = () => {
   const {
@@ -177,11 +178,69 @@ export const DebtsView: React.FC = () => {
     setPaymentError(null);
   };
 
+  const getVaultIcon = (vaultType: string) => {
+    switch (vaultType) {
+      case 'binance':
+        return <Coins className="w-4 h-4" />;
+      case 'bank':
+        return <Landmark className="w-4 h-4" />;
+      default:
+        return <Wallet className="w-4 h-4" />;
+    }
+  };
+
+  const typeOptions: SelectOption<DebtType>[] = [
+    {
+      value: 'receivable',
+      label: 'Por Cobrar (Me deben)',
+      icon: <ArrowUpRight className="w-4 h-4 text-emerald-500" />,
+    },
+    {
+      value: 'payable',
+      label: 'Por Pagar (Yo debo)',
+      icon: <ArrowDownRight className="w-4 h-4 text-red-500" />,
+    },
+  ];
+
+  const currencyOptions: SelectOption<Currency>[] = [
+    { value: 'USD', label: 'USD ($)' },
+    { value: 'USDT', label: 'USDT (Cryptocurrency)' },
+    { value: 'EUR', label: 'EUR (€)' },
+    { value: 'VES', label: 'Bolívares (VES)' },
+  ];
+
+  const agreementTypeOptions: SelectOption<AgreementType>[] = [
+    { value: 'fixed_usdt', label: 'Congelado en Divisas' },
+    { value: 'floating_ves', label: 'Flotante en Bolívares' },
+  ];
+
+  const initialVaultOptions: SelectOption[] = [
+    { value: '', label: 'Sin bóveda (no afecta saldos)' },
+    ...vaults.map((v) => ({
+      value: v.id,
+      label: v.name,
+      sublabel: v.currency,
+      icon: getVaultIcon(v.type),
+      extraText: `${v.balance.toLocaleString('en-US', { minimumFractionDigits: 2 })} ${v.currency}`,
+    })),
+  ];
+
+  const paymentVaultOptions: SelectOption[] = [
+    { value: '', label: 'Bóveda (opcional)...' },
+    ...vaults.map((v) => ({
+      value: v.id,
+      label: v.name,
+      sublabel: v.currency,
+      icon: getVaultIcon(v.type),
+      extraText: `${v.balance.toLocaleString('en-US', { minimumFractionDigits: 2 })} ${v.currency}`,
+    })),
+  ];
+
   return (
-    <div className="space-y-4 animate-fade-in">
+    <div className="space-y-4">
       {/* Formulario para registrar nueva deuda */}
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-xs transition-colors">
-        <h2 className="text-sm font-bold text-slate-800 dark:text-slate-100 mb-3">
+      <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-md p-4 transition-colors">
+        <h2 className="text-xs font-title-bold text-zinc-900 dark:text-zinc-100 mb-3 uppercase tracking-wider font-mono">
           Registrar Nueva Deuda / Préstamo
         </h2>
         <form
@@ -189,7 +248,7 @@ export const DebtsView: React.FC = () => {
           className="grid grid-cols-1 sm:grid-cols-3 gap-3"
         >
           <div>
-            <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">
+            <label className="block text-[10px] font-title-bold text-zinc-500 dark:text-zinc-400 mb-1 uppercase font-mono">
               Contacto / Persona
             </label>
             <input
@@ -197,13 +256,13 @@ export const DebtsView: React.FC = () => {
               placeholder="Ej. Juan Pérez"
               value={contactName}
               onChange={(e) => setContactName(e.target.value)}
-              className="w-full text-sm border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-sky-400 outline-hidden"
+              className="w-full text-xs font-title-semibold border border-zinc-200 dark:border-zinc-700 rounded-md px-3 py-2 bg-zinc-50 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-100 focus:bg-white dark:focus:bg-zinc-900 outline-hidden"
               required
             />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">
+            <label className="block text-[10px] font-title-bold text-zinc-500 dark:text-zinc-400 mb-1 uppercase font-mono">
               Teléfono WhatsApp (Opcional)
             </label>
             <input
@@ -211,26 +270,20 @@ export const DebtsView: React.FC = () => {
               placeholder="+58412..."
               value={contactPhone}
               onChange={(e) => setContactPhone(e.target.value)}
-              className="w-full text-sm border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-sky-400 outline-hidden"
+              className="w-full text-xs font-mono font-medium border border-zinc-200 dark:border-zinc-700 rounded-md px-3 py-2 bg-zinc-50 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-100 focus:bg-white dark:focus:bg-zinc-900 outline-hidden"
             />
           </div>
 
-          <div>
-            <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">
-              Tipo de Deuda
-            </label>
-            <select
-              value={type}
-              onChange={(e) => setType(e.target.value as DebtType)}
-              className="w-full text-sm border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-sky-400 outline-hidden"
-            >
-              <option value="receivable">Por Cobrar (Me deben)</option>
-              <option value="payable">Por Pagar (Yo debo)</option>
-            </select>
-          </div>
+          <CustomSelect<DebtType>
+            label="Tipo de Deuda"
+            headerTitle="Tipo de Deuda"
+            options={typeOptions}
+            value={type}
+            onChange={(val) => setType(val)}
+          />
 
           <div>
-            <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">
+            <label className="block text-[10px] font-title-bold text-zinc-500 dark:text-zinc-400 mb-1 uppercase font-mono">
               Monto Original
             </label>
             <input
@@ -239,47 +292,31 @@ export const DebtsView: React.FC = () => {
               placeholder="0.00"
               value={totalAmount}
               onChange={(e) => setTotalAmount(e.target.value)}
-              className="w-full text-sm border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-sky-400 outline-hidden"
+              className="w-full text-xs font-mono font-bold border border-zinc-200 dark:border-zinc-700 rounded-md px-3 py-2 bg-zinc-50 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-100 focus:bg-white dark:focus:bg-zinc-900 outline-hidden"
               required
             />
           </div>
 
-          <div>
-            <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">
-              Moneda Base
-            </label>
-            <select
-              value={currency}
-              onChange={(e) => setCurrency(e.target.value as Currency)}
-              className="w-full text-sm border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-sky-400 outline-hidden"
-            >
-              <option value="USD">USD ($)</option>
-              <option value="USDT">USDT (Cryptocurrency)</option>
-              <option value="EUR">EUR (€)</option>
-              <option value="VES">Bolívares (VES)</option>
-            </select>
-          </div>
+          <CustomSelect<Currency>
+            label="Moneda Base"
+            headerTitle="Moneda Base"
+            options={currencyOptions}
+            value={currency}
+            onChange={(val) => setCurrency(val)}
+          />
 
-          <div>
-            <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">
-              Tipo de Acuerdo
-            </label>
-            <select
-              value={agreementType}
-              onChange={(e) =>
-                setAgreementType(e.target.value as AgreementType)
-              }
-              className="w-full text-sm border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-sky-400 outline-hidden"
-            >
-              <option value="fixed_usdt">Congelado en Divisas</option>
-              <option value="floating_ves">Flotante en Bolívares</option>
-            </select>
-          </div>
+          <CustomSelect<AgreementType>
+            label="Tipo de Acuerdo"
+            headerTitle="Tipo de Acuerdo"
+            options={agreementTypeOptions}
+            value={agreementType}
+            onChange={(val) => setAgreementType(val)}
+          />
 
           {/* Abono Inicial Opcional */}
           <div>
             <div className="flex items-center justify-between mb-1">
-              <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400">
+              <label className="block text-[10px] font-title-bold text-zinc-500 dark:text-zinc-400 uppercase font-mono">
                 Abono Inicial (Opcional)
               </label>
               {selectedInitialVault && (
@@ -302,9 +339,9 @@ export const DebtsView: React.FC = () => {
                     setInitialPayment(maxVal > 0 ? maxVal.toFixed(2) : '');
                     setCreateError(null);
                   }}
-                  className="text-[10px] font-bold text-sky-600 dark:text-sky-400 hover:text-sky-800 bg-sky-50 dark:bg-sky-950/60 hover:bg-sky-100 px-1.5 py-0.5 rounded-md transition-colors cursor-pointer"
+                  className="text-[10px] font-mono font-bold text-zinc-900 dark:text-zinc-100 bg-zinc-100 dark:bg-zinc-800 px-1.5 py-0.5 rounded transition-colors cursor-pointer border border-zinc-200 dark:border-zinc-700"
                 >
-                  Máx ({selectedInitialVault.balance.toFixed(2)} {selectedInitialVault.currency})
+                  MÁX ({selectedInitialVault.balance.toFixed(2)} {selectedInitialVault.currency})
                 </button>
               )}
             </div>
@@ -317,343 +354,225 @@ export const DebtsView: React.FC = () => {
                 setInitialPayment(e.target.value);
                 setCreateError(null);
               }}
-              className="w-full text-sm border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-sky-400 outline-hidden"
+              className="w-full text-xs font-mono font-bold border border-zinc-200 dark:border-zinc-700 rounded-md px-3 py-2 bg-zinc-50 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-100 focus:bg-white dark:focus:bg-zinc-900 outline-hidden"
             />
           </div>
 
           <div className="sm:col-span-2">
-            <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">
-              Bóveda para Abono Inicial
-            </label>
-            <select
+            <CustomSelect
+              label="Bóveda para Abono Inicial"
+              headerTitle="Bóveda"
+              options={initialVaultOptions}
               value={initialVaultId}
-              onChange={(e) => {
-                setInitialVaultId(e.target.value);
+              onChange={(val) => {
+                setInitialVaultId(val);
                 setCreateError(null);
               }}
-              className="w-full text-sm border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-sky-400 outline-hidden"
-            >
-              <option value="">Sin bóveda (no afecta saldos)</option>
-              {vaults.map((v) => (
-                <option key={v.id} value={v.id}>
-                  {v.name} — Saldo: {v.balance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} {v.currency}
-                </option>
-              ))}
-            </select>
+            />
           </div>
 
           {createError && (
-            <div className="sm:col-span-3 text-xs font-bold text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-800 rounded-xl p-2.5">
+            <div className="sm:col-span-3 text-xs font-bold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900 rounded-md p-2.5">
               ⚠️ {createError}
             </div>
           )}
 
-          <div className="sm:col-span-3 flex justify-end">
+          <div className="sm:col-span-3 flex justify-end pt-1">
             <button
               type="submit"
-              className="px-5 py-2 bg-sky-600 hover:bg-sky-700 text-white font-bold text-sm rounded-xl shadow-xs transition-colors cursor-pointer"
+              className="px-4 py-2 bg-zinc-900 hover:bg-zinc-800 dark:bg-zinc-100 dark:hover:bg-zinc-200 text-white dark:text-zinc-900 font-title-bold text-xs rounded-md transition-colors cursor-pointer"
             >
-              Registrar Deuda
+              Guardar Deuda
             </button>
           </div>
         </form>
       </div>
 
-      {/* Control de Pestañas: Activas vs Saldadas */}
-      <div className="flex items-center justify-between border-b border-slate-200 pb-1">
-        <div className="flex space-x-2">
-          <button
-            onClick={() => setActiveTab('active')}
-            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-colors cursor-pointer flex items-center space-x-1.5 ${
-              activeTab === 'active'
-                ? 'bg-sky-600 text-white shadow-xs'
-                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-            }`}
-          >
-            <Clock className="w-3.5 h-3.5" />
-            <span>Deudas Activas ({activeDebts.length})</span>
-          </button>
+      {/* Tabs para alternar entre activas y saldadas */}
+      <div className="flex items-center space-x-2 border-b border-zinc-200 dark:border-zinc-800 pb-2">
+        <button
+          onClick={() => setActiveTab('active')}
+          className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-md text-xs font-title-semibold transition-colors cursor-pointer ${
+            activeTab === 'active'
+              ? 'bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 font-title-bold'
+              : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800'
+          }`}
+        >
+          <Clock className="w-3.5 h-3.5" />
+          <span>Deudas Activas ({activeDebts.length})</span>
+        </button>
 
-          <button
-            onClick={() => setActiveTab('completed')}
-            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-colors cursor-pointer flex items-center space-x-1.5 ${
-              activeTab === 'completed'
-                ? 'bg-emerald-600 text-white shadow-xs'
-                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-            }`}
-          >
-            <History className="w-3.5 h-3.5" />
-            <span>Historial Saldadas ({completedDebts.length})</span>
-          </button>
-        </div>
+        <button
+          onClick={() => setActiveTab('completed')}
+          className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-md text-xs font-title-semibold transition-colors cursor-pointer ${
+            activeTab === 'completed'
+              ? 'bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 font-title-bold'
+              : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800'
+          }`}
+        >
+          <CheckCircle2 className="w-3.5 h-3.5" />
+          <span>Saldadas ({completedDebts.length})</span>
+        </button>
       </div>
 
-      {/* Lista según Pestaña Selección */}
-      {activeTab === 'active' ? (
-        <div className="space-y-3">
-          {activeDebts.length === 0 ? (
-            <div className="bg-white border border-slate-200 rounded-2xl p-6 text-center text-xs text-slate-400">
-              No tienes deudas activas pendientes.
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {activeDebts.map((debt) => {
-                const payments = paymentsByDebtId[debt.id] || [];
-                const calc = rates
-                  ? FinanceEngine.calculateDebtBalance(debt, payments, rates)
-                  : null;
-                const isReceivable = debt.type === 'receivable';
+      {/* Lista de deudas */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {(activeTab === 'active' ? activeDebts : completedDebts).map((debt) => {
+          const payments = paymentsByDebtId[debt.id] || [];
+          const calc = FinanceEngine.calculateDebtBalance(debt, payments, rates);
+          const isReceivable = debt.type === 'receivable';
 
-                return (
-                  <div
-                    key={debt.id}
-                    className={`p-4 rounded-2xl border ${
-                      isReceivable ? 'pastel-blue-card' : 'pastel-pink-card'
-                    } space-y-3 shadow-xs`}
+          return (
+            <div
+              key={debt.id}
+              className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-md p-4 space-y-3 transition-colors flex flex-col justify-between"
+            >
+              <div>
+                <div className="flex items-center justify-between">
+                  <span
+                    className={`text-[10px] font-title-bold px-2 py-0.5 rounded border uppercase font-mono ${
+                      isReceivable
+                        ? 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-900'
+                        : 'bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-400 border-red-200 dark:border-red-900'
+                    }`}
                   >
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <span className="text-xs font-bold uppercase tracking-wider text-slate-600">
-                          {isReceivable ? 'Por Cobrar' : 'Por Pagar'}
-                        </span>
-                        <h3 className="text-base font-black text-slate-900">
-                          {debt.contactName}
-                        </h3>
-                      </div>
-                      <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-white/80 border border-slate-200 text-slate-600">
-                        {debt.agreementType === 'floating_ves'
-                          ? 'Bs Flotante'
-                          : 'Congelado en Divisas'}
-                      </span>
-                    </div>
+                    {isReceivable ? 'Por Cobrar' : 'Por Pagar'}
+                  </span>
+                  <span className="text-[10px] font-mono text-zinc-400">
+                    {debt.agreementType === 'fixed_usdt'
+                      ? 'Congelado USD'
+                      : 'Flotante Bs'}
+                  </span>
+                </div>
 
-                    <div className="grid grid-cols-2 gap-2 text-xs bg-white/70 p-2.5 rounded-xl border border-slate-200/60">
-                      <div>
-                        <div className="text-slate-400">Monto Inicial</div>
-                        <div className="font-bold text-slate-800">
-                          {getCurrencySymbol(debt.currency)}{' '}
-                          {debt.totalAmount.toFixed(2)}
-                        </div>
-                      </div>
-                      <div>
-                        <div className="text-slate-400">Saldo Pendiente</div>
-                        <div className="font-extrabold text-sky-950">
-                          {getCurrencySymbol(debt.currency)}{' '}
-                          {calc
-                            ? calc.remainingAmountOriginal.toFixed(2)
-                            : '...'}
-                        </div>
-                      </div>
-                    </div>
+                <div className="mt-2">
+                  <h3 className="text-base font-title-bold text-zinc-900 dark:text-zinc-100">
+                    {debt.contactName}
+                  </h3>
+                  {debt.contactPhone && (
+                    <p className="text-xs font-mono text-zinc-400">{debt.contactPhone}</p>
+                  )}
+                </div>
 
-                    <div className="flex items-center justify-between gap-2 pt-1">
-                      {paymentDebtId === debt.id ? (
-                        <div className="flex flex-col gap-1.5 w-full bg-white p-2 rounded-xl border border-sky-300">
-                          <div className="flex flex-col sm:flex-row items-center gap-1.5 w-full">
-                            <div className="relative w-full">
-                              <input
-                                type="number"
-                                step="any"
-                                placeholder="Monto abono"
-                                value={paymentAmount}
-                                onChange={(e) => {
-                                  setPaymentAmount(e.target.value);
-                                  setPaymentError(null);
-                                }}
-                                className="w-full text-xs px-2 py-1 pr-12 border border-slate-300 rounded-lg focus:outline-hidden"
-                              />
-                              {(() => {
-                                const selV = vaults.find((v) => v.id === paymentVaultId);
-                                if (!selV) return null;
-                                return (
-                                  <button
-                                    type="button"
-                                    onClick={() => {
-                                      const remOriginal =
-                                        calc?.remainingAmountOriginal ?? debt.totalAmount;
-                                      const remInVaultCurrency = convertCurrency(
-                                        remOriginal,
-                                        debt.currency,
-                                        selV.currency,
-                                        rates
-                                      );
-                                      const maxVal =
-                                        debt.type === 'payable'
-                                          ? Math.min(selV.balance, remInVaultCurrency)
-                                          : remInVaultCurrency;
-                                      setPaymentAmount(maxVal > 0 ? maxVal.toFixed(2) : '');
-                                      setPaymentError(null);
-                                    }}
-                                    className="absolute right-1 top-1/2 -translate-y-1/2 text-[10px] font-bold text-sky-600 hover:text-sky-800 bg-sky-50 px-1.5 py-0.5 rounded cursor-pointer"
-                                  >
-                                    Máx
-                                  </button>
-                                );
-                              })()}
-                            </div>
-                            <select
-                              value={paymentVaultId}
-                              onChange={(e) => {
-                                setPaymentVaultId(e.target.value);
-                                setPaymentError(null);
-                              }}
-                              className="w-full text-xs px-2 py-1 border border-slate-300 rounded-lg focus:outline-hidden bg-slate-50"
-                            >
-                              <option value="">Bóveda (opcional)...</option>
-                              {vaults.map((v) => (
-                                <option key={v.id} value={v.id}>
-                                  {v.name} ({v.balance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} {v.currency})
-                                </option>
-                              ))}
-                            </select>
-                            <div className="flex space-x-1 shrink-0">
-                              <button
-                                onClick={() => void handleAddPayment(debt)}
-                                className="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-lg cursor-pointer"
-                              >
-                                OK
-                              </button>
-                              <button
-                                onClick={() => {
-                                  setPaymentDebtId(null);
-                                  setPaymentError(null);
-                                }}
-                                className="px-2 py-1 bg-slate-200 text-slate-700 text-xs font-semibold rounded-lg cursor-pointer"
-                              >
-                                ✕
-                              </button>
-                            </div>
-                          </div>
-                          {paymentError && (
-                            <div className="text-[11px] font-bold text-rose-600 bg-rose-50 border border-rose-200 rounded-lg p-1.5">
-                              ⚠️ {paymentError}
-                            </div>
-                          )}
-                        </div>
-                      ) : (
-                        <div className="flex items-center justify-between w-full gap-2">
-                          <button
-                            onClick={() => {
-                              setPaymentDebtId(debt.id);
-                              void loadPaymentsForDebt(debt.id);
-                            }}
-                            className="px-3 py-1.5 bg-sky-600 hover:bg-sky-700 text-white font-bold text-xs rounded-xl shadow-xs transition-colors cursor-pointer"
-                          >
-                            + Registrar Abono
-                          </button>
-
-                          <div className="flex space-x-1">
-                            <button
-                              onClick={() => {
-                                void loadPaymentsForDebt(debt.id);
-                                setSelectedDebtForReceipt(debt);
-                              }}
-                              className="px-2.5 py-1.5 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 font-semibold text-xs rounded-xl transition-colors cursor-pointer"
-                            >
-                              Ticket
-                            </button>
-                            <button
-                              onClick={() => void markDebtStatus(debt.id, 'paid')}
-                              className="px-2.5 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 font-bold text-xs rounded-xl transition-colors cursor-pointer"
-                              title="Marcar como completamente saldada"
-                            >
-                              Saldar
-                            </button>
-                          </div>
-                        </div>
-                      )}
-                    </div>
+                <div className="mt-3 pt-2.5 border-t border-zinc-100 dark:border-zinc-800 space-y-1">
+                  <div className="flex justify-between text-xs">
+                    <span className="text-zinc-500 dark:text-zinc-400 font-title-semibold">
+                      Monto Original:
+                    </span>
+                    <span className="font-mono font-bold text-zinc-800 dark:text-zinc-200">
+                      {getCurrencySymbol(debt.currency)}{' '}
+                      {debt.totalAmount.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                    </span>
                   </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
-      ) : (
-        <div className="space-y-3">
-          {completedDebts.length === 0 ? (
-            <div className="bg-white border border-slate-200 rounded-2xl p-6 text-center text-xs text-slate-400">
-              Aún no hay deudas saldadas en el historial.
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {completedDebts.map((debt) => {
-                const payments = paymentsByDebtId[debt.id] || [];
-                const calc = rates
-                  ? FinanceEngine.calculateDebtBalance(debt, payments, rates)
-                  : null;
-                const isReceivable = debt.type === 'receivable';
 
-                return (
-                  <div
-                    key={debt.id}
-                    className="p-4 rounded-2xl border border-emerald-200 bg-emerald-50/50 space-y-3 shadow-xs"
-                  >
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <div className="flex items-center space-x-1 text-emerald-700 font-bold text-xs">
-                          <CheckCircle2 className="w-4 h-4" />
-                          <span>
-                            {isReceivable ? 'Cobrada Totalmente' : 'Pagada Totalmente'}
-                          </span>
-                        </div>
-                        <h3 className="text-base font-black text-slate-900 mt-0.5">
-                          {debt.contactName}
-                        </h3>
-                      </div>
-                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300">
-                        Saldada
+                  <div className="flex justify-between text-sm font-bold pt-1">
+                    <span className="text-zinc-900 dark:text-zinc-100 font-title-bold">
+                      Saldo Pendiente:
+                    </span>
+                    <span className="font-mono text-zinc-900 dark:text-zinc-100">
+                      {getCurrencySymbol(debt.currency)}{' '}
+                      {calc.remainingAmountOriginal.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                    </span>
+                  </div>
+
+                  {debt.currency !== 'VES' && rates && (
+                    <div className="flex justify-between text-xs font-mono text-zinc-500">
+                      <span>Eq. en Bolívares (P2P):</span>
+                      <span>
+                        Bs.{' '}
+                        {(calc.remainingAmountOriginal * rates.usd_libre).toLocaleString('es-VE', { minimumFractionDigits: 2 })}
                       </span>
                     </div>
+                  )}
+                </div>
+              </div>
 
-                    <div className="grid grid-cols-2 gap-2 text-xs bg-white/80 p-2.5 rounded-xl border border-emerald-100">
-                      <div>
-                        <div className="text-slate-400">Monto Inicial</div>
-                        <div className="font-bold text-slate-800">
-                          {getCurrencySymbol(debt.currency)}{' '}
-                          {debt.totalAmount.toFixed(2)}
-                        </div>
-                      </div>
-                      <div>
-                        <div className="text-slate-400">Total Abonado</div>
-                        <div className="font-extrabold text-emerald-700">
-                          $ {calc ? calc.totalPaidUSDT.toFixed(2) : '0.00'}
-                        </div>
-                      </div>
+              {/* Acciones de abono / comprobante */}
+              <div className="pt-2 border-t border-zinc-100 dark:border-zinc-800 flex flex-col space-y-2">
+                {paymentDebtId === debt.id ? (
+                  <div className="space-y-2">
+                    <div className="flex items-center space-x-2">
+                      <input
+                        type="number"
+                        step="any"
+                        placeholder="Monto a abonar"
+                        value={paymentAmount}
+                        onChange={(e) => setPaymentAmount(e.target.value)}
+                        className="w-full text-xs font-mono font-bold border border-zinc-200 dark:border-zinc-700 rounded-md px-2.5 py-1.5 bg-zinc-50 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-100 outline-hidden"
+                      />
+                      <button
+                        onClick={() => void handleAddPayment(debt)}
+                        className="px-3 py-1.5 bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 font-title-bold text-xs rounded-md cursor-pointer shrink-0"
+                      >
+                        OK
+                      </button>
+                      <button
+                        onClick={() => {
+                          setPaymentDebtId(null);
+                          setPaymentError(null);
+                        }}
+                        className="px-2.5 py-1.5 bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 font-title-semibold text-xs rounded-md cursor-pointer shrink-0"
+                      >
+                        ✕
+                      </button>
                     </div>
 
-                    <div className="flex items-center justify-between gap-2 pt-1">
+                    <CustomSelect
+                      options={paymentVaultOptions}
+                      value={paymentVaultId}
+                      onChange={(val) => setPaymentVaultId(val)}
+                      placeholder="Bóveda (opcional)..."
+                    />
+
+                    {paymentError && (
+                      <div className="text-[11px] font-bold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900 rounded-md p-1.5">
+                        ⚠️ {paymentError}
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-between w-full gap-2">
+                    {debt.status !== 'paid' && (
+                      <button
+                        onClick={() => {
+                          setPaymentDebtId(debt.id);
+                          void loadPaymentsForDebt(debt.id);
+                        }}
+                        className="px-3 py-1.5 bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 font-title-bold text-xs rounded-md transition-colors cursor-pointer"
+                      >
+                        + Registrar Abono
+                      </button>
+                    )}
+
+                    <div className="flex space-x-1.5 ml-auto">
                       <button
                         onClick={() => {
                           void loadPaymentsForDebt(debt.id);
                           setSelectedDebtForReceipt(debt);
                         }}
-                        className="px-3 py-1.5 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 font-semibold text-xs rounded-xl transition-colors cursor-pointer"
+                        className="px-3 py-1.5 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 font-title-semibold text-xs rounded-md transition-colors cursor-pointer"
                       >
-                        Ver Comprobante Ticket
+                        Ticket
                       </button>
-
-                      <button
-                        onClick={() =>
-                          void markDebtStatus(
-                            debt.id,
-                            payments.length > 0 ? 'partially_paid' : 'pending'
-                          )
-                        }
-                        className="px-2.5 py-1.5 text-slate-500 hover:text-slate-700 text-xs font-medium underline cursor-pointer"
-                      >
-                        Reabrir
-                      </button>
+                      {debt.status !== 'paid' && (
+                        <button
+                          onClick={() => void markDebtStatus(debt.id, 'paid')}
+                          className="px-3 py-1.5 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-900 font-title-bold text-xs rounded-md transition-colors cursor-pointer"
+                          title="Marcar como completamente saldada"
+                        >
+                          Saldar
+                        </button>
+                      )}
                     </div>
                   </div>
-                );
-              })}
+                )}
+              </div>
             </div>
-          )}
-        </div>
-      )}
+          );
+        })}
+      </div>
 
-      {/* Modal de Comprobante si está activo */}
+      {/* Modal de Comprobante Visual */}
       {selectedDebtForReceipt && (
         <ReceiptModal
           debt={selectedDebtForReceipt}

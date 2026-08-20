@@ -7,6 +7,7 @@ import type { TransactionType } from '../../shared/domain/types';
 import { TransactionForm } from './TransactionForm';
 import { TransactionItem } from './TransactionItem';
 import { convertCurrency } from '../../shared/domain/currencyUtils';
+import { CustomSelect, type SelectOption } from '../../shared/presentation/CustomSelect';
 
 export const TransactionsView: React.FC = () => {
   const { transactions, createTransaction, deleteTransaction } =
@@ -106,6 +107,15 @@ export const TransactionsView: React.FC = () => {
       )
     : transactions;
 
+  const filterOptions: SelectOption[] = [
+    { value: '', label: 'Todas las bóvedas' },
+    ...vaults.map((v) => ({
+      value: v.id,
+      label: v.name,
+      sublabel: v.currency,
+    })),
+  ];
+
   return (
     <div className="space-y-4">
       {/* Formulario de Registro Rápido */}
@@ -132,36 +142,27 @@ export const TransactionsView: React.FC = () => {
       />
 
       {/* Historial de Movimientos */}
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-xs transition-colors">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
-          <h2 className="text-sm font-bold text-slate-800 dark:text-slate-100">
+      <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-md p-4 transition-colors">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3 pb-2 border-b border-zinc-100 dark:border-zinc-800">
+          <h2 className="text-xs font-title-bold text-zinc-900 dark:text-zinc-100 uppercase tracking-wider font-mono">
             Historial Reciente
           </h2>
-          <div className="flex items-center space-x-2">
-            <label className="text-xs font-semibold text-slate-500 dark:text-slate-400">
-              Filtrar:
-            </label>
-            <select
+          <div className="w-full sm:w-60">
+            <CustomSelect
+              options={filterOptions}
               value={filterVaultId}
-              onChange={(e) => setFilterVaultId(e.target.value)}
-              className="text-xs border border-slate-300 dark:border-slate-700 rounded-xl px-2.5 py-1 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-sky-400 outline-hidden"
-            >
-              <option value="">Todas las bóvedas</option>
-              {vaults.map((v) => (
-                <option key={v.id} value={v.id}>
-                  {v.name} ({v.currency})
-                </option>
-              ))}
-            </select>
+              onChange={(val) => setFilterVaultId(val)}
+              placeholder="Todas las bóvedas"
+            />
           </div>
         </div>
 
         {filteredTxs.length === 0 ? (
-          <p className="text-xs text-slate-400 dark:text-slate-500 italic py-4 text-center">
+          <p className="text-xs text-zinc-400 dark:text-zinc-500 italic py-6 text-center font-mono">
             No hay movimientos registrados para el filtro seleccionado.
           </p>
         ) : (
-          <div className="divide-y divide-slate-100 dark:divide-slate-800 max-h-[500px] overflow-y-auto pr-1">
+          <div className="divide-y divide-zinc-100 dark:divide-zinc-800 max-h-[500px] overflow-y-auto pr-1">
             {filteredTxs.map((tx) => (
               <TransactionItem
                 key={tx.id}

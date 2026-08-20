@@ -1,5 +1,10 @@
 import React from 'react';
 import type { Currency, VaultType } from '../../shared/domain/types';
+import {
+  CustomSelect,
+  type SelectOption,
+} from '../../shared/presentation/CustomSelect';
+import { Landmark, Wallet, Coins } from 'lucide-react';
 
 export interface CreateVaultFormProps {
   newName: string;
@@ -24,59 +29,72 @@ export const CreateVaultForm: React.FC<CreateVaultFormProps> = ({
   setNewBalance,
   onSubmit,
 }) => {
+  const typeOptions: SelectOption<VaultType>[] = [
+    {
+      value: 'bank',
+      label: 'Banco Local / Digital',
+      icon: <Landmark className="w-4 h-4" />,
+    },
+    {
+      value: 'cash',
+      label: 'Efectivo',
+      icon: <Wallet className="w-4 h-4" />,
+    },
+    {
+      value: 'binance',
+      label: 'Billetera Digital (Binance, Kontigo, Zelle...)',
+      icon: <Coins className="w-4 h-4" />,
+    },
+  ];
+
+  const currencyOptions: SelectOption<Currency>[] = [
+    { value: 'USD', label: 'USD ($)' },
+    { value: 'USDT', label: 'USDT (Crypto / Ref. Dólar)' },
+    { value: 'VES', label: 'VES (Bs.)' },
+    { value: 'EUR', label: 'EUR (€)' },
+  ];
+
   return (
     <form
       onSubmit={onSubmit}
-      className="bg-white border border-sky-200 rounded-2xl p-4 shadow-xs space-y-3"
+      className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-md p-4 space-y-3 transition-colors"
     >
-      <h3 className="text-xs font-bold text-sky-800 uppercase tracking-wider">
+      <h3 className="text-xs font-title-bold text-zinc-900 dark:text-zinc-100 uppercase tracking-wider font-mono">
         Crear Nueva Bóveda
       </h3>
       <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
         <div>
-          <label className="block text-xs font-semibold text-slate-500 mb-1">
+          <label className="block text-[10px] font-title-bold text-zinc-500 dark:text-zinc-400 mb-1 uppercase font-mono">
             Nombre
           </label>
           <input
             type="text"
-            placeholder="Ej. Zinli, Zelle, Banesco"
+            placeholder="Ej. Zinli, Zelle, Kontigo, Banesco"
             value={newName}
             onChange={(e) => setNewName(e.target.value)}
-            className="w-full text-xs border border-slate-300 rounded-xl px-3 py-2 focus:ring-2 focus:ring-sky-400 outline-hidden"
+            className="w-full text-xs font-title-semibold border border-zinc-200 dark:border-zinc-700 rounded-md px-3 py-2 bg-zinc-50 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-100 focus:bg-white dark:focus:bg-zinc-900 outline-hidden"
             required
           />
         </div>
+
+        <CustomSelect<VaultType>
+          label="Tipo de Bóveda"
+          headerTitle="Tipo de Bóveda"
+          options={typeOptions}
+          value={newType}
+          onChange={(val) => setNewType(val)}
+        />
+
+        <CustomSelect<Currency>
+          label="Moneda Base"
+          headerTitle="Moneda Base"
+          options={currencyOptions}
+          value={newCurrency}
+          onChange={(val) => setNewCurrency(val)}
+        />
+
         <div>
-          <label className="block text-xs font-semibold text-slate-500 mb-1">
-            Tipo
-          </label>
-          <select
-            value={newType}
-            onChange={(e) => setNewType(e.target.value as VaultType)}
-            className="w-full text-xs border border-slate-300 rounded-xl px-3 py-2 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-sky-400 outline-hidden"
-          >
-            <option value="bank">Banco Local / Digital</option>
-            <option value="cash">Efectivo</option>
-            <option value="binance">Binance / Crypto</option>
-          </select>
-        </div>
-        <div>
-          <label className="block text-xs font-semibold text-slate-500 mb-1">
-            Moneda Base
-          </label>
-          <select
-            value={newCurrency}
-            onChange={(e) => setNewCurrency(e.target.value as Currency)}
-            className="w-full text-xs border border-slate-300 rounded-xl px-3 py-2 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-sky-400 outline-hidden"
-          >
-            <option value="USD">USD ($)</option>
-            <option value="USDT">USDT (Cryptocurr.)</option>
-            <option value="VES">VES (Bs.)</option>
-            <option value="EUR">EUR (€)</option>
-          </select>
-        </div>
-        <div>
-          <label className="block text-xs font-semibold text-slate-500 mb-1">
+          <label className="block text-[10px] font-title-bold text-zinc-500 dark:text-zinc-400 mb-1 uppercase font-mono">
             Saldo Inicial
           </label>
           <input
@@ -85,14 +103,15 @@ export const CreateVaultForm: React.FC<CreateVaultFormProps> = ({
             placeholder="0.00"
             value={newBalance}
             onChange={(e) => setNewBalance(e.target.value)}
-            className="w-full text-xs border border-slate-300 rounded-xl px-3 py-2 focus:ring-2 focus:ring-sky-400 outline-hidden"
+            className="w-full text-xs font-mono font-bold border border-zinc-200 dark:border-zinc-700 rounded-md px-3 py-2 bg-zinc-50 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-100 focus:bg-white dark:focus:bg-zinc-900 outline-hidden"
           />
         </div>
       </div>
+
       <div className="flex justify-end pt-1">
         <button
           type="submit"
-          className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-xs transition-colors cursor-pointer"
+          className="px-4 py-2 bg-zinc-900 hover:bg-zinc-800 dark:bg-zinc-100 dark:hover:bg-zinc-200 text-white dark:text-zinc-900 font-title-bold text-xs rounded-md transition-colors cursor-pointer"
         >
           Guardar Bóveda
         </button>

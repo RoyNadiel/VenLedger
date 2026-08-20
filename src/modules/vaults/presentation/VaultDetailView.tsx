@@ -174,7 +174,7 @@ export const VaultDetailView: React.FC<VaultDetailViewProps> = ({
           <div className="flex items-center space-x-2">
             <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-slate-400">
               {vault.type === 'binance'
-                ? 'Binance'
+                ? 'Billetera Digital'
                 : vault.type === 'cash'
                   ? 'Efectivo'
                   : 'Banco Local'}

@@ -5,7 +5,7 @@ import type {
   VaultType,
   ExchangeRates,
 } from '../../shared/domain/types';
-import { Pencil, TrendingDown, TrendingUp, Minus } from 'lucide-react';
+import { Pencil, TrendingDown, TrendingUp, Minus, Landmark, Wallet, Coins } from 'lucide-react';
 import { ConfirmModal } from '../../shared/presentation/ConfirmModal';
 import {
   getCurrencySymbol,
@@ -13,6 +13,7 @@ import {
 } from '../../shared/domain/currencyUtils';
 import { ratesService } from '../../rates/application/ratesService';
 import type { VesImpactPeriods } from '../../rates/domain/vesImpactEngine';
+import { CustomSelect, type SelectOption } from '../../shared/presentation/CustomSelect';
 
 export interface VaultCardProps {
   vault: Vault;
@@ -73,6 +74,19 @@ export const VaultCard: React.FC<VaultCardProps> = ({
 
   const activeImpact = vesImpact ? vesImpact[period] : null;
 
+  const typeOptions: SelectOption<VaultType>[] = [
+    { value: 'bank', label: 'Banco Local', icon: <Landmark className="w-4 h-4" /> },
+    { value: 'cash', label: 'Efectivo', icon: <Wallet className="w-4 h-4" /> },
+    { value: 'binance', label: 'Billetera Digital', icon: <Coins className="w-4 h-4" /> },
+  ];
+
+  const currencyOptions: SelectOption<Currency>[] = [
+    { value: 'USD', label: 'USD' },
+    { value: 'USDT', label: 'USDT' },
+    { value: 'VES', label: 'VES' },
+    { value: 'EUR', label: 'EUR' },
+  ];
+
   return (
     <div
       onClick={() => {
@@ -98,49 +112,35 @@ export const VaultCard: React.FC<VaultCardProps> = ({
       />
 
       {isEditing ? (
-        <div onClick={(e) => e.stopPropagation()} className="space-y-2 text-xs">
+        <div onClick={(e) => e.stopPropagation()} className="space-y-3 text-xs">
           <div>
-            <label className="block font-title-bold text-zinc-700 dark:text-zinc-300 mb-0.5 uppercase font-mono text-[10px]">
+            <label className="block font-title-bold text-zinc-700 dark:text-zinc-300 mb-1 uppercase font-mono text-[10px]">
               Nombre
             </label>
             <input
               type="text"
               value={editName}
               onChange={(e) => setEditName(e.target.value)}
-              className="w-full border border-zinc-300 dark:border-zinc-700 rounded-md px-2.5 py-1.5 outline-hidden bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 font-semibold"
+              className="w-full border border-zinc-300 dark:border-zinc-700 rounded-md px-3 py-2 outline-hidden bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 font-title-semibold"
             />
           </div>
+
           <div className="grid grid-cols-2 gap-2">
-            <div>
-              <label className="block font-title-bold text-zinc-700 dark:text-zinc-300 mb-0.5 uppercase font-mono text-[10px]">
-                Tipo
-              </label>
-              <select
-                value={editType}
-                onChange={(e) => setEditType(e.target.value as VaultType)}
-                className="w-full border border-zinc-300 dark:border-zinc-700 rounded-md px-2 py-1.5 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 outline-hidden font-semibold"
-              >
-                <option value="bank">Banco</option>
-                <option value="cash">Efectivo</option>
-                <option value="binance">Binance</option>
-              </select>
-            </div>
-            <div>
-              <label className="block font-title-bold text-zinc-700 dark:text-zinc-300 mb-0.5 uppercase font-mono text-[10px]">
-                Moneda
-              </label>
-              <select
-                value={editCurrency}
-                onChange={(e) => setEditCurrency(e.target.value as Currency)}
-                className="w-full border border-zinc-300 dark:border-zinc-700 rounded-md px-2 py-1.5 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 outline-hidden font-semibold"
-              >
-                <option value="USD">USD</option>
-                <option value="USDT">USDT</option>
-                <option value="VES">VES</option>
-                <option value="EUR">EUR</option>
-              </select>
-            </div>
+            <CustomSelect<VaultType>
+              label="Tipo"
+              options={typeOptions}
+              value={editType}
+              onChange={(val) => setEditType(val)}
+            />
+
+            <CustomSelect<Currency>
+              label="Moneda"
+              options={currencyOptions}
+              value={editCurrency}
+              onChange={(val) => setEditCurrency(val)}
+            />
           </div>
+
           <div className="flex justify-between items-center pt-2">
             <button
               onClick={() => setIsDeleteModalOpen(true)}
@@ -151,13 +151,13 @@ export const VaultCard: React.FC<VaultCardProps> = ({
             <div className="flex space-x-2">
               <button
                 onClick={() => setEditingVault(null)}
-                className="px-2.5 py-1 bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 rounded-md font-medium cursor-pointer"
+                className="px-2.5 py-1.5 bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 rounded-md font-medium cursor-pointer"
               >
                 Cancelar
               </button>
               <button
                 onClick={handleSaveEdit}
-                className="px-3 py-1 bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 rounded-md font-title-bold cursor-pointer"
+                className="px-3 py-1.5 bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 rounded-md font-title-bold cursor-pointer"
               >
                 Guardar
               </button>
@@ -169,7 +169,7 @@ export const VaultCard: React.FC<VaultCardProps> = ({
           <div className="flex items-center justify-between">
             <span className="text-xs font-title-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
               {vault.type === 'binance'
-                ? 'Binance'
+                ? 'Billetera Digital'
                 : vault.type === 'cash'
                   ? 'Efectivo'
                   : 'Banco Local'}
