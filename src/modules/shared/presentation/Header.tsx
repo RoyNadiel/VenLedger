@@ -76,7 +76,7 @@ export const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
         </button>
 
         {/* Navegación Desktop */}
-        <nav className="hidden md:flex items-center space-x-1 bg-zinc-100/80 dark:bg-zinc-800/80 p-1 rounded-lg border border-zinc-200 dark:border-zinc-700/60">
+        <nav className="hidden md:flex items-center space-x-1 p-1 rounded-lg ">
           {navItems.map((item) => {
             const isActive = activeTab === item.id;
             return (

@@ -7,34 +7,34 @@ interface VenLedgerLogoProps {
 
 export const VenLedgerLogo: React.FC<VenLedgerLogoProps> = ({
   className = '',
-  size = 36,
+  size = 32,
 }) => {
   return (
     <div
-      className={`rounded-xl bg-gradient-to-br from-sky-500 to-indigo-600 text-white flex items-center justify-center shadow-xs shrink-0 group-hover:scale-105 transition-transform duration-200 ${className}`}
+      className={`rounded-md bg-zinc-900 text-zinc-100 dark:bg-zinc-100 dark:text-zinc-900 border border-zinc-800 dark:border-zinc-200 flex items-center justify-center shrink-0 transition-transform duration-200 group-hover:scale-105 ${className}`}
       style={{ width: size, height: size }}
     >
       <svg
-        width={size * 0.65}
-        height={size * 0.65}
+        width={size * 0.6}
+        height={size * 0.6}
         viewBox="0 0 24 24"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
-        className="stroke-current text-white"
+        className="stroke-current"
       >
-        {/* Isotipo V estilizado con líneas de contabilidad / bóveda */}
+        {/* Isotipo V estilizado mínimo estilo Vercel / ACME */}
         <path
           d="M4 5L12 19L20 5"
-          strokeWidth="3.2"
+          strokeWidth="3"
           strokeLinecap="round"
           strokeLinejoin="round"
         />
         <path
-          d="M9 5L12 11L15 5"
-          strokeWidth="2.5"
+          d="M8.5 5L12 11L15.5 5"
+          strokeWidth="2"
           strokeLinecap="round"
           strokeLinejoin="round"
-          className="opacity-60"
+          className="opacity-40"
         />
       </svg>
     </div>
