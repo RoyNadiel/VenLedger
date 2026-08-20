@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useVaultsStore } from './useVaultsStore';
 import { useTransactionsStore } from '../../transactions/presentation/useTransactionsStore';
 import { useRatesStore } from '../../rates/presentation/useRatesStore';
@@ -14,7 +15,6 @@ import { Plus, X } from 'lucide-react';
 import { ConversionCard } from './ConversionCard';
 import { CreateVaultForm } from './CreateVaultForm';
 import { VaultCard } from './VaultCard';
-import { VaultDetailView } from './VaultDetailView';
 
 interface VaultsSummaryProps {
   hideSummaryOnMobile?: boolean;
@@ -23,13 +23,12 @@ interface VaultsSummaryProps {
 export const VaultsSummary: React.FC<VaultsSummaryProps> = ({
   hideSummaryOnMobile = false,
 }) => {
+  const navigate = useNavigate();
   const { vaults, createVault, updateVault, deleteVault } = useVaultsStore();
-  const { transactions, createTransaction } = useTransactionsStore();
+  const { createTransaction } = useTransactionsStore();
   const { rates } = useRatesStore();
   const [vesImpact, setVesImpact] = useState<VesImpactPeriods | null>(null);
 
-  const [selectedVaultForDetails, setSelectedVaultForDetails] =
-    useState<Vault | null>(null);
   const [isCreating, setIsCreating] = useState(false);
   const [newName, setNewName] = useState('');
   const [newType, setNewType] = useState<VaultType>('cash');
@@ -122,32 +121,15 @@ export const VaultsSummary: React.FC<VaultsSummaryProps> = ({
     await deleteVault(id);
   };
 
-  if (selectedVaultForDetails) {
-    return (
-      <VaultDetailView
-        vault={selectedVaultForDetails}
-        rates={rates}
-        transactions={transactions}
-        vaults={vaults}
-        onBack={() => setSelectedVaultForDetails(null)}
-        onEdit={(v) => {
-          setSelectedVaultForDetails(null);
-          handleStartEdit(v);
-        }}
-        onDelete={(id) => void handleDelete(id)}
-      />
-    );
-  }
-
   return (
     <div className="space-y-4">
-      {/* Tarjetas de Conversión Consolidada */}
+      {/* Franja Unificada de Conversión Consolidada */}
       <div
+        id="tour-summary"
         className={`${
           hideSummaryOnMobile ? 'hidden md:grid' : 'grid'
-        } grid-cols-1 sm:grid-cols-2 xl:grid-cols-[0.9fr_0.9fr_1fr_1.3fr] gap-1 sm:gap-2`}
+        } grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 border-b border-zinc-200 dark:border-zinc-800 pb-4 divide-y sm:divide-y-0 sm:divide-x divide-zinc-200 dark:divide-zinc-800`}
       >
-        {/* 1. Bs → USD (compra USD) */}
         <ConversionCard
           title="Bs → USD"
           amount={
@@ -155,14 +137,9 @@ export const VaultsSummary: React.FC<VaultsSummaryProps> = ({
           }
           currencySymbol="$"
           locale="en-US"
-          cardStyleClass="pastel-blue-card"
-          titleColorClass="text-sky-800 dark:text-sky-400"
-          amountColorClass="text-sky-950 dark:text-sky-300"
-          subColorClass="text-sky-700 dark:text-sky-600"
-          rateLabel={`Tasa BCV: ${rates ? rates.usd_official.toFixed(2) : '...'} Bs/USD`}
+          rateLabel={`BCV: ${rates ? rates.usd_official.toFixed(2) : '...'} Bs/USD`}
         />
 
-        {/* 2. Bs → EUR */}
         <ConversionCard
           title="Bs → EUR"
           amount={
@@ -170,14 +147,9 @@ export const VaultsSummary: React.FC<VaultsSummaryProps> = ({
           }
           currencySymbol="€"
           locale="de-DE"
-          cardStyleClass="pastel-pink-card"
-          titleColorClass="text-pink-800 dark:text-pink-400"
-          amountColorClass="text-pink-950 dark:text-pink-300"
-          subColorClass="text-pink-700 dark:text-pink-600"
-          rateLabel={`Tasa BCV Euro: ${rates ? rates.eur_official.toFixed(2) : '...'} Bs/EUR`}
+          rateLabel={`BCV: ${rates ? rates.eur_official.toFixed(2) : '...'} Bs/EUR`}
         />
 
-        {/* 3. Bs → USDT */}
         <ConversionCard
           title="Bs → USDT"
           amount={
@@ -185,45 +157,36 @@ export const VaultsSummary: React.FC<VaultsSummaryProps> = ({
           }
           currencySymbol="$"
           locale="en-US"
-          cardStyleClass="pastel-yellow-card"
-          titleColorClass="text-amber-800 dark:text-amber-400"
-          amountColorClass="text-amber-950 dark:text-amber-300"
-          subColorClass="text-amber-700 dark:text-amber-600"
-          rateLabel={`Tasa Binance: ${rates ? rates.usd_libre.toFixed(2) : '...'} Bs/USDT`}
+          rateLabel={`Binance P2P: ${rates ? rates.usd_libre.toFixed(2) : '...'} Bs/USDT`}
         />
 
-        {/* 4. USD → Bs (venta USD) */}
         <ConversionCard
-          title="Bolivars Totales"
+          title="Bolívares Totales"
           amount={consolidated.totalVES}
           currencySymbol="Bs."
           locale="es-VE"
-          cardStyleClass="pastel-green-card"
-          titleColorClass="text-emerald-800 dark:text-emerald-400"
-          amountColorClass="text-emerald-950 dark:text-emerald-300"
-          subColorClass="text-emerald-700 dark:text-emerald-600"
-          rateLabel={`Tasa BCV: ${rates ? rates.usd_official.toFixed(2) : '...'} Bs/USD`}
+          rateLabel={`Oficial BCV`}
           vesImpact={vesImpact}
         />
       </div>
 
       {/* Encabezado de Bóvedas y Botón Crear */}
-      <div className="flex items-center justify-between px-1">
-        <h2 className="text-sm font-bold text-slate-700">
-          Tus Bóvedas de Fondos
+      <div className="flex items-center justify-between pt-1">
+        <h2 className="text-xs font-title-bold tracking-wider text-zinc-900 dark:text-zinc-100 uppercase font-mono">
+          Bóvedas de Fondos
         </h2>
         <button
           onClick={() => setIsCreating(!isCreating)}
-          className="px-3 py-1.5 bg-sky-600 hover:bg-sky-700 text-white font-bold text-xs rounded-xl shadow-xs transition-colors cursor-pointer flex items-center space-x-1"
+          className="px-3 py-1.5 bg-zinc-900 hover:bg-zinc-800 dark:bg-zinc-100 dark:hover:bg-zinc-200 text-white dark:text-zinc-900 font-title-semibold text-xs rounded-md transition-colors cursor-pointer flex items-center space-x-1.5"
         >
           {isCreating ? (
             <>
-              <X className="w-3.5 h-3.5" />
+              <X className="w-3 h-3" />
               <span>Cancelar</span>
             </>
           ) : (
             <>
-              <Plus className="w-3.5 h-3.5" />
+              <Plus className="w-3 h-3" />
               <span>Nueva Bóveda</span>
             </>
           )}
@@ -246,7 +209,7 @@ export const VaultsSummary: React.FC<VaultsSummaryProps> = ({
       )}
 
       {/* Desglose por Bóveda */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 items-start">
+      <div id="tour-vaults" className="grid grid-cols-1 sm:grid-cols-3 gap-3 items-start">
         {vaults.map((vault) => (
           <VaultCard
             key={vault.id}
@@ -263,7 +226,7 @@ export const VaultsSummary: React.FC<VaultsSummaryProps> = ({
             handleStartEdit={handleStartEdit}
             handleSaveEdit={() => void handleSaveEdit()}
             handleDelete={(id) => void handleDelete(id)}
-            onOpenDetails={setSelectedVaultForDetails}
+            onOpenDetails={(v) => navigate(`/vaults/${v.id}`)}
           />
         ))}
       </div>

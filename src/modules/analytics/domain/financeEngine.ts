@@ -47,8 +47,7 @@ export interface PurchasingPowerMetric {
 
 export class FinanceEngine {
   /**
-   * Calcula el saldo total consolidado usando el Bolívar (VES) como moneda pivote central.
-   * Convierte cada bóveda a VES según su tasa correspondiente y calcula equivalentes en USD, USDT y EUR.
+   * Consolida todos los saldos en VES, USD, USDT y EUR usando las tasas del día.
    */
   static calculateConsolidatedBalance(
     vaults: Vault[],
@@ -57,7 +56,8 @@ export class FinanceEngine {
     let totalVES = 0;
 
     const vaultBreakdown = vaults.map((vault) => {
-      const equivalentVES = vault.balance * getRateInVES(vault.currency, rates);
+      const rateInVES = getRateInVES(vault.currency, rates);
+      const equivalentVES = vault.balance * rateInVES;
       totalVES += equivalentVES;
 
       const equivalentUSD =
@@ -192,15 +192,17 @@ export class FinanceEngine {
    */
   static calculatePurchasingPower(
     usdtBalance: number,
-    initialRateP2P: number,
-    currentRateP2P: number
+    historicalRateVES: number,
+    currentRates: ExchangeRates
   ): PurchasingPowerMetric {
-    const historicalValueInVES = usdtBalance * initialRateP2P;
-    const currentValueInVES = usdtBalance * currentRateP2P;
+    const historicalValueInVES = usdtBalance * historicalRateVES;
+    const currentValueInVES = usdtBalance * currentRates.usd_official;
 
-    const difference = currentValueInVES - historicalValueInVES;
     const percentageChange =
-      historicalValueInVES > 0 ? (difference / historicalValueInVES) * 100 : 0;
+      historicalValueInVES > 0
+        ? ((currentValueInVES - historicalValueInVES) / historicalValueInVES) *
+          100
+        : 0;
 
     let status: 'gained' | 'lost' | 'neutral' = 'neutral';
     if (percentageChange > 0.5) status = 'gained';

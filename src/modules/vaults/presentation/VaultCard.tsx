@@ -5,7 +5,7 @@ import type {
   VaultType,
   ExchangeRates,
 } from '../../shared/domain/types';
-import { Pencil, TrendingDown, TrendingUp, Minus } from 'lucide-react';
+import { Pencil, TrendingDown, TrendingUp, Minus, Landmark, Wallet, Coins, ChevronRight } from 'lucide-react';
 import { ConfirmModal } from '../../shared/presentation/ConfirmModal';
 import {
   getCurrencySymbol,
@@ -13,6 +13,7 @@ import {
 } from '../../shared/domain/currencyUtils';
 import { ratesService } from '../../rates/application/ratesService';
 import type { VesImpactPeriods } from '../../rates/domain/vesImpactEngine';
+import { CustomSelect, type SelectOption } from '../../shared/presentation/CustomSelect';
 
 export interface VaultCardProps {
   vault: Vault;
@@ -73,6 +74,19 @@ export const VaultCard: React.FC<VaultCardProps> = ({
 
   const activeImpact = vesImpact ? vesImpact[period] : null;
 
+  const typeOptions: SelectOption<VaultType>[] = [
+    { value: 'bank', label: 'Banco Local', icon: <Landmark className="w-4 h-4" /> },
+    { value: 'cash', label: 'Efectivo', icon: <Wallet className="w-4 h-4" /> },
+    { value: 'binance', label: 'Billetera Digital', icon: <Coins className="w-4 h-4" /> },
+  ];
+
+  const currencyOptions: SelectOption<Currency>[] = [
+    { value: 'USD', label: 'USD' },
+    { value: 'USDT', label: 'USDT' },
+    { value: 'VES', label: 'VES' },
+    { value: 'EUR', label: 'EUR' },
+  ];
+
   return (
     <div
       onClick={() => {
@@ -80,10 +94,8 @@ export const VaultCard: React.FC<VaultCardProps> = ({
           onOpenDetails(vault);
         }
       }}
-      className={`bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-xs flex flex-col justify-between space-y-3 transition-all ${
-        !isEditing
-          ? 'hover:border-sky-300 dark:hover:border-sky-700 hover:shadow-md cursor-pointer'
-          : ''
+      className={`group bg-zinc-50/60 dark:bg-zinc-900/40 hover:bg-zinc-100/70 dark:hover:bg-zinc-800/60 border border-zinc-200/80 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 rounded-md p-3.5 flex flex-col justify-between space-y-2.5 transition-all duration-150 ${
+        !isEditing ? 'cursor-pointer shadow-2xs hover:shadow-xs' : ''
       }`}
     >
       <ConfirmModal
@@ -98,66 +110,52 @@ export const VaultCard: React.FC<VaultCardProps> = ({
       />
 
       {isEditing ? (
-        <div onClick={(e) => e.stopPropagation()} className="space-y-2 text-xs">
+        <div onClick={(e) => e.stopPropagation()} className="space-y-3 text-xs">
           <div>
-            <label className="block font-semibold text-slate-500 dark:text-slate-400 mb-0.5">
+            <label className="block font-title-bold text-zinc-700 dark:text-zinc-300 mb-1 uppercase font-mono text-[10px]">
               Nombre
             </label>
             <input
               type="text"
               value={editName}
               onChange={(e) => setEditName(e.target.value)}
-              className="w-full border border-sky-400 dark:border-sky-600 rounded-lg px-2 py-1 outline-hidden bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100"
+              className="w-full border border-zinc-300 dark:border-zinc-700 rounded-md px-3 py-1.5 outline-hidden bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 font-title-semibold"
             />
           </div>
+
           <div className="grid grid-cols-2 gap-2">
-            <div>
-              <label className="block font-semibold text-slate-500 dark:text-slate-400 mb-0.5">
-                Tipo
-              </label>
-              <select
-                value={editType}
-                onChange={(e) => setEditType(e.target.value as VaultType)}
-                className="w-full border border-sky-400 dark:border-sky-600 rounded-lg px-2 py-1 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 outline-hidden"
-              >
-                <option value="bank">Banco</option>
-                <option value="cash">Efectivo</option>
-                <option value="binance">Binance</option>
-              </select>
-            </div>
-            <div>
-              <label className="block font-semibold text-slate-500 dark:text-slate-400 mb-0.5">
-                Moneda
-              </label>
-              <select
-                value={editCurrency}
-                onChange={(e) => setEditCurrency(e.target.value as Currency)}
-                className="w-full border border-sky-400 dark:border-sky-600 rounded-lg px-2 py-1 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 outline-hidden"
-              >
-                <option value="USD">USD</option>
-                <option value="USDT">USDT</option>
-                <option value="VES">VES</option>
-                <option value="EUR">EUR</option>
-              </select>
-            </div>
+            <CustomSelect<VaultType>
+              label="Tipo"
+              options={typeOptions}
+              value={editType}
+              onChange={(val) => setEditType(val)}
+            />
+
+            <CustomSelect<Currency>
+              label="Moneda"
+              options={currencyOptions}
+              value={editCurrency}
+              onChange={(val) => setEditCurrency(val)}
+            />
           </div>
+
           <div className="flex justify-between items-center pt-2">
             <button
               onClick={() => setIsDeleteModalOpen(true)}
-              className="text-rose-600 dark:text-rose-400 hover:text-rose-800 font-semibold cursor-pointer"
+              className="text-red-600 dark:text-red-400 hover:text-red-800 font-title-bold cursor-pointer"
             >
               Eliminar
             </button>
             <div className="flex space-x-2">
               <button
                 onClick={() => setEditingVault(null)}
-                className="px-2.5 py-1 bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-lg font-medium cursor-pointer"
+                className="px-2.5 py-1 bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 rounded-md font-medium cursor-pointer"
               >
                 Cancelar
               </button>
               <button
                 onClick={handleSaveEdit}
-                className="px-3 py-1 bg-sky-600 text-white rounded-lg font-bold cursor-pointer"
+                className="px-3 py-1 bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 rounded-md font-title-bold cursor-pointer"
               >
                 Guardar
               </button>
@@ -167,15 +165,15 @@ export const VaultCard: React.FC<VaultCardProps> = ({
       ) : (
         <>
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+            <span className="text-[11px] font-title-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
               {vault.type === 'binance'
-                ? 'Binance'
+                ? 'Billetera Digital'
                 : vault.type === 'cash'
                   ? 'Efectivo'
                   : 'Banco Local'}
             </span>
-            <div className="flex items-center space-x-2">
-              <span className="text-xs px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 font-medium text-slate-600 dark:text-slate-300">
+            <div className="flex items-center space-x-1.5">
+              <span className="text-[10px] px-1.5 py-0.5 rounded bg-zinc-200/60 dark:bg-zinc-800 font-mono font-bold text-zinc-700 dark:text-zinc-300 border border-zinc-200/80 dark:border-zinc-700">
                 {vault.currency}
               </span>
               <button
@@ -183,31 +181,32 @@ export const VaultCard: React.FC<VaultCardProps> = ({
                   e.stopPropagation();
                   handleStartEdit(vault);
                 }}
-                className="text-xs text-slate-400 hover:text-sky-600 dark:hover:text-sky-400 p-1 transition-colors cursor-pointer rounded-lg hover:bg-sky-50 dark:hover:bg-slate-800"
+                className="text-xs text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 p-0.5 transition-colors cursor-pointer rounded hover:bg-zinc-200/60 dark:hover:bg-zinc-800"
                 title="Editar Bóveda"
               >
                 <Pencil className="w-3.5 h-3.5" />
               </button>
+              <ChevronRight className="w-4 h-4 text-zinc-400 dark:text-zinc-500 group-hover:text-zinc-900 dark:group-hover:text-zinc-100 group-hover:translate-x-0.5 transition-all shrink-0" />
             </div>
           </div>
 
           <div>
-            <div className="text-sm font-bold text-slate-800 dark:text-slate-100 group-hover:text-sky-700 transition-colors">
+            <div className="text-sm font-title-bold text-zinc-900 dark:text-zinc-100 tracking-tight group-hover:text-zinc-900 dark:group-hover:text-white transition-colors">
               {vault.name}
             </div>
-            <div className="flex items-baseline justify-between mt-1">
+            <div className="flex items-baseline justify-between mt-0.5">
               <div>
-                <span className="text-xl font-black text-slate-900 dark:text-white">
+                <span className="text-xl font-mono font-bold text-zinc-900 dark:text-zinc-100 tracking-tight">
                   {getCurrencySymbol(vault.currency)}{' '}
                   {vault.balance.toLocaleString('en-US', {
                     minimumFractionDigits: 2,
                   })}
                 </span>
-                {/* Equivalente en $ para Bóvedas en Bolívares (Tasa BCV) */}
+                {/* Equivalente en $ para Bóvedas en Bolívares */}
                 {vault.currency === 'VES' &&
                   rates &&
                   rates.usd_official > 0 && (
-                    <div className="text-xs font-semibold text-slate-500 dark:text-slate-400 mt-0.5">
+                    <div className="text-xs font-mono font-bold text-zinc-500 dark:text-zinc-400 mt-0.5">
                       ≈ ${' '}
                       {(vault.balance / rates.usd_official).toLocaleString(
                         'en-US',
@@ -216,14 +215,14 @@ export const VaultCard: React.FC<VaultCardProps> = ({
                           maximumFractionDigits: 2,
                         }
                       )}{' '}
-                      <span className="text-[10px] text-slate-400 dark:text-slate-500 font-normal">
-                        (Tasa BCV)
+                      <span className="text-[10px] text-zinc-400 dark:text-zinc-500 font-normal">
+                        (BCV)
                       </span>
                     </div>
                   )}
                 {/* Equivalente en Bs para Bóvedas en Divisas */}
                 {vault.currency !== 'VES' && rates && (
-                  <div className="text-xs font-semibold text-slate-500 dark:text-slate-400 mt-0.5">
+                  <div className="text-xs font-mono font-bold text-zinc-500 dark:text-zinc-400 mt-0.5">
                     ≈ Bs.{' '}
                     {(
                       vault.balance * getRateInVES(vault.currency, rates)
@@ -231,7 +230,7 @@ export const VaultCard: React.FC<VaultCardProps> = ({
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2,
                     })}{' '}
-                    <span className="text-[10px] text-slate-400 dark:text-slate-500 font-normal">
+                    <span className="text-[10px] text-zinc-400 dark:text-zinc-500 font-normal">
                       ({vault.currency === 'USDT' ? 'Binance' : 'BCV'})
                     </span>
                   </div>
@@ -239,13 +238,13 @@ export const VaultCard: React.FC<VaultCardProps> = ({
               </div>
             </div>
 
-            {/* Selector e Indicador de Pérdida / Ganancia para Bolívares */}
+            {/* Impacto Cambiario en Bolívares */}
             {vault.currency === 'VES' && (
               <div
                 onClick={(e) => e.stopPropagation()}
-                className="mt-3 pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between min-h-[32px]"
+                className="mt-2 pt-2 border-t border-zinc-200/60 dark:border-zinc-800/60 flex items-center justify-between min-h-[28px]"
               >
-                <div className="inline-flex items-center p-0.5 bg-slate-900/5 dark:bg-slate-100/10 rounded-full border border-slate-900/5 dark:border-slate-100/10 backdrop-blur-xs">
+                <div className="inline-flex items-center p-0.5 bg-zinc-200/50 dark:bg-zinc-800 rounded border border-zinc-200 dark:border-zinc-700">
                   {(
                     [
                       { key: 'day1', label: 'Ayer' },
@@ -257,10 +256,10 @@ export const VaultCard: React.FC<VaultCardProps> = ({
                       key={p.key}
                       type="button"
                       onClick={() => setPeriod(p.key)}
-                      className={`px-2.5 py-0.5 rounded-full text-xs transition-all duration-150 cursor-pointer select-none ${
+                      className={`px-1.5 py-0.5 rounded text-[9px] font-mono transition-all duration-150 cursor-pointer select-none ${
                         period === p.key
-                          ? 'bg-white dark:bg-slate-800 text-sky-950 dark:text-sky-200 font-bold shadow-xs ring-1 ring-slate-900/10 dark:ring-slate-100/10 scale-[1.02]'
-                          : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 font-semibold'
+                          ? 'bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 font-bold'
+                          : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200 font-semibold'
                       }`}
                     >
                       {p.label}
@@ -270,34 +269,27 @@ export const VaultCard: React.FC<VaultCardProps> = ({
 
                 {activeImpact ? (
                   <span
-                    className={`inline-flex items-center px-1.5 py-0.5 rounded-md text-[11px] font-extrabold border ${
+                    className={`inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-mono font-bold border ${
                       activeImpact.deltaUSD < 0
-                        ? 'bg-rose-50 dark:bg-rose-950/50 text-rose-700 dark:text-rose-300 border-rose-200 dark:border-rose-800'
+                        ? 'bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-400 border-red-200 dark:border-red-900'
                         : activeImpact.deltaUSD > 0
-                          ? 'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800'
-                          : 'bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700'
+                          ? 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-900'
+                          : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 border-zinc-200 dark:border-zinc-700'
                     }`}
-                    title={`Pérdida/Ganancia calculada comparado con la tasa de ${
-                      period === 'day1'
-                        ? 'ayer'
-                        : period === 'days7'
-                          ? 'hace 7 días'
-                          : 'hace 30 días'
-                    } (${activeImpact.pastRate.toFixed(2)} Bs/USD)`}
                   >
                     {activeImpact.deltaUSD < 0 ? (
-                      <TrendingDown className="w-3 h-3 mr-0.5 shrink-0" />
+                      <TrendingDown className="w-3 h-3 mr-1 shrink-0" />
                     ) : activeImpact.deltaUSD > 0 ? (
-                      <TrendingUp className="w-3 h-3 mr-0.5 shrink-0" />
+                      <TrendingUp className="w-3 h-3 mr-1 shrink-0" />
                     ) : (
-                      <Minus className="w-3 h-3 mr-0.5 shrink-0" />
+                      <Minus className="w-3 h-3 mr-1 shrink-0" />
                     )}
                     {activeImpact.deltaUSD < 0
-                      ? `-$${Math.abs(activeImpact.deltaUSD).toFixed(2)} USD (${activeImpact.deltaVES.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} Bs.)`
-                      : `+$${activeImpact.deltaUSD.toFixed(2)} USD (+${activeImpact.deltaVES.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} Bs.)`}
+                      ? `-$${Math.abs(activeImpact.deltaUSD).toFixed(2)} USD`
+                      : `+$${activeImpact.deltaUSD.toFixed(2)} USD`}
                   </span>
                 ) : (
-                  <div className="h-5 w-16 bg-slate-100 dark:bg-slate-800 animate-pulse rounded-md"></div>
+                  <div className="h-4 w-14 bg-zinc-100 dark:bg-zinc-800 animate-pulse rounded"></div>
                 )}
               </div>
             )}

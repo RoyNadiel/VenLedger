@@ -14,41 +14,48 @@ export const RatesBar: React.FC = () => {
     : null;
 
   return (
-    <div className="bg-sky-50/70 dark:bg-slate-900/80  border-sky-100 dark:border-slate-800 px-2 sm:px-4 py-1.5 sm:py-2 text-xs font-medium text-slate-700 dark:text-slate-300 transition-colors">
-      <div className="max-w-[1480px] mx-auto flex items-center justify-between gap-1.5 sm:gap-4">
-        <div className="grid grid-cols-3 justify-items-center sm:flex sm:items-center gap-1 sm:gap-6 flex-1 min-w-0">
-          <div className="flex items-center space-x-1 sm:space-x-1.5 min-w-0">
-            <span className="text-slate-500 dark:text-slate-400 font-semibold text-xs sm:text-sm shrink-0">
-              <span className="hidden sm:inline">Tasa </span>BCV USD:
+    <div id="tour-rates" className="bg-zinc-100/60 dark:bg-zinc-900/60 border-b border-zinc-200 dark:border-zinc-800 px-3 sm:px-4 py-1.5 sm:py-2 text-xs transition-colors">
+      <div className="max-w-[1440px] mx-auto flex items-center justify-between gap-2 sm:gap-4">
+        {/* Grid de 3 columnas en móvil, Flex desglosado en desktop */}
+        <div className="grid grid-cols-3 sm:flex sm:items-center sm:space-x-6 flex-1 min-w-0 gap-1 sm:gap-4">
+          {/* BCV USD */}
+          <div className="flex items-center justify-start space-x-1.5 shrink-0">
+            <span className="text-zinc-500 dark:text-zinc-400 font-medium text-[10px] sm:text-xs">
+              <span className="inline sm:hidden">USD:</span>
+              <span className="hidden sm:inline">BCV USD:</span>
             </span>
-            <span className="font-bold text-sky-800 dark:text-sky-300 bg-white dark:bg-slate-800 px-1 sm:px-2 py-0.5 rounded-md border border-sky-300 dark:border-slate-700 text-xs sm:text-sm shrink-0">
-              {rates ? `${rates.usd_official.toFixed(2)}` : '...'}
-            </span>
-          </div>
-
-          <div className="flex items-center space-x-1 sm:space-x-1.5 min-w-0">
-            <span className="text-slate-500 dark:text-slate-400 font-semibold text-xs sm:text-sm shrink-0">
-              <span className="hidden sm:inline">Tasa </span>BCV EUR:
-            </span>
-            <span className="font-bold text-sky-800 dark:text-sky-300 bg-white dark:bg-slate-800 px-1 sm:px-2 py-0.5 rounded-md border border-sky-300 dark:border-slate-700 text-xs sm:text-sm shrink-0">
-              {rates ? `${rates.eur_official.toFixed(2)}` : '...'}
+            <span className="font-mono font-semibold text-zinc-900 dark:text-zinc-100 sm:bg-white sm:dark:bg-zinc-800 sm:px-2 sm:py-0.5 sm:rounded sm:border sm:border-zinc-200 sm:dark:border-zinc-700 text-[11px] sm:text-xs">
+              {rates ? `${rates.usd_official.toFixed(2)} Bs` : '...'}
             </span>
           </div>
 
-          <div className="flex items-center space-x-1 sm:space-x-1.5 min-w-0">
-            <span className="text-slate-500 dark:text-slate-400 font-semibold text-xs sm:text-sm shrink-0">
-              <span className="hidden sm:inline">Binance </span>USDT:
+          {/* BCV EUR */}
+          <div className="flex items-center justify-center sm:justify-start space-x-1.5 shrink-0">
+            <span className="text-zinc-500 dark:text-zinc-400 font-medium text-[10px] sm:text-xs">
+              <span className="inline sm:hidden">EUR:</span>
+              <span className="hidden sm:inline">BCV EUR:</span>
             </span>
-            <span className="font-bold text-sky-950 dark:text-sky-200 bg-white dark:bg-slate-800 px-1 sm:px-2 py-0.5 rounded-md border border-sky-300 dark:border-slate-700 text-xs sm:text-sm shrink-0">
-              {rates ? `${rates.usd_libre.toFixed(2)}` : '...'}
+            <span className="font-mono font-semibold text-zinc-900 dark:text-zinc-100 sm:bg-white sm:dark:bg-zinc-800 sm:px-2 sm:py-0.5 sm:rounded sm:border sm:border-zinc-200 sm:dark:border-zinc-700 text-[11px] sm:text-xs">
+              {rates ? `${rates.eur_official.toFixed(2)} Bs` : '...'}
+            </span>
+          </div>
+
+          {/* Binance P2P */}
+          <div className="flex items-center justify-end sm:justify-start space-x-1.5 shrink-0">
+            <span className="text-zinc-500 dark:text-zinc-400 font-medium text-[10px] sm:text-xs">
+              <span className="inline sm:hidden">USDT:</span>
+              <span className="hidden sm:inline">Binance USDT:</span>
+            </span>
+            <span className="font-mono font-semibold text-zinc-900 dark:text-zinc-100 sm:bg-white sm:dark:bg-zinc-800 sm:px-2 sm:py-0.5 sm:rounded sm:border sm:border-zinc-200 sm:dark:border-zinc-700 text-[11px] sm:text-xs">
+              {rates ? `${rates.usd_libre.toFixed(2)} Bs` : '...'}
             </span>
           </div>
         </div>
 
-        <div className="flex items-center space-x-2 shrink-0">
+        <div className="flex items-center space-x-3 shrink-0 pl-1 border-l border-zinc-200 dark:border-zinc-800 sm:border-0 sm:pl-0">
           {formattedDate && (
             <span
-              className="hidden md:inline-block text-[11px] text-slate-400 dark:text-slate-300 font-semibold bg-white/70 dark:bg-slate-800/80 px-2 py-0.5 rounded-md border border-slate-200 dark:border-slate-700"
+              className="hidden md:inline-block text-[11px] font-mono text-zinc-500 dark:text-zinc-400 bg-white dark:bg-zinc-800 px-2 py-0.5 rounded border border-zinc-200 dark:border-zinc-700"
               title={`Fecha oficial asignada por el BCV: ${rateTimestamp}`}
             >
               BCV {formattedDate}
@@ -58,13 +65,13 @@ export const RatesBar: React.FC = () => {
           <button
             onClick={() => void fetchRates(true)}
             disabled={isLoading}
-            className="text-sky-600 dark:text-sky-400 hover:text-sky-800 dark:hover:text-sky-300 transition-colors flex items-center space-x-1 disabled:opacity-50 cursor-pointer font-bold p-1 sm:p-0"
+            className="text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors flex items-center space-x-1.5 disabled:opacity-50 cursor-pointer text-xs font-medium"
             title="Actualizar Tasas"
           >
             <RefreshCw
               className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin' : ''}`}
             />
-            <span className="hidden sm:inline">Actualizar Tasas</span>
+            <span className="hidden sm:inline">Actualizar</span>
           </button>
         </div>
       </div>

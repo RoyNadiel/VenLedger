@@ -1,129 +1,100 @@
 import React from 'react';
-// import { useOutboxStore } from '../../outbox/presentation/useOutboxStore';
+import { Link, NavLink } from 'react-router-dom';
 import { VenLedgerLogo } from './VenLedgerLogo';
 import { ThemeToggle } from './ThemeToggle';
+import { useOnboardingTour } from './useOnboardingTour';
 import {
   LayoutDashboard,
   Landmark,
   ArrowLeftRight,
   Handshake,
   BarChart3,
+  HelpCircle,
 } from 'lucide-react';
 
-export type Tab =
-  | 'dashboard'
-  | 'vaults'
-  | 'transactions'
-  | 'debts'
-  | 'analytics';
+export const Header: React.FC = () => {
+  const { startTour } = useOnboardingTour();
 
-interface HeaderProps {
-  activeTab: Tab;
-  setActiveTab: (tab: Tab) => void;
-}
-
-export const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
-  // const { pendingCount } = useOutboxStore();
-
-  const navItems: Array<{
-    id: Tab;
-    label: string;
-    icon: React.ReactNode;
-    activeClass: string;
-  }> = [
+  const navItems = [
     {
-      id: 'dashboard',
+      path: '/',
       label: 'Dashboard',
       icon: <LayoutDashboard className="w-4 h-4" />,
-      activeClass: 'bg-white text-sky-600 shadow-xs',
     },
     {
-      id: 'vaults',
+      path: '/vaults',
       label: 'Bóvedas',
       icon: <Landmark className="w-4 h-4" />,
-      activeClass: 'bg-white text-indigo-600 shadow-xs',
     },
     {
-      id: 'transactions',
+      path: '/transactions',
       label: 'Movimientos',
       icon: <ArrowLeftRight className="w-4 h-4" />,
-      activeClass: 'bg-white text-emerald-600 shadow-xs',
     },
     {
-      id: 'debts',
+      path: '/debts',
       label: 'Deudas',
       icon: <Handshake className="w-4 h-4" />,
-      activeClass: 'bg-white text-rose-600 shadow-xs',
     },
     {
-      id: 'analytics',
+      path: '/analytics',
       label: 'Salud Financiera',
       icon: <BarChart3 className="w-4 h-4" />,
-      activeClass: 'bg-white text-purple-600 shadow-xs',
     },
   ];
 
   return (
-    <header className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 sticky top-0 z-30 py-3 px-2 hadow-xs transition-colors">
-      <div className="max-w-[1480px] w-full mx-auto flex items-center justify-between">
+    <header className="bg-white/80 dark:bg-zinc-900/80 backdrop-blur-md border-b border-zinc-200 dark:border-zinc-800 sticky top-0 z-30 py-3 px-4 transition-colors">
+      <div className="max-w-[1440px] w-full mx-auto flex items-center justify-between">
         {/* Logo & Marca */}
-        <button
-          type="button"
-          onClick={() => setActiveTab('dashboard')}
-          className="flex items-center space-x-2.5 cursor-pointer text-left focus:outline-none group active:scale-95 transition-all duration-150 select-none"
+        <Link
+          id="tour-logo"
+          to="/"
+          className="flex items-center space-x-3 cursor-pointer text-left focus:outline-none group select-none"
           title="Ir al Resumen / Dashboard"
         >
-          <VenLedgerLogo size={36} />
+          <VenLedgerLogo size={32} />
           <div>
-            <h1 className="text-xl font-bold tracking-tight text-slate-800 dark:text-slate-100 group-hover:text-sky-600 transition-colors">
+            <h1 className="text-lg font-title-bold tracking-tight text-zinc-900 dark:text-zinc-100 group-hover:text-zinc-600 dark:group-hover:text-zinc-400 transition-colors">
               VenLedger
             </h1>
-            <p className="text-xs text-slate-500 dark:text-slate-400 hidden sm:block">
-              Control Financiero Venezuela
+            <p className="text-[11px] text-zinc-500 dark:text-zinc-400 hidden sm:block font-subtitle">
+              FINANCE PWA
             </p>
           </div>
-        </button>
+        </Link>
 
-        {/* Navegación Desktop (Visible en pantallas medianas y grandes) */}
-        <nav className="hidden md:flex items-center space-x-1 bg-slate-100/80 dark:bg-slate-800/80 p-1.5 rounded-2xl border border-slate-200/60 dark:border-slate-700/60">
-          {navItems.map((item) => {
-            const isActive = activeTab === item.id;
-            return (
-              <button
-                key={item.id}
-                onClick={() => setActiveTab(item.id)}
-                className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all duration-150 active:scale-95 select-none cursor-pointer ${
+        {/* Navegación Desktop */}
+        <nav id="tour-nav-desktop" className="hidden md:flex items-center space-x-1 p-1 rounded-lg">
+          {navItems.map((item) => (
+            <NavLink
+              key={item.path}
+              to={item.path}
+              end={item.path === '/'}
+              className={({ isActive }) =>
+                `flex items-center space-x-2 px-3 py-1.5 rounded-md text-xs font-subtitle transition-all duration-150 select-none cursor-pointer ${
                   isActive
-                    ? item.activeClass
-                    : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-white/50 dark:hover:bg-slate-700/50'
-                }`}
-              >
-                <span
-                  className={
-                    isActive ? '' : 'text-slate-400 dark:text-slate-500'
-                  }
-                >
-                  {item.icon}
-                </span>
-                <span>{item.label}</span>
-              </button>
-            );
-          })}
+                    ? 'bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 shadow-xs font-title-semibold'
+                    : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-200/60 dark:hover:bg-zinc-700/50'
+                }`
+              }
+            >
+              <span>{item.icon}</span>
+              <span>{item.label}</span>
+            </NavLink>
+          ))}
         </nav>
 
-        {/* Lado Derecho Header: Botón Cambio de Tema + Sync discreto */}
+        {/* Lado Derecho Header */}
         <div className="flex items-center space-x-2">
+          <button
+            onClick={() => startTour(true)}
+            className="p-2 rounded-md text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
+            title="Ver Tutorial / Tour Guiado"
+          >
+            <HelpCircle className="w-4 h-4" />
+          </button>
           <ThemeToggle />
-
-          {/* {pendingCount > 0 && (
-            <span
-              className="inline-flex items-center p-2 rounded-full text-[11px] font-bold bg-amber-100 dark:bg-amber-950 dark:text-white dark:border-amber-600 text-amber-800 border border-amber-200"
-              title={`${pendingCount} cambio(s) pendiente(s) por sincronizar`}
-            >
-              <span className="w-2 h-2 mr-1 rounded-full bg-amber-500 animate-pulse"></span>
-              {pendingCount}
-            </span>
-          )} */}
         </div>
       </div>
     </header>

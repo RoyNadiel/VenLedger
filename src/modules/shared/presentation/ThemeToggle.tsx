@@ -57,7 +57,11 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({ className = '' }) => {
       Math.max(y, window.innerHeight - y)
     );
 
-    const transition = (document as any).startViewTransition(() => {
+    const docWithTransition = document as Document & {
+      startViewTransition: (cb: () => void) => { ready: Promise<void> };
+    };
+
+    const transition = docWithTransition.startViewTransition(() => {
       flushSync(() => {
         applyThemeChange();
       });

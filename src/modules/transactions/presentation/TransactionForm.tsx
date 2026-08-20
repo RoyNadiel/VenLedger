@@ -3,6 +3,15 @@ import type { TransactionType, ExchangeRates } from '../../shared/domain/types';
 import type { Vault } from '../../vaults/domain/entities';
 import type { Category } from '../../categories/domain/entities';
 import { getCurrencySymbol } from '../../shared/domain/currencyUtils';
+import { CustomSelect, type SelectOption } from '../../shared/presentation/CustomSelect';
+import {
+  ArrowDownRight,
+  ArrowUpRight,
+  ArrowLeftRight,
+  Landmark,
+  Wallet,
+  Coins,
+} from 'lucide-react';
 
 export interface TransactionFormProps {
   type: TransactionType;
@@ -62,95 +71,110 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
     (c) => c.type === (type === 'income' ? 'income' : 'expense')
   );
 
+  const getVaultIcon = (vaultType: string) => {
+    switch (vaultType) {
+      case 'binance':
+        return <Coins className="w-4 h-4" />;
+      case 'bank':
+        return <Landmark className="w-4 h-4" />;
+      default:
+        return <Wallet className="w-4 h-4" />;
+    }
+  };
+
+  const typeOptions: SelectOption<TransactionType>[] = [
+    {
+      value: 'expense',
+      label: 'Gasto (Salida)',
+      icon: <ArrowDownRight className="w-4 h-4 text-red-500" />,
+    },
+    {
+      value: 'income',
+      label: 'Ingreso (Entrada)',
+      icon: <ArrowUpRight className="w-4 h-4 text-emerald-500" />,
+    },
+    {
+      value: 'transfer',
+      label: 'Transferencia / Cambio',
+      icon: <ArrowLeftRight className="w-4 h-4 text-sky-500" />,
+    },
+  ];
+
+  const vaultOptions: SelectOption[] = vaults.map((v) => ({
+    value: v.id,
+    label: v.name,
+    sublabel: v.currency,
+    icon: getVaultIcon(v.type),
+    extraText: `${getCurrencySymbol(v.currency)} ${v.balance.toLocaleString('en-US', { minimumFractionDigits: 2 })}`,
+  }));
+
+  const destVaultOptions: SelectOption[] = vaults
+    .filter((v) => v.id !== vaultId)
+    .map((v) => ({
+      value: v.id,
+      label: v.name,
+      sublabel: v.currency,
+      icon: getVaultIcon(v.type),
+      extraText: `${getCurrencySymbol(v.currency)} ${v.balance.toLocaleString('en-US', { minimumFractionDigits: 2 })}`,
+    }));
+
+  const categoryOptions: SelectOption[] = [
+    { value: '', label: 'Sin categoría...' },
+    ...filteredCategories.map((c) => ({
+      value: c.id,
+      label: c.name,
+    })),
+  ];
+
   return (
-    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-xs transition-colors">
-      <h2 className="text-sm font-bold text-slate-800 dark:text-slate-100 mb-3">
+    <div className="pb-4 border-b border-zinc-200 dark:border-zinc-800 transition-colors">
+      <h2 className="text-xs font-title-bold text-zinc-900 dark:text-zinc-100 mb-3 uppercase tracking-wider font-mono">
         Nuevo Movimiento
       </h2>
       <form onSubmit={onSubmit} className="space-y-3">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          <div>
-            <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">
-              Tipo de Operación
-            </label>
-            <select
-              value={type}
-              onChange={(e) => setType(e.target.value as TransactionType)}
-              className="w-full text-sm border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-sky-400 outline-hidden"
-            >
-              <option value="expense">Gasto (Salida)</option>
-              <option value="income">Ingreso (Entrada)</option>
-              <option value="transfer">
-                Transferencia / Cambio entre Bóvedas
-              </option>
-            </select>
-          </div>
+          <CustomSelect<TransactionType>
+            label="Tipo de Operación"
+            headerTitle="Operación"
+            options={typeOptions}
+            value={type}
+            onChange={(val) => setType(val)}
+          />
 
-          <div>
-            <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">
-              {isTransfer ? 'Bóveda Origen (Sale)' : 'Bóveda'}
-            </label>
-            <select
-              value={vaultId}
-              onChange={(e) => setVaultId(e.target.value)}
-              className="w-full text-sm border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-sky-400 outline-hidden"
-              required
-            >
-              <option value="">Seleccionar bóveda...</option>
-              {vaults.map((v) => (
-                <option key={v.id} value={v.id}>
-                  {v.name} ({v.currency})
-                </option>
-              ))}
-            </select>
-          </div>
+          <CustomSelect
+            label={isTransfer ? 'Bóveda Origen' : 'Bóveda'}
+            headerTitle="Bóveda de Origen"
+            options={vaultOptions}
+            value={vaultId}
+            onChange={(val) => setVaultId(val)}
+            placeholder="Seleccionar bóveda..."
+          />
 
           {isTransfer ? (
-            <div>
-              <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">
-                Bóveda Destino (Entra)
-              </label>
-              <select
-                value={destinationVaultId}
-                onChange={(e) => setDestinationVaultId(e.target.value)}
-                className="w-full text-sm border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-sky-400 outline-hidden"
-                required
-              >
-                <option value="">Seleccionar destino...</option>
-                {vaults
-                  .filter((v) => v.id !== vaultId)
-                  .map((v) => (
-                    <option key={v.id} value={v.id}>
-                      {v.name} ({v.currency})
-                    </option>
-                  ))}
-              </select>
-            </div>
+            <CustomSelect
+              label="Bóveda Destino"
+              headerTitle="Bóveda de Destino"
+              options={destVaultOptions}
+              value={destinationVaultId}
+              onChange={(val) => setDestinationVaultId(val)}
+              placeholder="Seleccionar destino..."
+            />
           ) : (
-            <div>
-              <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">
-                Categoría (Opcional)
-              </label>
-              <select
-                value={categoryId}
-                onChange={(e) => setCategoryId?.(e.target.value)}
-                className="w-full text-sm border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-sky-400 outline-hidden"
-              >
-                <option value="">Sin categoría...</option>
-                {filteredCategories.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.name}
-                  </option>
-                ))}
-              </select>
-            </div>
+            <CustomSelect
+              label="Categoría (Opcional)"
+              headerTitle="Categoría"
+              options={categoryOptions}
+              value={categoryId}
+              onChange={(val) => setCategoryId?.(val)}
+              placeholder="Sin categoría..."
+            />
           )}
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div>
             <div className="flex items-center justify-between mb-1">
-              <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400">
+              <label className="block text-[10px] font-title-bold text-zinc-500 dark:text-zinc-400 uppercase font-mono">
                 {isTransfer
                   ? `Monto Retirado (${sourceVault?.currency || 'Origen'})`
                   : 'Monto'}
@@ -162,10 +186,10 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
                     setAmount(String(sourceVault.balance));
                     onFillMax?.();
                   }}
-                  className="text-[10px] font-bold text-sky-600 dark:text-sky-400 hover:text-sky-800 bg-sky-50 dark:bg-sky-950/60 hover:bg-sky-100 px-1.5 py-0.5 rounded-md transition-colors cursor-pointer"
+                  className="text-[10px] font-mono font-bold text-zinc-900 dark:text-zinc-100 bg-zinc-100 dark:bg-zinc-800 px-1.5 py-0.5 rounded transition-colors cursor-pointer border border-zinc-200 dark:border-zinc-700"
                   title={`Saldo disponible: ${sourceVault.balance}`}
                 >
-                  Máx
+                  MÁX
                 </button>
               )}
             </div>
@@ -175,15 +199,13 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
               placeholder="0.00"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
-              className="w-full text-sm border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-sky-400 outline-hidden"
+              className="w-full text-xs font-mono font-bold border border-zinc-200 dark:border-zinc-700 rounded-md px-3 py-2 bg-zinc-50 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-100 focus:bg-white dark:focus:bg-zinc-900 outline-hidden"
               required
             />
             {isTransfer && sourceVault && (
-              <div className="mt-1 flex items-center justify-between text-[10px] text-slate-400">
-                <span>Disponible en bóveda:</span>
-                <span className={`font-semibold ${
-                  sourceVault.balance <= 0 ? 'text-rose-500' : 'text-emerald-600 dark:text-emerald-400'
-                }`}>
+              <div className="mt-1 flex items-center justify-between text-[10px] font-mono text-zinc-400">
+                <span>Disponible:</span>
+                <span className="font-bold text-zinc-900 dark:text-zinc-100">
                   {getCurrencySymbol(sourceVault.currency)}{' '}
                   {sourceVault.balance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </span>
@@ -194,14 +216,14 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
           {isDifferentCurrency && (
             <div>
               <div className="flex justify-between items-center mb-1">
-                <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400">
+                <label className="block text-[10px] font-title-bold text-zinc-500 dark:text-zinc-400 uppercase font-mono">
                   Monto Recibido ({destVault?.currency})
                 </label>
                 {rates && (
                   <button
                     type="button"
                     onClick={onAutoCalculateDest}
-                    className="text-[10px] text-sky-600 dark:text-sky-400 hover:underline cursor-pointer"
+                    className="text-[10px] font-mono font-bold text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 cursor-pointer"
                   >
                     Calc. Tasa
                   </button>
@@ -213,14 +235,14 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
                 placeholder="0.00"
                 value={destinationAmount}
                 onChange={(e) => setDestinationAmount(e.target.value)}
-                className="w-full text-sm border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-sky-400 outline-hidden"
+                className="w-full text-xs font-mono font-bold border border-zinc-200 dark:border-zinc-700 rounded-md px-3 py-2 bg-zinc-50 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-100 focus:bg-white dark:focus:bg-zinc-900 outline-hidden"
                 required
               />
             </div>
           )}
 
           <div className={isDifferentCurrency ? '' : 'sm:col-span-2'}>
-            <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">
+            <label className="block text-[10px] font-title-bold text-zinc-500 dark:text-zinc-400 mb-1 uppercase font-mono">
               Nota / Detalle
             </label>
             <input
@@ -232,7 +254,7 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
               }
               value={note}
               onChange={(e) => setNote(e.target.value)}
-              className="w-full text-sm border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-sky-400 outline-hidden"
+              className="w-full text-xs font-medium border border-zinc-200 dark:border-zinc-700 rounded-md px-3 py-2 bg-zinc-50 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-100 focus:bg-white dark:focus:bg-zinc-900 outline-hidden"
             />
           </div>
         </div>
@@ -240,10 +262,10 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
         <div className="flex justify-end pt-1">
           <button
             type="submit"
-            className="px-5 py-2 bg-sky-600 hover:bg-sky-700 text-white font-bold text-sm rounded-xl shadow-xs transition-colors cursor-pointer"
+            className="px-4 py-2 bg-zinc-900 hover:bg-zinc-800 dark:bg-zinc-100 dark:hover:bg-zinc-200 text-white dark:text-zinc-900 font-title-bold text-xs rounded-md transition-colors cursor-pointer"
           >
             {isTransfer
-              ? 'Registrar Transferencia / Cambio'
+              ? 'Registrar Transferencia'
               : 'Guardar Movimiento'}
           </button>
         </div>

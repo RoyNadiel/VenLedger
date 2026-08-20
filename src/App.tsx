@@ -1,9 +1,12 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { Routes, Route, NavLink, Navigate } from 'react-router-dom';
 import { useInitialization } from './modules/shared/presentation/useInitialization';
-import { Header, type Tab } from './modules/shared/presentation/Header';
+import { Header } from './modules/shared/presentation/Header';
 import { RatesBar } from './modules/rates/presentation/RatesBar';
+import { ScrollToTop } from './modules/shared/presentation/ScrollToTop';
 import { DashboardView } from './modules/analytics/presentation/DashboardView';
 import { VaultsSummary } from './modules/vaults/presentation/VaultsSummary';
+import { VaultDetailRoute } from './modules/vaults/presentation/VaultDetailRoute';
 import { TransactionsView } from './modules/transactions/presentation/TransactionsView';
 import { DebtsView } from './modules/debts/presentation/DebtsView';
 import { AnalyticsView } from './modules/analytics/presentation/AnalyticsView';
@@ -17,16 +20,15 @@ import {
 
 export const App: React.FC = () => {
   const { isInitialized, initError } = useInitialization();
-  const [activeTab, setActiveTab] = useState<Tab>('dashboard');
 
   if (initError) {
     return (
-      <div className="min-h-screen bg-rose-50 flex items-center justify-center p-4">
-        <div className="bg-white border border-rose-200 p-6 rounded-2xl max-w-sm w-full text-center space-y-2">
-          <h2 className="text-lg font-bold text-rose-700">
+      <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 flex items-center justify-center p-4">
+        <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-6 rounded-xl max-w-sm w-full text-center space-y-2">
+          <h2 className="text-base font-semibold text-red-600 dark:text-red-400">
             Error al Iniciar VenLedger
           </h2>
-          <p className="text-xs text-slate-600">{initError}</p>
+          <p className="text-xs text-zinc-600 dark:text-zinc-400">{initError}</p>
         </div>
       </div>
     );
@@ -34,10 +36,10 @@ export const App: React.FC = () => {
 
   if (!isInitialized) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 flex items-center justify-center p-4">
         <div className="flex flex-col items-center space-y-3">
-          <div className="w-10 h-10 border-4 border-sky-500 border-t-transparent rounded-full animate-spin"></div>
-          <span className="text-xs font-semibold text-slate-500">
+          <div className="w-8 h-8 border-2 border-zinc-900 dark:border-zinc-100 border-t-transparent rounded-full animate-spin"></div>
+          <span className="text-xs font-mono text-zinc-500 dark:text-zinc-400">
             Cargando VenLedger...
           </span>
         </div>
@@ -45,80 +47,51 @@ export const App: React.FC = () => {
     );
   }
 
+  const mobileNavItems = [
+    { path: '/', label: 'Resumen', icon: <LayoutDashboard className="w-4 h-4 mb-0.5" /> },
+    { path: '/vaults', label: 'Bóvedas', icon: <Landmark className="w-4 h-4 mb-0.5" /> },
+    { path: '/transactions', label: 'Movimientos', icon: <ArrowLeftRight className="w-4 h-4 mb-0.5" /> },
+    { path: '/debts', label: 'Deudas', icon: <Handshake className="w-4 h-4 mb-0.5" /> },
+    { path: '/analytics', label: 'Salud', icon: <BarChart3 className="w-4 h-4 mb-0.5" /> },
+  ];
+
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 pb-20 md:pb-8 transition-colors">
-      <Header activeTab={activeTab} setActiveTab={setActiveTab} />
+    <div className="min-h-screen flex flex-col bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 pb-20 md:pb-8 transition-colors">
+      <ScrollToTop />
+      <Header />
       <RatesBar />
-      <main className="max-w-[1480px] w-full mx-auto p-2 flex-1">
-        {activeTab === 'dashboard' && <DashboardView />}
-        {activeTab === 'vaults' && <VaultsSummary hideSummaryOnMobile />}
-        {activeTab === 'transactions' && <TransactionsView />}
-        {activeTab === 'debts' && <DebtsView />}
-        {activeTab === 'analytics' && <AnalyticsView />}
+      <main className="max-w-[1440px] w-full mx-auto p-4 flex-1">
+        <Routes>
+          <Route path="/" element={<DashboardView />} />
+          <Route path="/vaults" element={<VaultsSummary hideSummaryOnMobile />} />
+          <Route path="/vaults/:vaultId" element={<VaultDetailRoute />} />
+          <Route path="/transactions" element={<TransactionsView />} />
+          <Route path="/debts" element={<DebtsView />} />
+          <Route path="/analytics" element={<AnalyticsView />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
       </main>
 
-      {/* Navegación por pestañas móvil (oculta en escritorio) */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 z-40 px-2 py-2 transition-colors">
+      {/* Navegación por pestañas móvil */}
+      <nav id="tour-nav-mobile" className="md:hidden fixed bottom-0 left-0 right-0 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-md border-t border-zinc-200 dark:border-zinc-800 z-40 px-2 py-2 transition-colors">
         <div className="max-w-md mx-auto flex justify-around items-center">
-          <button
-            onClick={() => setActiveTab('dashboard')}
-            className={`flex flex-col items-center py-1 px-2 rounded-xl text-xs font-semibold transition-all duration-150 active:scale-90 select-none cursor-pointer ${
-              activeTab === 'dashboard'
-                ? 'text-sky-600 bg-sky-50'
-                : 'text-slate-400 hover:text-slate-600'
-            }`}
-          >
-            <LayoutDashboard className="w-5 h-5 mb-0.5" />
-            Resumen
-          </button>
-
-          <button
-            onClick={() => setActiveTab('vaults')}
-            className={`flex flex-col items-center py-1 px-2 rounded-xl text-xs font-semibold transition-all duration-150 active:scale-90 select-none cursor-pointer ${
-              activeTab === 'vaults'
-                ? 'text-indigo-600 bg-indigo-50'
-                : 'text-slate-400 hover:text-slate-600'
-            }`}
-          >
-            <Landmark className="w-5 h-5 mb-0.5" />
-            Bóvedas
-          </button>
-
-          <button
-            onClick={() => setActiveTab('transactions')}
-            className={`flex flex-col items-center py-1 px-2 rounded-xl text-xs font-semibold transition-all duration-150 active:scale-90 select-none cursor-pointer ${
-              activeTab === 'transactions'
-                ? 'text-emerald-600 bg-emerald-50'
-                : 'text-slate-400 hover:text-slate-600'
-            }`}
-          >
-            <ArrowLeftRight className="w-5 h-5 mb-0.5" />
-            Movimientos
-          </button>
-
-          <button
-            onClick={() => setActiveTab('debts')}
-            className={`flex flex-col items-center py-1 px-2 rounded-xl text-xs font-semibold transition-all duration-150 active:scale-90 select-none cursor-pointer ${
-              activeTab === 'debts'
-                ? 'text-rose-600 bg-rose-50'
-                : 'text-slate-400 hover:text-slate-600'
-            }`}
-          >
-            <Handshake className="w-5 h-5 mb-0.5" />
-            Deudas
-          </button>
-
-          <button
-            onClick={() => setActiveTab('analytics')}
-            className={`flex flex-col items-center py-1 px-2 rounded-xl text-xs font-semibold transition-all duration-150 active:scale-90 select-none cursor-pointer ${
-              activeTab === 'analytics'
-                ? 'text-purple-600 bg-purple-50'
-                : 'text-slate-400 hover:text-slate-600'
-            }`}
-          >
-            <BarChart3 className="w-5 h-5 mb-0.5" />
-            Salud
-          </button>
+          {mobileNavItems.map((item) => (
+            <NavLink
+              key={item.path}
+              to={item.path}
+              end={item.path === '/'}
+              className={({ isActive }) =>
+                `flex flex-col items-center py-1.5 px-3 rounded-lg text-[11px] font-medium transition-all duration-150 select-none cursor-pointer ${
+                  isActive
+                    ? 'text-zinc-900 bg-zinc-100 dark:text-zinc-100 dark:bg-zinc-800 font-semibold'
+                    : 'text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100'
+                }`
+              }
+            >
+              {item.icon}
+              {item.label}
+            </NavLink>
+          ))}
         </div>
       </nav>
     </div>
