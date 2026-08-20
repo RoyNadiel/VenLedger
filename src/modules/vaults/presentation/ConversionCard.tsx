@@ -28,10 +28,10 @@ export const ConversionCard: React.FC<ConversionCardProps> = ({
   const activeImpact = vesImpact ? vesImpact[period] : null;
 
   return (
-    <div className="acme-card h-fit p-4 rounded-md border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 flex flex-col justify-between min-w-0 transition-colors">
+    <div className="py-2 px-3 flex flex-col justify-between min-w-0 transition-colors">
       <div>
-        <div className="flex flex-wrap items-center justify-between gap-2 min-h-[26px]">
-          <div className="text-xs font-title-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
+        <div className="flex flex-wrap items-center justify-between gap-2 min-h-[24px]">
+          <div className="text-[11px] font-title-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
             {title}
           </div>
 
@@ -48,7 +48,7 @@ export const ConversionCard: React.FC<ConversionCardProps> = ({
                   key={p.key}
                   type="button"
                   onClick={() => setPeriod(p.key)}
-                  className={`px-2 py-0.5 rounded text-[10px] font-title-semibold transition-all duration-150 cursor-pointer select-none ${
+                  className={`px-1.5 py-0.5 rounded text-[9px] font-title-semibold transition-all duration-150 cursor-pointer select-none ${
                     period === p.key
                       ? 'bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900'
                       : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
@@ -61,8 +61,8 @@ export const ConversionCard: React.FC<ConversionCardProps> = ({
           )}
         </div>
 
-        <div className="mt-2">
-          <span className="text-2xl lg:text-3xl font-title-bold text-zinc-900 dark:text-zinc-100 block truncate tracking-tight">
+        <div className="mt-1">
+          <span className="text-xl lg:text-2xl font-title-bold text-zinc-900 dark:text-zinc-100 block truncate tracking-tight">
             {currencySymbol}{' '}
             {amount.toLocaleString(locale, {
               minimumFractionDigits: 2,
@@ -72,14 +72,14 @@ export const ConversionCard: React.FC<ConversionCardProps> = ({
         </div>
       </div>
 
-      <div className="flex flex-wrap items-center justify-between gap-1 mt-3 pt-2.5 border-t border-zinc-100 dark:border-zinc-800/80">
-        <span className="text-xs font-title-semibold text-zinc-500 dark:text-zinc-400 truncate">
+      <div className="flex flex-wrap items-center justify-between gap-1 mt-2 pt-2 border-t border-zinc-100 dark:border-zinc-800/60">
+        <span className="text-[11px] font-title-semibold text-zinc-500 dark:text-zinc-400 truncate">
           {rateLabel}
         </span>
 
         {activeImpact && (
           <span
-            className={`inline-flex items-center px-1.5 py-0.5 rounded text-[11px] font-title-semibold border ${
+            className={`inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-title-semibold border ${
               activeImpact.deltaUSD < 0
                 ? 'bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-400 border-red-200 dark:border-red-900'
                 : activeImpact.deltaUSD > 0

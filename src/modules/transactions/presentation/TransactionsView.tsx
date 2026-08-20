@@ -117,7 +117,7 @@ export const TransactionsView: React.FC = () => {
   ];
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       {/* Formulario de Registro Rápido */}
       <TransactionForm
         type={type}
@@ -142,8 +142,8 @@ export const TransactionsView: React.FC = () => {
       />
 
       {/* Historial de Movimientos */}
-      <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-md p-4 transition-colors">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3 pb-2 border-b border-zinc-100 dark:border-zinc-800">
+      <div className="pt-2">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3 pb-2 border-b border-zinc-200 dark:border-zinc-800">
           <h2 className="text-xs font-title-bold text-zinc-900 dark:text-zinc-100 uppercase tracking-wider font-mono">
             Historial Reciente
           </h2>

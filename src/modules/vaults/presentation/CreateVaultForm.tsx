@@ -57,7 +57,7 @@ export const CreateVaultForm: React.FC<CreateVaultFormProps> = ({
   return (
     <form
       onSubmit={onSubmit}
-      className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-md p-4 space-y-3 transition-colors"
+      className="pb-4 border-b border-zinc-200 dark:border-zinc-800 space-y-3 transition-colors"
     >
       <h3 className="text-xs font-title-bold text-zinc-900 dark:text-zinc-100 uppercase tracking-wider font-mono">
         Crear Nueva Bóveda

@@ -237,9 +237,9 @@ export const DebtsView: React.FC = () => {
   ];
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       {/* Formulario para registrar nueva deuda */}
-      <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-md p-4 transition-colors">
+      <div className="pb-4 border-b border-zinc-200 dark:border-zinc-800 transition-colors">
         <h2 className="text-xs font-title-bold text-zinc-900 dark:text-zinc-100 mb-3 uppercase tracking-wider font-mono">
           Registrar Nueva Deuda / Préstamo
         </h2>
@@ -425,7 +425,7 @@ export const DebtsView: React.FC = () => {
           return (
             <div
               key={debt.id}
-              className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-md p-4 space-y-3 transition-colors flex flex-col justify-between"
+              className="border-b border-zinc-200 dark:border-zinc-800 pb-4 pt-1 px-1 space-y-3 transition-colors flex flex-col justify-between"
             >
               <div>
                 <div className="flex items-center justify-between">
@@ -454,7 +454,7 @@ export const DebtsView: React.FC = () => {
                   )}
                 </div>
 
-                <div className="mt-3 pt-2.5 border-t border-zinc-100 dark:border-zinc-800 space-y-1">
+                <div className="mt-3 pt-2.5 border-t border-zinc-100 dark:border-zinc-800/60 space-y-1">
                   <div className="flex justify-between text-xs">
                     <span className="text-zinc-500 dark:text-zinc-400 font-title-semibold">
                       Monto Original:
@@ -488,7 +488,7 @@ export const DebtsView: React.FC = () => {
               </div>
 
               {/* Acciones de abono / comprobante */}
-              <div className="pt-2 border-t border-zinc-100 dark:border-zinc-800 flex flex-col space-y-2">
+              <div className="pt-2 border-t border-zinc-100 dark:border-zinc-800/60 flex flex-col space-y-2">
                 {paymentDebtId === debt.id ? (
                   <div className="space-y-2">
                     <div className="flex items-center space-x-2">

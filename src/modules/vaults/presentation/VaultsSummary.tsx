@@ -140,12 +140,12 @@ export const VaultsSummary: React.FC<VaultsSummaryProps> = ({
   }
 
   return (
-    <div className="space-y-6">
-      {/* Tarjetas de Conversión Consolidada */}
+    <div className="space-y-4">
+      {/* Franja Unificada de Conversión Consolidada */}
       <div
         className={`${
           hideSummaryOnMobile ? 'hidden md:grid' : 'grid'
-        } grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3`}
+        } grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 border-b border-zinc-200 dark:border-zinc-800 pb-4 divide-y sm:divide-y-0 sm:divide-x divide-zinc-200 dark:divide-zinc-800`}
       >
         <ConversionCard
           title="Bs → USD"
@@ -188,22 +188,22 @@ export const VaultsSummary: React.FC<VaultsSummaryProps> = ({
       </div>
 
       {/* Encabezado de Bóvedas y Botón Crear */}
-      <div className="flex items-center justify-between pt-2">
-        <h2 className="text-sm font-title-bold tracking-tight text-zinc-900 dark:text-zinc-100 uppercase">
+      <div className="flex items-center justify-between pt-1">
+        <h2 className="text-xs font-title-bold tracking-wider text-zinc-900 dark:text-zinc-100 uppercase font-mono">
           Bóvedas de Fondos
         </h2>
         <button
           onClick={() => setIsCreating(!isCreating)}
-          className="px-3 py-1.5 bg-zinc-900 hover:bg-zinc-800 dark:bg-zinc-100 dark:hover:bg-zinc-200 text-white dark:text-zinc-900 font-title-semibold text-xs rounded-lg transition-colors cursor-pointer flex items-center space-x-1.5"
+          className="px-3 py-1.5 bg-zinc-900 hover:bg-zinc-800 dark:bg-zinc-100 dark:hover:bg-zinc-200 text-white dark:text-zinc-900 font-title-semibold text-xs rounded-md transition-colors cursor-pointer flex items-center space-x-1.5"
         >
           {isCreating ? (
             <>
-              <X className="w-3.5 h-3.5" />
+              <X className="w-3 h-3" />
               <span>Cancelar</span>
             </>
           ) : (
             <>
-              <Plus className="w-3.5 h-3.5" />
+              <Plus className="w-3 h-3" />
               <span>Nueva Bóveda</span>
             </>
           )}
@@ -226,7 +226,7 @@ export const VaultsSummary: React.FC<VaultsSummaryProps> = ({
       )}
 
       {/* Desglose por Bóveda */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 items-start">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 items-start">
         {vaults.map((vault) => (
           <VaultCard
             key={vault.id}

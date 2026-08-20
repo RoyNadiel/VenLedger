@@ -127,7 +127,7 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
   ];
 
   return (
-    <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-md p-4 transition-colors">
+    <div className="pb-4 border-b border-zinc-200 dark:border-zinc-800 transition-colors">
       <h2 className="text-xs font-title-bold text-zinc-900 dark:text-zinc-100 mb-3 uppercase tracking-wider font-mono">
         Nuevo Movimiento
       </h2>
