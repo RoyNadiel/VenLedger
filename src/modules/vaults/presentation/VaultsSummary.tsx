@@ -125,6 +125,7 @@ export const VaultsSummary: React.FC<VaultsSummaryProps> = ({
     <div className="space-y-4">
       {/* Franja Unificada de Conversión Consolidada */}
       <div
+        id="tour-summary"
         className={`${
           hideSummaryOnMobile ? 'hidden md:grid' : 'grid'
         } grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 border-b border-zinc-200 dark:border-zinc-800 pb-4 divide-y sm:divide-y-0 sm:divide-x divide-zinc-200 dark:divide-zinc-800`}
@@ -208,7 +209,7 @@ export const VaultsSummary: React.FC<VaultsSummaryProps> = ({
       )}
 
       {/* Desglose por Bóveda */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 items-start">
+      <div id="tour-vaults" className="grid grid-cols-1 sm:grid-cols-3 gap-3 items-start">
         {vaults.map((vault) => (
           <VaultCard
             key={vault.id}

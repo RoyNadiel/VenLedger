@@ -193,3 +193,73 @@ html.dark .text-slate-500 {
 ::view-transition-new(root) {
   z-index: 9999;
 }
+
+/* ── Driver.js Custom Styling (Vercel Minimalist Aesthetic) ── */
+.driver-popover {
+  background-color: #18181b !important;
+  color: #f4f4f5 !important;
+  border: 1px solid #27272a !important;
+  border-radius: 8px !important;
+  padding: 16px !important;
+  font-family: 'Bellota', sans-serif !important;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.5) !important;
+}
+
+.driver-popover-title {
+  font-family: 'Bellota', sans-serif !important;
+  font-weight: 700 !important;
+  font-size: 15px !important;
+  color: #ffffff !important;
+  margin-bottom: 6px !important;
+}
+
+.driver-popover-description {
+  font-size: 12px !important;
+  color: #a1a1aa !important;
+  line-height: 1.5 !important;
+}
+
+.driver-popover-footer {
+  margin-top: 14px !important;
+}
+
+.driver-popover-progress-text {
+  font-family: 'Inconsolata', monospace !important;
+  font-size: 11px !important;
+  color: #71717a !important;
+}
+
+.driver-popover-navigation-btns {
+  gap: 6px !important;
+}
+
+.driver-popover-btn {
+  background-color: #27272a !important;
+  color: #f4f4f5 !important;
+  border: 1px solid #3f3f46 !important;
+  border-radius: 6px !important;
+  font-family: 'Bellota', sans-serif !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  padding: 5px 12px !important;
+  text-shadow: none !important;
+  transition: all 0.15s ease !important;
+}
+
+.driver-popover-btn:hover {
+  background-color: #3f3f46 !important;
+  color: #ffffff !important;
+}
+
+.driver-popover-next-btn,
+.driver-popover-done-btn {
+  background-color: #f4f4f5 !important;
+  color: #18181b !important;
+  border-color: #ffffff !important;
+}
+
+.driver-popover-next-btn:hover,
+.driver-popover-done-btn:hover {
+  background-color: #e4e4e7 !important;
+  color: #09090b !important;
+}

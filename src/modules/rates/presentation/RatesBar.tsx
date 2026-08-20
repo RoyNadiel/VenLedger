@@ -14,7 +14,7 @@ export const RatesBar: React.FC = () => {
     : null;
 
   return (
-    <div className="bg-zinc-100/60 dark:bg-zinc-900/60 border-b border-zinc-200 dark:border-zinc-800 px-3 sm:px-4 py-1.5 sm:py-2 text-xs transition-colors">
+    <div id="tour-rates" className="bg-zinc-100/60 dark:bg-zinc-900/60 border-b border-zinc-200 dark:border-zinc-800 px-3 sm:px-4 py-1.5 sm:py-2 text-xs transition-colors">
       <div className="max-w-[1440px] mx-auto flex items-center justify-between gap-2 sm:gap-4">
         {/* Grid de 3 columnas en móvil, Flex desglosado en desktop */}
         <div className="grid grid-cols-3 sm:flex sm:items-center sm:space-x-6 flex-1 min-w-0 gap-1 sm:gap-4">

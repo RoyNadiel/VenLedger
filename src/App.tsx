@@ -73,7 +73,7 @@ export const App: React.FC = () => {
       </main>
 
       {/* Navegación por pestañas móvil */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-md border-t border-zinc-200 dark:border-zinc-800 z-40 px-2 py-2 transition-colors">
+      <nav id="tour-nav-mobile" className="md:hidden fixed bottom-0 left-0 right-0 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-md border-t border-zinc-200 dark:border-zinc-800 z-40 px-2 py-2 transition-colors">
         <div className="max-w-md mx-auto flex justify-around items-center">
           {mobileNavItems.map((item) => (
             <NavLink

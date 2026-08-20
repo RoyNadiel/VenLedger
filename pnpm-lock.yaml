@@ -17,6 +17,9 @@ importers:
       dexie-react-hooks:
         specifier: ^4.4.0
         version: 4.4.0(dexie@4.4.4)(react@19.2.8)
+      driver.js:
+        specifier: ^1.8.0
+        version: 1.8.0
       html-to-image:
         specifier: ^1.11.13
         version: 1.11.13
@@ -1430,6 +1433,9 @@ packages:
 
   dexie@4.4.4:
     resolution: {integrity: sha512-jIwsYI8Os2hgnqc6O49YwFDKGc5v5QjGx0wPVp543ip1F53VFAKMLthV2pQosQcVTv3eAskTWYspOx195PM0FQ==}
+
+  driver.js@1.8.0:
+    resolution: {integrity: sha512-+8/IO7h1v14IzWh2GP60N7T3PFZweXwdn5e5POuxRSBoCYUojsBxzqawPeXh3YZIibRy7EehYNEyxe7slwwtdg==}
 
   dunder-proto@1.0.1:
     resolution: {integrity: sha512-KIN/nDJBQRcXw0MLVhZE9iQHmG68qAVIBg9CqmUYjmQIhgij9U5MFvrqkUL5FbtyyzZuOeOt0zdeRe4UY7ct+A==}
@@ -4058,6 +4064,8 @@ snapshots:
       react: 19.2.8
 
   dexie@4.4.4: {}
+
+  driver.js@1.8.0: {}
 
   dunder-proto@1.0.1:
     dependencies:

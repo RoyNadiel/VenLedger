@@ -2,15 +2,19 @@ import React from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { VenLedgerLogo } from './VenLedgerLogo';
 import { ThemeToggle } from './ThemeToggle';
+import { useOnboardingTour } from './useOnboardingTour';
 import {
   LayoutDashboard,
   Landmark,
   ArrowLeftRight,
   Handshake,
   BarChart3,
+  HelpCircle,
 } from 'lucide-react';
 
 export const Header: React.FC = () => {
+  const { startTour } = useOnboardingTour();
+
   const navItems = [
     {
       path: '/',
@@ -44,6 +48,7 @@ export const Header: React.FC = () => {
       <div className="max-w-[1440px] w-full mx-auto flex items-center justify-between">
         {/* Logo & Marca */}
         <Link
+          id="tour-logo"
           to="/"
           className="flex items-center space-x-3 cursor-pointer text-left focus:outline-none group select-none"
           title="Ir al Resumen / Dashboard"
@@ -60,7 +65,7 @@ export const Header: React.FC = () => {
         </Link>
 
         {/* Navegación Desktop */}
-        <nav className="hidden md:flex items-center space-x-1 p-1 rounded-lg">
+        <nav id="tour-nav-desktop" className="hidden md:flex items-center space-x-1 p-1 rounded-lg">
           {navItems.map((item) => (
             <NavLink
               key={item.path}
@@ -82,6 +87,13 @@ export const Header: React.FC = () => {
 
         {/* Lado Derecho Header */}
         <div className="flex items-center space-x-2">
+          <button
+            onClick={() => startTour(true)}
+            className="p-2 rounded-md text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
+            title="Ver Tutorial / Tour Guiado"
+          >
+            <HelpCircle className="w-4 h-4" />
+          </button>
           <ThemeToggle />
         </div>
       </div>
