@@ -27,6 +27,7 @@ export interface DebtCalculationResult {
   agreementType: AgreementType;
   originalAmount: number;
   currency: string;
+  totalPaidOriginal: number;
   totalPaidUSDT: number;
   totalPaidVES: number;
   remainingAmountUSDT: number;
@@ -46,8 +47,7 @@ export interface PurchasingPowerMetric {
 
 export class FinanceEngine {
   /**
-   * Calcula el saldo total consolidado usando el Bolívar (VES) como moneda pivote central.
-   * Convierte cada bóveda a VES según su tasa correspondiente y calcula equivalentes en USD, USDT y EUR.
+   * Consolida todos los saldos en VES, USD, USDT y EUR usando las tasas del día.
    */
   static calculateConsolidatedBalance(
     vaults: Vault[],
@@ -56,7 +56,8 @@ export class FinanceEngine {
     let totalVES = 0;
 
     const vaultBreakdown = vaults.map((vault) => {
-      const equivalentVES = vault.balance * getRateInVES(vault.currency, rates);
+      const rateInVES = getRateInVES(vault.currency, rates);
+      const equivalentVES = vault.balance * rateInVES;
       totalVES += equivalentVES;
 
       const equivalentUSD =
@@ -101,28 +102,37 @@ export class FinanceEngine {
   ): DebtCalculationResult {
     let totalPaidVES = 0;
     let totalPaidUSDT = 0;
-
-    payments.forEach((payment) => {
-      const paymentRateInVES = getRateInVES(payment.currency, currentRates, payment.rateUsed);
-      const paidVES = payment.amount * paymentRateInVES;
-      totalPaidVES += paidVES;
-      // Usar la tasa P2P del momento del pago para obtener el equivalente USDT real.
-      // usdLibreAtPayment es el campo canónico; rateUsed es fallback para pagos anteriores
-      // en los que la moneda era VES o USDT (donde rateUsed === usd_libre).
-      const libreRate = payment.usdLibreAtPayment > 0
-        ? payment.usdLibreAtPayment
-        : (currentRates.usd_libre || 1);
-      totalPaidUSDT += paidVES / libreRate;
-    });
+    let totalPaidOriginal = 0;
 
     const debtRateInVES = getRateInVES(debt.currency, currentRates);
-    const originalVES = debt.totalAmount * debtRateInVES;
-    const originalUSDT = (currentRates.usd_libre || 1) > 0
-      ? originalVES / currentRates.usd_libre
-      : debt.totalAmount;
 
-    // Para fixed_usdt: comparar directamente en USDT — la deuda está congelada en esa unidad.
-    // Para floating_ves: comparar en VES — el valor de la deuda sigue a la tasa oficial.
+    payments.forEach((payment) => {
+      const paymentRateInVES = getRateInVES(
+        payment.currency,
+        currentRates,
+        payment.rateUsed
+      );
+      const paidVES = payment.amount * paymentRateInVES;
+      totalPaidVES += paidVES;
+
+      const libreRate =
+        payment.usdLibreAtPayment > 0
+          ? payment.usdLibreAtPayment
+          : currentRates.usd_libre || 1;
+      totalPaidUSDT += paidVES / libreRate;
+
+      // Abono acreditado en la moneda original de la deuda
+      if (payment.currency === debt.currency) {
+        totalPaidOriginal += payment.amount;
+      } else if (debtRateInVES > 0) {
+        totalPaidOriginal += paidVES / debtRateInVES;
+      } else {
+        totalPaidOriginal += payment.amount;
+      }
+    });
+
+    const originalVES = debt.totalAmount * debtRateInVES;
+
     let remainingAmountOriginal: number;
     let remainingAmountUSDT: number;
     let remainingAmountVES_Official: number;
@@ -130,24 +140,35 @@ export class FinanceEngine {
     let isFullyPaid: boolean;
 
     if (debt.agreementType === 'fixed_usdt') {
-      const remainingUSDT = Math.max(0, originalUSDT - totalPaidUSDT);
-      isFullyPaid = remainingUSDT <= 0.05; // tolerancia de 5 centavos
-      remainingAmountUSDT = remainingUSDT;
-      remainingAmountOriginal = debt.currency === 'USDT' || debt.currency === 'USD'
-        ? remainingUSDT
-        : debtRateInVES > 0
-          ? (remainingUSDT * (currentRates.usd_libre || 1)) / debtRateInVES
-          : remainingUSDT;
-      remainingAmountVES_Official = remainingUSDT * (currentRates.usd_official || 1);
-      remainingAmountVES_Libre = remainingUSDT * (currentRates.usd_libre || 1);
+      remainingAmountOriginal = Math.max(
+        0,
+        debt.totalAmount - totalPaidOriginal
+      );
+      isFullyPaid = remainingAmountOriginal <= 0.01;
+
+      const remainingVES = remainingAmountOriginal * debtRateInVES;
+      remainingAmountVES_Official =
+        remainingAmountOriginal * (currentRates.usd_official || 1);
+      remainingAmountVES_Libre =
+        remainingAmountOriginal * (currentRates.usd_libre || 1);
+      remainingAmountUSDT =
+        (currentRates.usd_libre || 1) > 0
+          ? remainingVES / currentRates.usd_libre
+          : remainingAmountOriginal;
     } else {
       // floating_ves: comparar en VES
       const remainingVES = Math.max(0, originalVES - totalPaidVES);
       isFullyPaid = remainingVES <= 0.5;
-      remainingAmountOriginal = debtRateInVES > 0 ? remainingVES / debtRateInVES : 0;
-      remainingAmountUSDT = (currentRates.usd_libre || 1) > 0 ? remainingVES / currentRates.usd_libre : 0;
-      remainingAmountVES_Official = remainingAmountUSDT * (currentRates.usd_official || 1);
-      remainingAmountVES_Libre = remainingAmountUSDT * (currentRates.usd_libre || 1);
+      remainingAmountOriginal =
+        debtRateInVES > 0 ? remainingVES / debtRateInVES : 0;
+      remainingAmountUSDT =
+        (currentRates.usd_libre || 1) > 0
+          ? remainingVES / currentRates.usd_libre
+          : 0;
+      remainingAmountVES_Official =
+        remainingAmountUSDT * (currentRates.usd_official || 1);
+      remainingAmountVES_Libre =
+        remainingAmountUSDT * (currentRates.usd_libre || 1);
     }
 
     return {
@@ -156,6 +177,7 @@ export class FinanceEngine {
       agreementType: debt.agreementType,
       originalAmount: debt.totalAmount,
       currency: debt.currency,
+      totalPaidOriginal: Number(totalPaidOriginal.toFixed(2)),
       totalPaidUSDT: Number(totalPaidUSDT.toFixed(2)),
       totalPaidVES: Number(totalPaidVES.toFixed(2)),
       remainingAmountUSDT: Number(remainingAmountUSDT.toFixed(2)),
@@ -173,15 +195,17 @@ export class FinanceEngine {
    */
   static calculatePurchasingPower(
     usdtBalance: number,
-    initialRateP2P: number,
-    currentRateP2P: number
+    historicalRateVES: number,
+    currentRates: ExchangeRates
   ): PurchasingPowerMetric {
-    const historicalValueInVES = usdtBalance * initialRateP2P;
-    const currentValueInVES = usdtBalance * currentRateP2P;
+    const historicalValueInVES = usdtBalance * historicalRateVES;
+    const currentValueInVES = usdtBalance * currentRates.usd_official;
 
-    const difference = currentValueInVES - historicalValueInVES;
     const percentageChange =
-      historicalValueInVES > 0 ? (difference / historicalValueInVES) * 100 : 0;
+      historicalValueInVES > 0
+        ? ((currentValueInVES - historicalValueInVES) / historicalValueInVES) *
+          100
+        : 0;
 
     let status: 'gained' | 'lost' | 'neutral' = 'neutral';
     if (percentageChange > 0.5) status = 'gained';
