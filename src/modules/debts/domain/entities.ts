@@ -23,6 +23,7 @@ export interface DebtPayment {
   rateUsed: number;          // Tasa de la moneda del pago → VES
   rateType: 'bcv' | 'libre';
   vaultId?: string;          // Bóveda asociada donde entra o sale el dinero
+  fee?: number;              // Comisión bancaria / Pago Móvil (ej. BDV, IGTF)
   createdAt: string;
   note?: string;
 }

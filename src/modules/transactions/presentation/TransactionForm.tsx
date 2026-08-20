@@ -28,6 +28,8 @@ export interface TransactionFormProps {
   setCategoryId?: (id: string) => void;
   note: string;
   setNote: (note: string) => void;
+  fee?: string;
+  setFee?: (fee: string) => void;
   vaults: Vault[];
   categories?: Category[];
   rates: ExchangeRates | null;
@@ -51,6 +53,8 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
   setCategoryId,
   note,
   setNote,
+  fee = '',
+  setFee,
   vaults,
   categories = [],
   rates,
@@ -258,6 +262,64 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
             />
           </div>
         </div>
+
+        {/* Sección opcional de Comisión Bancaria (para gastos o transferencias) */}
+        {(type === 'expense' || isTransfer) && setFee && (
+          <div className="pt-1">
+            <div className="flex flex-wrap items-center justify-between gap-1 mb-1">
+              <label className="block text-[10px] font-title-bold text-zinc-500 dark:text-zinc-400 uppercase font-mono">
+                Comisión Bancaria / Fee ({sourceVault?.currency || 'Opcional'})
+              </label>
+              <div className="flex items-center space-x-1.5">
+                {(!sourceVault || sourceVault.currency === 'VES') && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const numAmt = parseFloat(amount) || 0;
+                      const calculated = Math.max(14, numAmt * 0.003);
+                      setFee(calculated.toFixed(2));
+                    }}
+                    className="text-[10px] font-mono font-bold text-zinc-700 dark:text-zinc-300 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 px-1.5 py-0.5 rounded transition-colors cursor-pointer border border-zinc-200 dark:border-zinc-700"
+                    title="0.30% con un mínimo de 14.00 Bs (BDV / Pago Móvil)"
+                  >
+                    0.3% BDV (Mín. 14 Bs)
+                  </button>
+                )}
+                {sourceVault && sourceVault.currency !== 'VES' && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const numAmt = parseFloat(amount) || 0;
+                      const calculated = numAmt * 0.03;
+                      setFee(calculated.toFixed(2));
+                    }}
+                    className="text-[10px] font-mono font-bold text-zinc-700 dark:text-zinc-300 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 px-1.5 py-0.5 rounded transition-colors cursor-pointer border border-zinc-200 dark:border-zinc-700"
+                    title="3% IGTF (Transacciones Financieras)"
+                  >
+                    3% IGTF
+                  </button>
+                )}
+                {fee && parseFloat(fee) > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => setFee('')}
+                    className="text-[10px] font-mono font-bold text-zinc-400 hover:text-red-500 cursor-pointer"
+                  >
+                    ✕ Limpiar
+                  </button>
+                )}
+              </div>
+            </div>
+            <input
+              type="number"
+              step="any"
+              placeholder="0.00 (Monto comisión)"
+              value={fee}
+              onChange={(e) => setFee(e.target.value)}
+              className="w-full sm:w-1/3 text-xs font-mono font-bold border border-zinc-200 dark:border-zinc-700 rounded-md px-3 py-1.5 bg-zinc-50 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-100 focus:bg-white dark:focus:bg-zinc-900 outline-hidden"
+            />
+          </div>
+        )}
 
         <div className="flex justify-end pt-1">
           <button

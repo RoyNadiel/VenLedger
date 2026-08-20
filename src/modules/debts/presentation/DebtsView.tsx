@@ -36,6 +36,7 @@ export const DebtsView: React.FC = () => {
     useState<AgreementType>('fixed_usdt');
   const [initialPayment, setInitialPayment] = useState('');
   const [initialPaymentCustomRate, setInitialPaymentCustomRate] = useState('');
+  const [initialPaymentFee, setInitialPaymentFee] = useState('');
   const [initialVaultId, setInitialVaultId] = useState('');
   const [createError, setCreateError] = useState<string | null>(null);
 
@@ -43,6 +44,7 @@ export const DebtsView: React.FC = () => {
   const [paymentDebtId, setPaymentDebtId] = useState<string | null>(null);
   const [paymentAmount, setPaymentAmount] = useState('');
   const [paymentCustomRate, setPaymentCustomRate] = useState('');
+  const [paymentFee, setPaymentFee] = useState('');
   const [paymentVaultId, setPaymentVaultId] = useState('');
   const [paymentError, setPaymentError] = useState<string | null>(null);
 
@@ -105,6 +107,8 @@ export const DebtsView: React.FC = () => {
       const customRate = parseFloat(initialPaymentCustomRate);
       const hasCustomRate = !isNaN(customRate) && customRate > 0;
       const defaultRateInfo = getPaymentRateInfo(paymentCurrency, rates);
+      const parsedFee = parseFloat(initialPaymentFee);
+      const validFee = !isNaN(parsedFee) && parsedFee > 0 ? parsedFee : undefined;
 
       await addPayment({
         debtId: newDebt.id,
@@ -113,6 +117,7 @@ export const DebtsView: React.FC = () => {
         rateUsed: hasCustomRate ? customRate : defaultRateInfo.rateUsed,
         rateType: hasCustomRate ? 'libre' : defaultRateInfo.rateType,
         vaultId: initialVaultId || undefined,
+        fee: validFee,
       });
     }
 
@@ -121,6 +126,7 @@ export const DebtsView: React.FC = () => {
     setTotalAmount('');
     setInitialPayment('');
     setInitialPaymentCustomRate('');
+    setInitialPaymentFee('');
     setInitialVaultId('');
     setCreateError(null);
   };
@@ -168,6 +174,8 @@ export const DebtsView: React.FC = () => {
     const customRate = parseFloat(paymentCustomRate);
     const hasCustomRate = !isNaN(customRate) && customRate > 0;
     const defaultRateInfo = getPaymentRateInfo(paymentCurrency, rates);
+    const parsedFee = parseFloat(paymentFee);
+    const validFee = !isNaN(parsedFee) && parsedFee > 0 ? parsedFee : undefined;
 
     await addPayment({
       debtId: debt.id,
@@ -176,10 +184,12 @@ export const DebtsView: React.FC = () => {
       rateUsed: hasCustomRate ? customRate : defaultRateInfo.rateUsed,
       rateType: hasCustomRate ? 'libre' : defaultRateInfo.rateType,
       vaultId: paymentVaultId || undefined,
+      fee: validFee,
     });
 
     setPaymentAmount('');
     setPaymentCustomRate('');
+    setPaymentFee('');
     setPaymentVaultId('');
     setPaymentDebtId(null);
     setPaymentError(null);
@@ -379,19 +389,76 @@ export const DebtsView: React.FC = () => {
           </div>
 
           {hasInitialPaymentVal && (
-            <div>
-              <label className="block text-xs font-semibold text-zinc-500 dark:text-zinc-400 mb-1">
-                Tasa Manual (Opcional)
-              </label>
-              <input
-                type="number"
-                step="any"
-                placeholder="Ej. 45.00 Bs/$"
-                value={initialPaymentCustomRate}
-                onChange={(e) => setInitialPaymentCustomRate(e.target.value)}
-                className="w-full text-xs font-mono border border-zinc-200 dark:border-zinc-700 rounded-md px-3 py-2 bg-zinc-50 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-100 focus:bg-white dark:focus:bg-zinc-900 outline-hidden"
-              />
-            </div>
+            <>
+              <div>
+                <label className="block text-xs font-semibold text-zinc-500 dark:text-zinc-400 mb-1">
+                  Tasa Manual (Opcional)
+                </label>
+                <input
+                  type="number"
+                  step="any"
+                  placeholder="Ej. 45.00 Bs/$"
+                  value={initialPaymentCustomRate}
+                  onChange={(e) => setInitialPaymentCustomRate(e.target.value)}
+                  className="w-full text-xs font-mono border border-zinc-200 dark:border-zinc-700 rounded-md px-3 py-2 bg-zinc-50 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-100 focus:bg-white dark:focus:bg-zinc-900 outline-hidden"
+                />
+              </div>
+
+              <div className="sm:col-span-3">
+                <div className="flex items-center justify-between mb-1">
+                  <label className="block text-[10px] font-title-bold text-zinc-500 dark:text-zinc-400 uppercase font-mono">
+                    Comisión Bancaria / Fee ({selectedInitialVault?.currency || currency})
+                  </label>
+                  <div className="flex items-center space-x-1.5">
+                    {(!selectedInitialVault || selectedInitialVault.currency === 'VES' || currency === 'VES') && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const numAmt = parseFloat(initialPayment) || 0;
+                          const calculated = Math.max(14, numAmt * 0.003);
+                          setInitialPaymentFee(calculated.toFixed(2));
+                        }}
+                        className="text-[10px] font-mono font-bold text-zinc-700 dark:text-zinc-300 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 px-1.5 py-0.5 rounded transition-colors cursor-pointer border border-zinc-200 dark:border-zinc-700"
+                        title="0.30% con un mínimo de 14.00 Bs (BDV / Pago Móvil)"
+                      >
+                        0.3% BDV (Mín. 14 Bs)
+                      </button>
+                    )}
+                    {((selectedInitialVault && selectedInitialVault.currency !== 'VES') || currency !== 'VES') && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const numAmt = parseFloat(initialPayment) || 0;
+                          const calculated = numAmt * 0.03;
+                          setInitialPaymentFee(calculated.toFixed(2));
+                        }}
+                        className="text-[10px] font-mono font-bold text-zinc-700 dark:text-zinc-300 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 px-1.5 py-0.5 rounded transition-colors cursor-pointer border border-zinc-200 dark:border-zinc-700"
+                        title="3% IGTF (Transacciones Financieras)"
+                      >
+                        3% IGTF
+                      </button>
+                    )}
+                    {initialPaymentFee && parseFloat(initialPaymentFee) > 0 && (
+                      <button
+                        type="button"
+                        onClick={() => setInitialPaymentFee('')}
+                        className="text-[10px] font-mono font-bold text-zinc-400 hover:text-red-500 cursor-pointer"
+                      >
+                        ✕ Limpiar
+                      </button>
+                    )}
+                  </div>
+                </div>
+                <input
+                  type="number"
+                  step="any"
+                  placeholder="0.00 (Monto comisión)"
+                  value={initialPaymentFee}
+                  onChange={(e) => setInitialPaymentFee(e.target.value)}
+                  className="w-full sm:w-1/3 text-xs font-mono font-bold border border-zinc-200 dark:border-zinc-700 rounded-md px-3 py-1.5 bg-zinc-50 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-100 focus:bg-white dark:focus:bg-zinc-900 outline-hidden"
+                />
+              </div>
+            </>
           )}
 
           {createError && (
@@ -561,6 +628,51 @@ export const DebtsView: React.FC = () => {
                       onChange={(val) => setPaymentVaultId(val)}
                       placeholder="Bóveda (opcional)..."
                     />
+
+                    {/* Comisión Bancaria para Abono */}
+                    <div className="flex flex-wrap items-center justify-between gap-1 pt-1">
+                      <div className="flex items-center space-x-1.5">
+                        <span className="text-[10px] font-mono font-bold text-zinc-500 dark:text-zinc-400">
+                          Comisión:
+                        </span>
+                        {(!paymentVaultId || vaults.find((v) => v.id === paymentVaultId)?.currency === 'VES' || debt.currency === 'VES') && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const numAmt = parseFloat(paymentAmount) || 0;
+                              const calculated = Math.max(14, numAmt * 0.003);
+                              setPaymentFee(calculated.toFixed(2));
+                            }}
+                            className="text-[10px] font-mono font-bold text-zinc-700 dark:text-zinc-300 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 px-1.5 py-0.5 rounded transition-colors cursor-pointer border border-zinc-200 dark:border-zinc-700"
+                            title="0.30% con un mínimo de 14.00 Bs (BDV / Pago Móvil)"
+                          >
+                            0.3% BDV (Mín. 14 Bs)
+                          </button>
+                        )}
+                        {((vaults.find((v) => v.id === paymentVaultId)?.currency !== 'VES') || (debt.currency !== 'VES' && !paymentVaultId)) && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const numAmt = parseFloat(paymentAmount) || 0;
+                              const calculated = numAmt * 0.03;
+                              setPaymentFee(calculated.toFixed(2));
+                            }}
+                            className="text-[10px] font-mono font-bold text-zinc-700 dark:text-zinc-300 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 px-1.5 py-0.5 rounded transition-colors cursor-pointer border border-zinc-200 dark:border-zinc-700"
+                            title="3% IGTF (Transacciones Financieras)"
+                          >
+                            3% IGTF
+                          </button>
+                        )}
+                      </div>
+                      <input
+                        type="number"
+                        step="any"
+                        placeholder="Fee (opcional)"
+                        value={paymentFee}
+                        onChange={(e) => setPaymentFee(e.target.value)}
+                        className="w-28 text-xs font-mono font-bold border border-zinc-200 dark:border-zinc-700 rounded-md px-2 py-1 bg-zinc-50 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-100 outline-hidden"
+                      />
+                    </div>
 
                     {paymentError && (
                       <div className="text-[11px] font-bold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900 rounded-md p-1.5">

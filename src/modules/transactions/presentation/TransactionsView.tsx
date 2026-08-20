@@ -23,6 +23,7 @@ export const TransactionsView: React.FC = () => {
   const [destinationAmount, setDestinationAmount] = useState('');
   const [categoryId, setCategoryId] = useState('');
   const [note, setNote] = useState('');
+  const [fee, setFee] = useState('');
   const [filterVaultId, setFilterVaultId] = useState('');
 
   const isTransfer = type === 'transfer' || type === 'buy_sell';
@@ -38,6 +39,8 @@ export const TransactionsView: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const numAmount = parseFloat(amount);
+    const numFee = parseFloat(fee);
+    const validFee = !isNaN(numFee) && numFee > 0 ? numFee : undefined;
     const selectedVault = sourceVault || vaults[0];
 
     if (!selectedVault || isNaN(numAmount) || numAmount <= 0) return;
@@ -65,6 +68,7 @@ export const TransactionsView: React.FC = () => {
         destinationAmount: numDestAmount,
         currency: selectedVault.currency,
         type,
+        fee: validFee,
         note:
           note || `Transferencia de ${selectedVault.name} a ${destVault?.name}`,
       });
@@ -75,6 +79,7 @@ export const TransactionsView: React.FC = () => {
         currency: selectedVault.currency,
         categoryId: categoryId || undefined,
         type,
+        fee: validFee,
         note,
       });
     }
@@ -82,6 +87,7 @@ export const TransactionsView: React.FC = () => {
     setAmount('');
     setDestinationAmount('');
     setNote('');
+    setFee('');
     setCategoryId('');
   };
 
@@ -134,6 +140,8 @@ export const TransactionsView: React.FC = () => {
         setCategoryId={setCategoryId}
         note={note}
         setNote={setNote}
+        fee={fee}
+        setFee={setFee}
         vaults={vaults}
         categories={categories}
         rates={rates}

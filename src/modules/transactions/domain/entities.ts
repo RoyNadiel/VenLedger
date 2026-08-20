@@ -11,6 +11,7 @@ export interface Transaction {
   type: TransactionType;
   categoryId?: string; // UUID v4
   rateUsed?: number;
+  fee?: number; // Comisión bancaria / Pago Móvil (ej. BDV, IGTF)
   note?: string;
   createdAt: string;
 }

@@ -29,17 +29,18 @@ export const useTransactionsStore = create<TransactionsState>((set, get) => ({
 
     // 2. Ajustar el saldo de la(s) bóveda(s) correspondiente(s)
     const isTransfer = data.type === 'transfer' || data.type === 'buy_sell';
+    const fee = data.fee || 0;
 
     if (isTransfer && data.destinationVaultId) {
-      // Bóveda de Origen se descuenta
+      // Bóveda de Origen se descuenta (Monto enviado + Comisión bancaria)
       const sourceVault = await dexieVaultRepository.getById(data.vaultId);
       if (sourceVault) {
         await dexieVaultRepository.update(data.vaultId, {
-          balance: sourceVault.balance - data.amount,
+          balance: sourceVault.balance - (data.amount + fee),
         });
       }
 
-      // Bóveda de Destino se incrementa
+      // Bóveda de Destino se incrementa con el monto percibido
       const destVault = await dexieVaultRepository.getById(data.destinationVaultId);
       if (destVault) {
         const addedAmount = data.destinationAmount ?? data.amount;
@@ -51,8 +52,8 @@ export const useTransactionsStore = create<TransactionsState>((set, get) => ({
       const vault = await dexieVaultRepository.getById(data.vaultId);
       if (vault) {
         let balanceAdjustment = 0;
-        if (data.type === 'income') balanceAdjustment = data.amount;
-        else if (data.type === 'expense') balanceAdjustment = -data.amount;
+        if (data.type === 'income') balanceAdjustment = data.amount - fee;
+        else if (data.type === 'expense') balanceAdjustment = -(data.amount + fee);
 
         if (balanceAdjustment !== 0) {
           await dexieVaultRepository.update(data.vaultId, {
@@ -76,12 +77,14 @@ export const useTransactionsStore = create<TransactionsState>((set, get) => ({
 
     if (txToDelete) {
       const isTransfer = txToDelete.type === 'transfer' || txToDelete.type === 'buy_sell';
+      const fee = txToDelete.fee || 0;
+
       if (isTransfer && txToDelete.destinationVaultId) {
-        // Revertir origen
+        // Revertir origen (devuelve el monto + la comisión cobrada)
         const sourceVault = await dexieVaultRepository.getById(txToDelete.vaultId);
         if (sourceVault) {
           await dexieVaultRepository.update(txToDelete.vaultId, {
-            balance: sourceVault.balance + txToDelete.amount,
+            balance: sourceVault.balance + txToDelete.amount + fee,
           });
         }
         // Revertir destino
@@ -96,8 +99,8 @@ export const useTransactionsStore = create<TransactionsState>((set, get) => ({
         const vault = await dexieVaultRepository.getById(txToDelete.vaultId);
         if (vault) {
           let revertAdjustment = 0;
-          if (txToDelete.type === 'income') revertAdjustment = -txToDelete.amount;
-          else if (txToDelete.type === 'expense') revertAdjustment = txToDelete.amount;
+          if (txToDelete.type === 'income') revertAdjustment = -(txToDelete.amount - fee);
+          else if (txToDelete.type === 'expense') revertAdjustment = txToDelete.amount + fee;
 
           if (revertAdjustment !== 0) {
             await dexieVaultRepository.update(txToDelete.vaultId, {

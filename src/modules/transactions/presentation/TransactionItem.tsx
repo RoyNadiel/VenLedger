@@ -86,6 +86,14 @@ export const TransactionItem: React.FC<TransactionItemProps> = ({
                 minute: '2-digit',
               })}
             </span>
+            {tx.fee && tx.fee > 0 && (
+              <>
+                <span>•</span>
+                <span className="font-mono text-amber-600 dark:text-amber-400 font-bold">
+                  Fee: {getCurrencySymbol(tx.currency)}{tx.fee.toFixed(2)}
+                </span>
+              </>
+            )}
           </div>
         </div>
       </div>
@@ -101,13 +109,13 @@ export const TransactionItem: React.FC<TransactionItemProps> = ({
             ) : isFilteredVaultSource ? (
               <span className="text-sm font-bold text-amber-700 dark:text-amber-400">
                 -{getCurrencySymbol(vault?.currency ?? 'USD')}{' '}
-                {tx.amount.toFixed(2)}
+                {(tx.amount + (tx.fee || 0)).toFixed(2)}
               </span>
             ) : (
               <div className="flex flex-col items-end text-xs">
                 <span className="font-bold text-slate-700 dark:text-slate-300">
                   -{getCurrencySymbol(vault?.currency ?? 'USD')}{' '}
-                  {tx.amount.toFixed(2)}
+                  {(tx.amount + (tx.fee || 0)).toFixed(2)}
                 </span>
                 <span className="font-bold text-emerald-600 dark:text-emerald-400">
                   +{getCurrencySymbol(dest?.currency ?? 'USD')}{' '}
@@ -123,7 +131,7 @@ export const TransactionItem: React.FC<TransactionItemProps> = ({
             >
               {isIncome ? '+' : '-'}
               {getCurrencySymbol(tx.currency)}{' '}
-              {tx.amount.toFixed(2)}
+              {(tx.amount + (isIncome ? -(tx.fee || 0) : (tx.fee || 0))).toFixed(2)}
             </span>
           )}
         </div>

@@ -59,6 +59,7 @@ export const useDebtsStore = create<DebtsState>((set, get) => ({
         amount: paymentData.amount,
         currency: paymentData.currency,
         type: isReceivable ? 'income' : 'expense',
+        fee: paymentData.fee,
         note: isReceivable
           ? `Abono de deuda: ${debt.contactName}`
           : `Pago de deuda a: ${debt.contactName}`,
