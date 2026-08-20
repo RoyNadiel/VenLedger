@@ -4,9 +4,9 @@ import { useRatesStore } from '../../rates/presentation/useRatesStore';
 import { useVaultsStore } from '../../vaults/presentation/useVaultsStore';
 import { FinanceEngine } from '../../analytics/domain/financeEngine';
 import { ReceiptModal } from './ReceiptModal';
-import type { AgreementType, Currency, DebtType } from '../../shared/domain/types';
+import type { AgreementType, Currency, DebtType, ExchangeRates } from '../../shared/domain/types';
 import type { Debt } from '../domain/entities';
-import { CheckCircle2, Clock, History, Landmark, Wallet, Coins, ArrowUpRight, ArrowDownRight } from 'lucide-react';
+import { CheckCircle2, Clock, Landmark, Wallet, Coins, ArrowUpRight, ArrowDownRight } from 'lucide-react';
 import { convertCurrency, getCurrencySymbol, getPaymentRateInfo } from '../../shared/domain/currencyUtils';
 import { CustomSelect, type SelectOption } from '../../shared/presentation/CustomSelect';
 
@@ -419,7 +419,13 @@ export const DebtsView: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {(activeTab === 'active' ? activeDebts : completedDebts).map((debt) => {
           const payments = paymentsByDebtId[debt.id] || [];
-          const calc = FinanceEngine.calculateDebtBalance(debt, payments, rates);
+          const fallbackRates: ExchangeRates = rates || {
+            usd_official: 1,
+            eur_official: 1,
+            usd_libre: 1,
+            timestamp: new Date().toISOString(),
+          };
+          const calc = FinanceEngine.calculateDebtBalance(debt, payments, fallbackRates);
           const isReceivable = debt.type === 'receivable';
 
           return (
